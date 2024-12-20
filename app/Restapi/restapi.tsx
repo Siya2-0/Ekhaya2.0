@@ -1,3 +1,5 @@
+"use server"
+
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 const supabaseUrl = process.env.NEXT_PUBLIC_API_URL as string;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
@@ -13,3 +15,9 @@ export async function addCategory(categoryname: string, categorydescription: str
       status: 200,
     })
   }
+
+  export const editCategory = async () => {
+    // const supabase = await createClient();
+    // await supabase.auth.signOut();
+    return console.log('Edit Category');
+  };

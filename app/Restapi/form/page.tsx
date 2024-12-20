@@ -1,6 +1,11 @@
+import { editCategory } from '../restapi';
 import { addCategory } from '../restapi';
 
-export default function NewPage() {
+export default async function NewPage() {
+  const response = await editCategory();
+  console.log(response);
+  const responseTwo = await addCategory("dummyData", "Second insert");
+  console.log(responseTwo);
   // Function to fetch data and update the DOM
   // const fetchData = async () => {
   //   const resultElement = document.getElementById('result');
@@ -41,6 +46,7 @@ export default function NewPage() {
               rows={10}
               cols={50}
             />
+            <button type="submit" formAction={editCategory}>Log in now</button>
           </form>
         </div>
       </div>
