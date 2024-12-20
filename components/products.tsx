@@ -99,7 +99,7 @@ const Products = () => {
       name: "Classic Gin",
       category: "Gin",
       price: 34.99,
-      image: "https://images.unsplash.com/photo-1614313511387-1436a4480ebb",
+      image: "https://images.unsplash.com/photo-1621873495914-1c921811e37b",
     },
     {
       id: 5,
