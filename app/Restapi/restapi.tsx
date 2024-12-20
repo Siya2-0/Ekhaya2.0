@@ -1,14 +1,19 @@
 "use server"
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
-const supabaseUrl = process.env.NEXT_PUBLIC_API_URL as string;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+import { createClient } from "@/utils/supabase/server";
+
 
 
 export async function addCategory(categoryname: string, categorydescription: string ) {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = await createClient();
     const { data: Categories, error } = await supabase.from('Categories').insert({category_name:categoryname, category_description:categorydescription})
-    if (error) throw error
+    if (error){
+      return new Response(JSON.stringify({ error }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      })
+
+    }
   
     return new Response(JSON.stringify({ Categories }), {
       headers: { 'Content-Type': 'application/json' },
