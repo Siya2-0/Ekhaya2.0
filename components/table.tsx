@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
-import { FiEdit, FiTrash2, FiFilter, FiSearch } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiFilter, FiSearch, FiPlus, FiX } from "react-icons/fi";
 import { BiSortAlt2 } from "react-icons/bi";
 
 const EmployeeTable = () => {
@@ -46,6 +48,29 @@ const EmployeeTable = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" });
   const [editEmployee, setEditEmployee] = useState<any>({});
   const [showModal, setShowModal] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    surname: "",
+    email: "",
+    cellphone: "",
+    status: "Active",
+    authority: "User",
+    role: ""
+  });
+  const [formErrors, setFormErrors] = useState<{ name?: string; surname?: string; email?: string; cellphone?: string }>({});
+
+  const validateForm = () => {
+    let errors: any = {};
+    if (!formData.name.trim()) errors.name = "Name is required";
+    if (!formData.surname.trim()) errors.surname = "Surname is required";
+    if (!formData.email.trim()) errors.email = "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = "Invalid email format";
+    }
+    if (!formData.cellphone.trim()) errors.cellphone = "Cellphone is required";
+    return errors;
+  };
 
   const handleSort = (key: any) => {
     let direction = "ascending";
@@ -109,22 +134,55 @@ const EmployeeTable = () => {
       filterStatus ? employee.status === filterStatus : true
     );
 
+    const handleSubmit = (e: any) => {
+      e.preventDefault();
+      const errors = validateForm();
+      if (Object.keys(errors).length === 0) {
+        const newEmployee = {
+          id: employees.length + 1,
+          ...formData,
+          role: formData.role || "User", // Add default role if not provided
+          createdAt: new Date().toISOString().split("T")[0],
+          additionalStatus: "New"
+        };
+        setEmployees([...employees, newEmployee]);
+        setFormData({
+          name: "",
+          surname: "",
+          email: "",
+          cellphone: "",
+          status: "Active",
+          authority: "User",
+          role: ""
+        });
+        setShowForm(false);
+      } else {
+        setFormErrors(errors);
+      }
+    };
+
   return (
-    <div className="p-6 bg-[F2F2F2] min-h-screen text-[#303030]">
+    <div className="p-6 bg-[F2F2F2] min-h-screen text-[#303030] pt-12">
       <div className="mb-6 space-y-4">
         <div className="flex flex-wrap gap-4 items-center justify-between">
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-[#D62929] text-white px-4 py-4 rounded-lg flex items-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <FiPlus /> Add New User
+        </button>
           <div className="relative bg-[#f2f2f2]">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search employees..."
-              className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
+              className="pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
               onChange={handleSearch}
             />
           </div>
           <div className="flex gap-4">
             <select
-              className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
+              className="px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
               onChange={handleFilterRole}
             >
               <option value="">Filter by Role</option>
@@ -133,7 +191,7 @@ const EmployeeTable = () => {
               <option value="Manager">Manager</option>
             </select>
             <select
-              className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
+              className="px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
               onChange={handleFilterStatus}
             >
               <option value="">Filter by Status</option>
@@ -144,7 +202,7 @@ const EmployeeTable = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg shadow">
+      <div className="overflow-x-auto rounded-lg shadow mt-8">
         <table className="w-full bg-white">
           <thead className="bg-gray-100">
             <tr>
@@ -257,6 +315,105 @@ const EmployeeTable = () => {
           </div>
         </div>
       )}
+      {/* Sliding Form */}
+      <div className={`fixed inset-y-0 right-0 w-[500px] bg-white shadow-lg transform ${showForm ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out`}>
+        <div className="p-6 h-full overflow-y-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Add New User</h2>
+            <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-gray-700">
+              <FiX size={24} />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                placeholder="Enter your Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] shadow-sm focus:border-b-blue-500 ${formErrors.name ? "border-red-500" : ""}`}
+              />
+              {formErrors.name && <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Surname</label>
+              <input
+                type="text"
+                value={formData.surname}
+                onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
+                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${formErrors.surname ? "border-red-500" : ""}`}
+              />
+              {formErrors.surname && <p className="mt-1 text-sm text-red-600">{formErrors.surname}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${formErrors.email ? "border-red-500" : ""}`}
+              />
+              {formErrors.email && <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Cellphone</label>
+              <input
+                type="tel"
+                value={formData.cellphone}
+                onChange={(e) => setFormData({ ...formData, cellphone: e.target.value })}
+                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${formErrors.cellphone ? "border-red-500" : ""}`}
+              />
+              {formErrors.cellphone && <p className="mt-1 text-sm text-red-600">{formErrors.cellphone}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                className="mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Authority</label>
+              <select
+                value={formData.authority}
+                onChange={(e) => setFormData({ ...formData, authority: e.target.value })}
+                className="mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+              </select>
+            </div>
+
+            <div className="flex gap-4 pt-4">
+              <button
+                type="submit"
+                className="flex-1 bg-[#D62929] text-white px-4 py-4 rounded-lg hover:opacity-90 transition-opacity"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

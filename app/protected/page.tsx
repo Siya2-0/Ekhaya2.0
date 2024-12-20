@@ -1,34 +1,19 @@
-"use client";
-
+import { signOutAction } from "@/app/actions";
 import Sidebar from "@/components/sidebar";
 import EmployeeTable from "@/components/table";
-// import { createClient } from "@/utils/supabase/server";
-// import { redirect } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import AuthButton from "@/components/header-auth";
 
 export default function ProtectedPage() {
-  // const supabase = await createClient();
-
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
-
-  // if (!user) {
-  //   return redirect("/sign-in");
-  // }
-
   return (
-    <div className="flex h-screen min-w-full bg-[#F2F2F2]">
-      {/* Left Column (Sidebar) */}
-      <div className="w-64">
-        <Sidebar />
-      </div>
-
-      {/* Right Column */}
-      <div className="flex-1 p-4">
-        <p className="text-[#303030] font-bold text-[32px] ml-8">Staff</p>
-        <EmployeeTable/>
-      </div>
-    </div>
+    <main className="relative flex min-h-screen flex-col bg-[#F2F2F2] pt-12">
+      <p className="text-[#303030] font-bold text-[32px] ml-8">Home Page</p>
+        <AuthButton />
+        {/* <EmployeeTable/> */}
+    </main>
   );
 }
 
