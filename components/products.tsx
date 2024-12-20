@@ -85,7 +85,7 @@ const Products = () => {
       name: "Smooth Vodka",
       category: "Vodka",
       price: 45.99,
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b",
+      image: "https://images.unsplash.com/photo-1621873495914-1c921811e37b",
     },
     {
       id: 3,
@@ -144,11 +144,11 @@ const Products = () => {
 
   const drawer = (
     <div className="flex">
-        <Box sx={{ p: 2, width: 250 }}>
+        <Box sx={{ p: 2, width: "100%" }}>
         <Typography variant="h6" sx={{ mb: 2 }}>
             Categories
         </Typography>
-        <FormGroup>
+        <FormGroup sx={{ flexDirection: "row" }}>
             {categories.map((category) => (
             <FormControlLabel
                 key={category}
@@ -169,14 +169,14 @@ const Products = () => {
   return (
     <main className="w-full h-full flex overflow-auto">
         <Box sx={{ flexGrow: 1 }}>
-        <Container sx={{ mt: 8 }}>
+        <Container sx={{ mt: 8, mb: 8 }}>
             {!isMobile && (
                 <Grid item xs={12} sm={3}>
                 {drawer}
                 </Grid>
             )}
             <Grid item xs={12} sm={9}>
-                <SearchWrapper>
+                <SearchWrapper sx={{ mb: 4 }}>
                 <TextField
                     fullWidth
                     placeholder="Search products..."
@@ -223,7 +223,7 @@ const Products = () => {
                               <p className='uppercase text-[16px] mt-[16px]'>{product.name}</p>
                           </div>
                           <p className='text-gray-400 text-base text-[14px]'>{product.category}</p>
-                          <p className='font-bold text-[16px] mt-0'>{product.price.toFixed(2)}</p>
+                          <p className='font-bold text-[16px] mt-0'>R{product.price.toFixed(2)}</p>
                       </div>
                   </div>
               </Link>
