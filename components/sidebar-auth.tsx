@@ -6,7 +6,7 @@ import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 import Sidebar from "./sidebar";
 
-export default async function AuthButton() {
+export default async function AuthSidebar() {
   const supabase = await createClient();
 
   const {
@@ -51,15 +51,15 @@ export default async function AuthButton() {
   }
   return user ? (
     <>
-      <div className="flex items-center gap-4 absolute right-8 top-12 ">
+      {/* <div className="flex items-center gap-4 absolute right-8 top-12 ">
         Hey, {user.email}!
         <form action={signOutAction}>
           <Button className="text-[#303030]" type="submit" variant={"outline"}>
             Sign out
           </Button>
         </form>
-      </div>
-      {/* <Sidebar />     */}
+      </div> */}
+      <Sidebar />    
     </>
   ) : (
     <div className=""></div>

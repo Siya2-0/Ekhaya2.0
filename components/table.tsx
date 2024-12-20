@@ -1,6 +1,40 @@
+"use client";
+
+import { signUpAction } from "@/app/actions";
+
 import React, { useState } from "react";
-import { FiEdit, FiTrash2, FiFilter, FiSearch } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiFilter, FiSearch, FiPlus, FiX } from "react-icons/fi";
 import { BiSortAlt2 } from "react-icons/bi";
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  TextField,
+  Typography,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from "@mui/material";
+import { styled } from "@mui/system";
+import { SubmitButton } from "./submit-button";
+import Link from "next/link";
+
+const StyledForm = styled("form")(({ theme }: any) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(3),
+  padding: theme.spacing(3),
+  backgroundColor: "#ffffff",
+  borderRadius: theme.spacing(1),
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
+}));
 
 const EmployeeTable = () => {
   const initialEmployees = [
@@ -46,6 +80,7 @@ const EmployeeTable = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" });
   const [editEmployee, setEditEmployee] = useState<any>({});
   const [showModal, setShowModal] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   const handleSort = (key: any) => {
     let direction = "ascending";
@@ -109,22 +144,133 @@ const EmployeeTable = () => {
       filterStatus ? employee.status === filterStatus : true
     );
 
+    interface FormData {
+      name: string;
+      surname: string;
+      phone: string;
+      email: string;
+      role: string;
+      password: string;
+      status: string;
+      username: string;
+      authority: string;
+    }
+
+    const [formData, setFormData] = useState<FormData>({
+      name: "",
+      surname: "",
+      phone: "",
+      email: "",
+      role: "",
+      password: "",
+      status: "Active",
+      username: "",
+      authority: ""
+    });
+  
+    interface FormErrors {
+      name?: string;
+      surname?: string;
+      phone?: string;
+      email?: string;
+      role?: string;
+      password?: string;
+      username?: string;
+      authority?: string;
+    }
+    
+    const [errors, setErrors] = useState<FormErrors>({});
+    // const [showSuccess, setShowSuccess] = useState(false);
+  
+    const validateForm = () => {
+      const newErrors: FormErrors = {};
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+  
+      if (!formData.name) newErrors.name = "Name is required";
+      if (!formData.surname) newErrors.surname = "Surname is required";
+      if (!formData.phone) newErrors.phone = "Phone number is required";
+      if (!phoneRegex.test(formData.phone)) newErrors.phone = "Invalid phone number format";
+      if (!formData.email) newErrors.email = "Email is required";
+      if (!emailRegex.test(formData.email)) newErrors.email = "Invalid email format";
+      if (!formData.role) newErrors.role = "Role is required";
+      if (!formData.password) newErrors.password = "Password is required";
+      if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters";
+      if (!formData.username) newErrors.username = "Username is required";
+      if (!formData.authority) newErrors.authority = "Level of Authority is required";
+  
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+  
+    const [showDialog, setShowDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  const [dialogSuccess, setDialogSuccess] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    const response = await signUpAction(formData);
+    if (response.success) {
+      setDialogMessage("Registration successful!");
+      setDialogSuccess(true);
+      setShowForm(false);
+
+      // Refresh the page after closing the dialog
+      setShowDialog(true);
+    } else {
+      setDialogMessage(response.message || "An error occurred.");
+      setDialogSuccess(false);
+      setShowDialog(true);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setShowDialog(false);
+
+    if (dialogSuccess) {
+      // Refresh the page on successful registration
+      window.location.reload();
+    }
+  };
+  
+    const handleChange = (event: any) => {
+      const { name, value } = event.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value
+      }));
+      if (errors[name as keyof FormErrors]) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: ""
+        }));
+      }
+    };
+
   return (
-    <div className="p-6 bg-[F2F2F2] min-h-screen text-[#303030]">
+    <div className="p-6 bg-[F2F2F2] min-h-screen text-[#303030] pt-12">
       <div className="mb-6 space-y-4">
         <div className="flex flex-wrap gap-4 items-center justify-between">
+        <button
+          onClick={() => setShowForm(true)}
+          className="bg-[#D62929] text-white px-4 py-4 rounded-lg flex items-center gap-2 hover:opacity-90 transition-opacity"
+        >
+          <FiPlus /> Add New User
+        </button>
           <div className="relative bg-[#f2f2f2]">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search employees..."
-              className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
+              className="pl-10 pr-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
               onChange={handleSearch}
             />
           </div>
           <div className="flex gap-4">
             <select
-              className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
+              className="px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
               onChange={handleFilterRole}
             >
               <option value="">Filter by Role</option>
@@ -133,7 +279,7 @@ const EmployeeTable = () => {
               <option value="Manager">Manager</option>
             </select>
             <select
-              className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
+              className="px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
               onChange={handleFilterStatus}
             >
               <option value="">Filter by Status</option>
@@ -144,7 +290,7 @@ const EmployeeTable = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg shadow">
+      <div className="overflow-x-auto rounded-lg shadow mt-8">
         <table className="w-full bg-white">
           <thead className="bg-gray-100">
             <tr>
@@ -257,6 +403,138 @@ const EmployeeTable = () => {
           </div>
         </div>
       )}
+      {/* Sliding Form */}
+      <div className={`fixed inset-y-0 right-0 w-[500px] bg-white shadow-lg transform ${showForm ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 ease-in-out`}>
+        <div className="p-6 h-full overflow-y-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Add New User</h2>
+            <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-gray-700">
+              <FiX size={24} />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex flex-col min-w-full max-w-full mx-auto">
+            <Typography variant="h4" component="h1" gutterBottom>
+              Sign up
+            </Typography>
+            <Box display="flex" flexDirection="column" gap={2} mt={3}>
+              <TextField
+                variant="outlined"
+                label="Email"
+                name="email"
+                placeholder="you@example.com"
+                required
+                inputProps={{ maxLength: 50 }}
+              />
+              <TextField
+                variant="outlined"
+                label="Password"
+                type="password"
+                name="password"
+                placeholder="Your password"
+                inputProps={{ minLength: 8, maxLength: 50 }}
+                required
+              />
+              <TextField
+                variant="outlined"
+                label="First Name"
+                name="name"
+                placeholder="Enter Name"
+                required
+                inputProps={{ maxLength: 50 }}
+              />
+              <TextField
+                variant="outlined"
+                label="Last Name"
+                name="surname"
+                placeholder="Last Name"
+                required
+                inputProps={{ maxLength: 50 }}
+              />
+              <TextField
+                variant="outlined"
+                label="Phone Number"
+                name="phone_number"
+                placeholder=""
+                inputProps={{ maxLength: 50 }}
+              />
+              <TextField
+                variant="outlined"
+                label="Job Position"
+                name="role"
+                placeholder="Enter Job Title"
+                inputProps={{ maxLength: 50 }}
+              />
+              <TextField
+                select
+                variant="outlined"
+                label="Level of Access"
+                name="loa"
+                required
+                defaultValue="NonManagement"
+              >
+                <MenuItem value="NonManagement">NonManagement</MenuItem>
+                <MenuItem value="Management">Management</MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
+              </TextField>
+              <TextField
+                select
+                variant="outlined"
+                label="Status"
+                name="status"
+                required
+                defaultValue="active"
+              >
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+              </TextField>
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  pt: 2,
+                  pb: 2,
+                  backgroundColor: "#303030",
+                  "&:hover": {
+                    backgroundColor: "#505050", // Slightly lighter color for hover effect
+                  },
+                }}
+              >
+                Register
+              </Button>
+
+            </Box>
+          </form>
+
+          {/* Success Snackbar */}
+          <Dialog open={showDialog} onClose={handleDialogClose}>
+            <DialogTitle>{dialogSuccess ? "Success" : "Error"}</DialogTitle>
+            <DialogContent>
+              <Typography>{dialogMessage}</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDialogClose} color="primary" autoFocus>
+                {dialogSuccess ? "OK" : "Close"}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Error Snackbar */}
+          {/* {errorMessage && (
+            <Snackbar
+              open={Boolean(errorMessage)}
+              autoHideDuration={6000}
+              onClose={() => setErrorMessage(null)}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <Alert severity="error" variant="filled" onClose={() => setErrorMessage(null)}>
+                {errorMessage}
+              </Alert>
+            </Snackbar>
+          )} */}
+        </div>
+      </div>
     </div>
   );
 };

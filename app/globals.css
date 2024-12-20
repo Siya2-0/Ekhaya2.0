@@ -77,13 +77,32 @@
 
 body {
   margin: 0;
-  display: flex;
+  /* display: flex; */
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   background-color: #FFFFFF;
   overflow: hidden;
   font-family: Arial, sans-serif;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  transition: 0.5 ease-in-out;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .card {
