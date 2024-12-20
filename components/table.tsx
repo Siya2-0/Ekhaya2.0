@@ -1,8 +1,40 @@
 "use client";
 
+import { signUpAction } from "@/app/actions";
+
 import React, { useState } from "react";
 import { FiEdit, FiTrash2, FiFilter, FiSearch, FiPlus, FiX } from "react-icons/fi";
 import { BiSortAlt2 } from "react-icons/bi";
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  TextField,
+  Typography,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from "@mui/material";
+import { styled } from "@mui/system";
+import { SubmitButton } from "./submit-button";
+import Link from "next/link";
+
+const StyledForm = styled("form")(({ theme }: any) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(3),
+  padding: theme.spacing(3),
+  backgroundColor: "#ffffff",
+  borderRadius: theme.spacing(1),
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
+}));
 
 const EmployeeTable = () => {
   const initialEmployees = [
@@ -49,28 +81,6 @@ const EmployeeTable = () => {
   const [editEmployee, setEditEmployee] = useState<any>({});
   const [showModal, setShowModal] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    surname: "",
-    email: "",
-    cellphone: "",
-    status: "Active",
-    authority: "User",
-    role: ""
-  });
-  const [formErrors, setFormErrors] = useState<{ name?: string; surname?: string; email?: string; cellphone?: string }>({});
-
-  const validateForm = () => {
-    let errors: any = {};
-    if (!formData.name.trim()) errors.name = "Name is required";
-    if (!formData.surname.trim()) errors.surname = "Surname is required";
-    if (!formData.email.trim()) errors.email = "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = "Invalid email format";
-    }
-    if (!formData.cellphone.trim()) errors.cellphone = "Cellphone is required";
-    return errors;
-  };
 
   const handleSort = (key: any) => {
     let direction = "ascending";
@@ -134,30 +144,108 @@ const EmployeeTable = () => {
       filterStatus ? employee.status === filterStatus : true
     );
 
-    const handleSubmit = (e: any) => {
-      e.preventDefault();
-      const errors = validateForm();
-      if (Object.keys(errors).length === 0) {
-        const newEmployee = {
-          id: employees.length + 1,
-          ...formData,
-          role: formData.role || "User", // Add default role if not provided
-          createdAt: new Date().toISOString().split("T")[0],
-          additionalStatus: "New"
-        };
-        setEmployees([...employees, newEmployee]);
-        setFormData({
-          name: "",
-          surname: "",
-          email: "",
-          cellphone: "",
-          status: "Active",
-          authority: "User",
-          role: ""
-        });
-        setShowForm(false);
-      } else {
-        setFormErrors(errors);
+    interface FormData {
+      name: string;
+      surname: string;
+      phone: string;
+      email: string;
+      role: string;
+      password: string;
+      status: string;
+      username: string;
+      authority: string;
+    }
+
+    const [formData, setFormData] = useState<FormData>({
+      name: "",
+      surname: "",
+      phone: "",
+      email: "",
+      role: "",
+      password: "",
+      status: "Active",
+      username: "",
+      authority: ""
+    });
+  
+    interface FormErrors {
+      name?: string;
+      surname?: string;
+      phone?: string;
+      email?: string;
+      role?: string;
+      password?: string;
+      username?: string;
+      authority?: string;
+    }
+    
+    const [errors, setErrors] = useState<FormErrors>({});
+    // const [showSuccess, setShowSuccess] = useState(false);
+  
+    const validateForm = () => {
+      const newErrors: FormErrors = {};
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+  
+      if (!formData.name) newErrors.name = "Name is required";
+      if (!formData.surname) newErrors.surname = "Surname is required";
+      if (!formData.phone) newErrors.phone = "Phone number is required";
+      if (!phoneRegex.test(formData.phone)) newErrors.phone = "Invalid phone number format";
+      if (!formData.email) newErrors.email = "Email is required";
+      if (!emailRegex.test(formData.email)) newErrors.email = "Invalid email format";
+      if (!formData.role) newErrors.role = "Role is required";
+      if (!formData.password) newErrors.password = "Password is required";
+      if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters";
+      if (!formData.username) newErrors.username = "Username is required";
+      if (!formData.authority) newErrors.authority = "Level of Authority is required";
+  
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    };
+  
+    const [showDialog, setShowDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  const [dialogSuccess, setDialogSuccess] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    const response = await signUpAction(formData);
+    if (response.success) {
+      setDialogMessage("Registration successful!");
+      setDialogSuccess(true);
+      setShowForm(false);
+
+      // Refresh the page after closing the dialog
+      setShowDialog(true);
+    } else {
+      setDialogMessage(response.message || "An error occurred.");
+      setDialogSuccess(false);
+      setShowDialog(true);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setShowDialog(false);
+
+    if (dialogSuccess) {
+      // Refresh the page on successful registration
+      window.location.reload();
+    }
+  };
+  
+    const handleChange = (event: any) => {
+      const { name, value } = event.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value
+      }));
+      if (errors[name as keyof FormErrors]) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: ""
+        }));
       }
     };
 
@@ -325,93 +413,126 @@ const EmployeeTable = () => {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
-              <input
-                type="text"
-                placeholder="Enter your Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] shadow-sm focus:border-b-blue-500 ${formErrors.name ? "border-red-500" : ""}`}
+          <form onSubmit={handleSubmit} className="flex flex-col min-w-full max-w-full mx-auto">
+            <Typography variant="h4" component="h1" gutterBottom>
+              Sign up
+            </Typography>
+            <Box display="flex" flexDirection="column" gap={2} mt={3}>
+              <TextField
+                variant="outlined"
+                label="Email"
+                name="email"
+                placeholder="you@example.com"
+                required
+                inputProps={{ maxLength: 50 }}
               />
-              {formErrors.name && <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Surname</label>
-              <input
-                type="text"
-                value={formData.surname}
-                onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${formErrors.surname ? "border-red-500" : ""}`}
+              <TextField
+                variant="outlined"
+                label="Password"
+                type="password"
+                name="password"
+                placeholder="Your password"
+                inputProps={{ minLength: 8, maxLength: 50 }}
+                required
               />
-              {formErrors.surname && <p className="mt-1 text-sm text-red-600">{formErrors.surname}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${formErrors.email ? "border-red-500" : ""}`}
+              <TextField
+                variant="outlined"
+                label="First Name"
+                name="name"
+                placeholder="Enter Name"
+                required
+                inputProps={{ maxLength: 50 }}
               />
-              {formErrors.email && <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Cellphone</label>
-              <input
-                type="tel"
-                value={formData.cellphone}
-                onChange={(e) => setFormData({ ...formData, cellphone: e.target.value })}
-                className={`mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${formErrors.cellphone ? "border-red-500" : ""}`}
+              <TextField
+                variant="outlined"
+                label="Last Name"
+                name="surname"
+                placeholder="Last Name"
+                required
+                inputProps={{ maxLength: 50 }}
               />
-              {formErrors.cellphone && <p className="mt-1 text-sm text-red-600">{formErrors.cellphone}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Status</label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              <TextField
+                variant="outlined"
+                label="Phone Number"
+                name="phone_number"
+                placeholder=""
+                inputProps={{ maxLength: 50 }}
+              />
+              <TextField
+                variant="outlined"
+                label="Job Position"
+                name="role"
+                placeholder="Enter Job Title"
+                inputProps={{ maxLength: 50 }}
+              />
+              <TextField
+                select
+                variant="outlined"
+                label="Level of Access"
+                name="loa"
+                required
+                defaultValue="NonManagement"
               >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Authority</label>
-              <select
-                value={formData.authority}
-                onChange={(e) => setFormData({ ...formData, authority: e.target.value })}
-                className="mt-1 bg-transparent block w-full border-b-[2px] border-b-[#ccc] border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                <MenuItem value="NonManagement">NonManagement</MenuItem>
+                <MenuItem value="Management">Management</MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
+              </TextField>
+              <TextField
+                select
+                variant="outlined"
+                label="Status"
+                name="status"
+                required
+                defaultValue="active"
               >
-                <option value="User">User</option>
-                <option value="Admin">Admin</option>
-                <option value="Manager">Manager</option>
-              </select>
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <button
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+              </TextField>
+              <Button
                 type="submit"
-                className="flex-1 bg-[#D62929] text-white px-4 py-4 rounded-lg hover:opacity-90 transition-opacity"
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  pt: 2,
+                  pb: 2,
+                  backgroundColor: "#303030",
+                  "&:hover": {
+                    backgroundColor: "#505050", // Slightly lighter color for hover effect
+                  },
+                }}
               >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
+                Register
+              </Button>
+
+            </Box>
           </form>
+
+          {/* Success Snackbar */}
+          <Dialog open={showDialog} onClose={handleDialogClose}>
+            <DialogTitle>{dialogSuccess ? "Success" : "Error"}</DialogTitle>
+            <DialogContent>
+              <Typography>{dialogMessage}</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDialogClose} color="primary" autoFocus>
+                {dialogSuccess ? "OK" : "Close"}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Error Snackbar */}
+          {/* {errorMessage && (
+            <Snackbar
+              open={Boolean(errorMessage)}
+              autoHideDuration={6000}
+              onClose={() => setErrorMessage(null)}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <Alert severity="error" variant="filled" onClose={() => setErrorMessage(null)}>
+                {errorMessage}
+              </Alert>
+            </Snackbar>
+          )} */}
         </div>
       </div>
     </div>
