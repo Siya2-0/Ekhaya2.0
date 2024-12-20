@@ -52,6 +52,27 @@ const Orders = () => {
       category: "Vodka",
       price: 32.99,
       image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+    },
+    {
+      id: 4,
+      name: "Premium Whisky",
+      category: "Whisky",
+      price: 59.99,
+      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+    },
+    {
+      id: 5,
+      name: "Silver Tequila",
+      category: "Tequila",
+      price: 45.99,
+      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+    },
+    {
+      id: 6,
+      name: "Smooth Vodka",
+      category: "Vodka",
+      price: 32.99,
+      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
     }
   ];
 
@@ -70,6 +91,7 @@ const Orders = () => {
     } else {
       setCurrentOrders([...currentOrders, { ...item, quantity: 1 }]);
     }
+    setShowOrders(true);
   };
 
   const removeFromOrders = (itemId: any) => {
@@ -95,9 +117,10 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
-      <header className="bg-[#F2F2F2] shadow-md p-4">
+      <header className="bg-[#F2F2F2] shadow-md p-4 sticky">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-[#303030]">Ekhaya Bar Lounge</h1>
+          <h1 className="text-2xl font-bold text-[#303030]">E&nbsp;k&nbsp;h&nbsp;a&nbsp;y&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;a&nbsp;r&nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;o&nbsp;u&nbsp;n&nbsp;g&nbsp;e</h1>
+
           <button
             onClick={() => setShowOrders(!showOrders)}
             className="flex items-center gap-2 bg-[#D62929] text-white px-4 py-2 rounded-lg hover:placeholder-opacity-90 transition-opacity"
@@ -123,7 +146,7 @@ const Orders = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map(item => (
-            <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={item.id} className="bg-[#f2f2f2] rounded-lg shadow-md overflow-hidden">
               <img
                 src={item.image}
                 alt={item.name}
@@ -136,7 +159,7 @@ const Orders = () => {
                   <span className="text-lg font-bold">R{item.price}</span>
                   <button
                     onClick={() => addToOrders(item)}
-                    className="bg-[#D62929] text-white px-4 py-2 rounded-lg hover:placeholder-opacity-90 transition-opacity"
+                    className="bg-[#D62929] text-[#f2f2f2] px-4 py-2 rounded-lg hover:placeholder-opacity-90 transition-opacity"
                   >
                     Add to Orders
                   </button>
@@ -147,7 +170,7 @@ const Orders = () => {
         </div>
       </div>
 
-      <div className={`fixed top-0 right-0 h-full w-full md:w-[700px] bg-white shadow-lg transform transition-transform duration-300 ${showOrders ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed top-0 right-0 h-full w-full md:w-[700px] bg-[#f2f2f2] shadow-lg transform transition-transform duration-300 ${showOrders ? "translate-x-0" : "translate-x-full"}`}>
         <div className="p-0 h-full flex flex-col">
           {/* <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Current Orders</h2>
@@ -246,11 +269,11 @@ const Orders = () => {
                                         <div className='hidden sm:block min-w-[100px]'>
                                         <div className="py-2 px-3 inline-block bg-[#f2f2f2]" data-hs-input-number>
                                           <div className="flex items-center gap-x-1.5">
-                                          <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-black shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-black before:transition-all before:duration-500 hover:text-white hover:shadow-black hover:before:left-0 hover:before:w-full">
+                                          <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#000000] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                             <span className="relative z-10"><FaMinus className='w-[10px] h-[10px]'/></span>
                                           </button>
-                                            <input className="p-0 w-4 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-black" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
-                                            <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-black shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-black before:transition-all before:duration-500 hover:text-white hover:shadow-black hover:before:left-0 hover:before:w-full">
+                                            <input className="p-0 w-4 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-[#D62929]" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
+                                            <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-[#D62929] relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#000000] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                               <span className="relative z-10"><FaPlus className='w-[10px] h-[10px]'/></span>
                                             </button>
                                           </div>
@@ -260,11 +283,11 @@ const Orders = () => {
                                         <div className='sm:hidden block min-w-[100px]'>
                                         <div className="py-2 px-3 inline-block bg-[#f2f2f2]" data-hs-input-number>
                                           <div className="flex items-center gap-x-1.5">
-                                          <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-black shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-black before:transition-all before:duration-500 hover:text-white hover:shadow-black hover:before:left-0 hover:before:w-full">
+                                          <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                             <span className="relative z-10"><FaMinus className='w-[10px] h-[10px]'/></span>
                                           </button>
-                                            <input className="p-0 w-4 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-black" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
-                                            <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-black shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-black before:transition-all before:duration-500 hover:text-white hover:shadow-black hover:before:left-0 hover:before:w-full">
+                                            <input className="p-0 w-4 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-[#D62929]" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
+                                            <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-[#D62929] relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                               <span className="relative z-10"><FaPlus className='w-[10px] h-[10px]'/></span>
                                             </button>
                                           </div>
@@ -273,12 +296,12 @@ const Orders = () => {
                                           <p className='text-center text-2xl font-bold'>R{(item.price * item.quantity).toFixed(2)}</p>
                                         </div>
                                         <div className='md:block hidden pr-0'>
-                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[128px] bg-[#f2f2f2] w-full text-black right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-black transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-black hover:before:w-2/4 hover:before:bg-black hover:after:w-2/4 hover:after:bg-black">
+                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[128px] bg-[#f2f2f2] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
                                             <span className="relative z-10 uppercase">delete</span>
                                           </button>
                                         </div>
                                         <div className='md:hidden block pr-0'>
-                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[128px] bg-[#f2f2f2] w-full text-black right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-black transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-black hover:before:w-2/4 hover:before:bg-black hover:after:w-2/4 hover:after:bg-black">
+                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[128px] bg-[#f2f2f2] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
                                               <span className="relative z-10"><RxCross2 className='w-[25px] h-[25px]'/></span>
                                           </button>
                                         </div>
@@ -297,13 +320,13 @@ const Orders = () => {
                       <p className='mr-0 text-[#212322] text-3xl font-normal relative'>R{calculateTotal().total.toFixed(2)}</p>
                       </div>
                     </div>
-                    <button onClick={() => setShowOrders(false)} disabled={currentOrders.length === 0} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#000000]"} bg-[#f2f2f2] ${(currentOrders.length === 0) ? "text-[#898989]":"text-black"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#000000]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#000000]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
-                      <span className={`top-0 flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#000000]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#000000]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} group-hover:before:h-full group-hover:after:h-full`}></span>
-                      <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#898989]":"group-hover:text-[#ffffff]"} text-[18px] font-semibold`}>Continue Shopping</span>
+                    <button onClick={() => setShowOrders(false)} disabled={currentOrders.length === 0} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} bg-[#f2f2f2] ${(currentOrders.length === 0) ? "text-[#898989]":"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#D62929]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
+                      <span className={`top-0 flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#D62929]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#D62929]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} group-hover:before:h-full group-hover:after:h-full`}></span>
+                      <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#898989]":"group-hover:text-[#ffffff]"} text-[18px] font-semibold`}>Continue Ordering</span>
                     </button>
-                    <button disabled={currentOrders.length === 0}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#000000]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#000000]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#000000]"} hover:before:h-full hover:after:h-full`}>
+                    <button disabled={currentOrders.length === 0}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#D62929]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#D62929]"} hover:before:h-full hover:after:h-full`}>
                       <span className={`top-[0] flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 hover:text-black group-hover:before:h-full group-hover:after:h-full`}></span>
-                      <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#ffffff]":"group-hover:text-[#000000]"} text-[18px] font-semibold`}>Order</span>
+                      <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#ffffff]":"group-hover:text-[#D62929]"} text-[18px] font-semibold`}>Order</span>
                     </button>
                   </div>
                 </div>
