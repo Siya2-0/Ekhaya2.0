@@ -41,7 +41,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`h-screen flex flex-col relative bg-[#303030] text-white transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"} fixed left-0 top-0`}
+      className={`h-screen sticky flex flex-col bg-[#303030] text-white transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"} fixed left-0 top-0`}
     >
       <div className={`absolute right-0 z-10 ${isCollapsed ? 'top-0' : 'top-0'}`}>
         <button onClick={() => setIsCollapsed(!isCollapsed)} className='bg-[#D62929] text-white p-2 cursor-pointer'>
