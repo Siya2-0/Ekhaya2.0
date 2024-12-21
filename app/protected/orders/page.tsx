@@ -73,45 +73,45 @@ const Orders = () => {
   const liquorItems = [
     {
       id: 1,
-      name: "Premium Whisky",
+      name: "Heineken Premium Larger",
       category: "Whisky",
       price: 59.99,
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+      image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fheineken.png?alt=media&token=8e9e171f-da87-4066-971e-46e6d217c3c6"
     },
     {
       id: 2,
-      name: "Silver Tequila",
+      name: "Savanna Dry Cider",
       category: "Tequila",
       price: 45.99,
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+      image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fsavanna.png?alt=media&token=d57f7cc6-f625-4a21-9cd0-2d671246f4fd"
     },
     {
       id: 3,
-      name: "Smooth Vodka",
+      name: "Castle Lite Lager",
       category: "Vodka",
       price: 32.99,
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+      image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fcastle.png?alt=media&token=3c27a545-6ad7-4d5a-94c8-7ebd334b41d7"
     },
     {
       id: 4,
-      name: "Premium Whisky",
+      name: "Gordon's London Gin",
       category: "Whisky",
       price: 59.99,
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+      image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fgordons.png?alt=media&token=0c5926fb-1ed0-4dda-9abd-cf2ec3804cb0"
     },
     {
       id: 5,
-      name: "Silver Tequila",
+      name: "Corona",
       category: "Tequila",
       price: 45.99,
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+      image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fcorona.png?alt=media&token=e28236c2-99a1-443d-a288-22923781a3aa"
     },
     {
       id: 6,
-      name: "Smooth Vodka",
+      name: "Castle Lager",
       category: "Vodka",
       price: 32.99,
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b"
+      image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Flarger.png?alt=media&token=5a43eb96-8f6c-4e90-bf7d-2f6655740b7d"
     }
   ];
 
@@ -177,7 +177,7 @@ const Orders = () => {
 
   const drawer = (
       <div className="flex">
-          <Box sx={{ p: 2, width: "100%" }}>
+          <Box sx={{ pb: 2, width: "100%" }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
               Categories
           </Typography>
@@ -207,7 +207,7 @@ const Orders = () => {
           onClick={() => setShowOrders(false)}
         ></div>
       )}
-      <header className="bg-[#F2F2F2] shadow-md p-4 sticky">
+      <header className="bg-[#F2F2F2] shadow-md p-4 sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-[#303030]">E&nbsp;k&nbsp;h&nbsp;a&nbsp;y&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;a&nbsp;r&nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;o&nbsp;u&nbsp;n&nbsp;g&nbsp;e</h1>
 
@@ -222,28 +222,12 @@ const Orders = () => {
       </header>
 
       <div className="container mx-auto p-0">
-        {/* <div className="flex flex-wrap gap-2 mb-6">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-lg ${activeCategory === category ? "bg-[#D62929] text-white" : "bg-white text-gray-700 hover:bg-orange-100"}`}
-            >
-              {category}
-            </button>
-          ))}
-        </div> */}
-
-        {/* {!isMobile && ( */}
-        <Grid item xs={12} sm={3}>
-        {drawer}
-        </Grid>
-        {/* )} */}
 
         <main className="w-full h-full flex overflow-auto">
         <Box sx={{ flexGrow: 1 }}>
-        <Container sx={{ mt: 0, mb: 8 }}>
+        <Container sx={{ mt: 4, mb: 8 }}>
             <Grid item xs={12} sm={9}>
+                {drawer}
                 <SearchWrapper sx={{ mb: 4 }}>
                 <TextField
                     fullWidth
@@ -284,7 +268,7 @@ const Orders = () => {
                           loading="eager" 
                           width={300} 
                           height={300} 
-                          className='w-full md:max-h-[200px] object-cover hover:scale-105 transform transition-transform ease-in-out duration-300 cursor-pointer'/>
+                          className='w-full md:max-h-[250px] object-cover hover:scale-105 transform transition-transform ease-in-out duration-300 cursor-pointer'/>
                       </div>
                       <div className="pb-8 border-b relative">
                         <div className="font-bold">
@@ -318,14 +302,6 @@ const Orders = () => {
                 />
                 </Box>
         </Container>
-
-        {/* <Drawer
-            anchor="left"
-            open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
-        >
-            {drawer}
-        </Drawer> */}
         </Box>
     </main>
       </div>
@@ -415,7 +391,7 @@ const Orders = () => {
                     </button>
                     <button disabled={currentOrders.length === 0}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#D62929]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#D62929]"} hover:before:h-full hover:after:h-full`}>
                       <span className={`top-[0] flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 hover:text-black group-hover:before:h-full group-hover:after:h-full`}></span>
-                      <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#ffffff]":"group-hover:text-[#D62929]"} text-[18px] font-semibold`}>Order</span>
+                      <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#ffffff]":"group-hover:text-[#D62929]"} text-[18px] font-semibold`}>Print Receipt</span>
                     </button>
                   </div>
                 </div>
