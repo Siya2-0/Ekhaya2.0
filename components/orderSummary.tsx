@@ -2,8 +2,9 @@
 
 import React, { useState } from "react";
 import { FaCreditCard, FaMoneyBillWave, FaMobile, FaGift, FaPrint, FaEnvelope, FaPlus, FaMinus } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 
-const OrderSummary = ({pay}: any) => {
+const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders}: any) => {
   const [orderItems, setOrderItems] = useState([
     { id: 1, name: "Classic Martini", quantity: 2, price: 12.99 },
     { id: 2, name: "Craft Beer", quantity: 3, price: 8.99 },
@@ -35,10 +36,13 @@ const OrderSummary = ({pay}: any) => {
 
   const handlePrint = () => {
     console.log("Printing receipt...");
+    setCurrentOrders([]);
+    setCurrentOrders([]);
   };
 
   const handleEmailReceipt = () => {
     console.log("Emailing receipt...");
+    setShowPaymentModal(false);
   };
 
   return (
@@ -186,9 +190,9 @@ const OrderSummary = ({pay}: any) => {
             </button>
             <button
               onClick={handleEmailReceipt}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             >
-              <FaEnvelope /> Email Receipt
+              <MdCancel /> Cancel
             </button>
           </div>
         </div>

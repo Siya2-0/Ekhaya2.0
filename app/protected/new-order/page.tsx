@@ -219,8 +219,8 @@ const NewOrder = () => {
       const ordersHistory = JSON.parse(localStorage.getItem('ordersHistory') || '[]');
       ordersHistory.push(newOrder);
       localStorage.setItem('ordersHistory', JSON.stringify(ordersHistory));
-      setCurrentOrders([]);
-      setCurrentOrders([]);
+      // setCurrentOrders([]);
+      // setCurrentOrders([]);
       // setShowPaymentModal(false);
       setShowOrderSummary(true);
       setPay(paymentMethod === "card");
@@ -249,7 +249,7 @@ const NewOrder = () => {
         )}
         {showOrderSummary && (
           <OrderSummary
-            pay={pay}
+            pay={pay} setShowPaymentModal={setShowPaymentModal} setCurrentOrders={setCurrentOrders}
             // orderItems={currentOrders}
             // handleQuantityChange={updateQuantity}
             // paymentMethod="card"
