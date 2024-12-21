@@ -5,10 +5,49 @@ import { motion } from "framer-motion";
 import { FaTimes, FaPlus, FaMinus, FaShoppingCart } from "react-icons/fa";
 import Image from "next/image";
 import { RxCross2 } from 'react-icons/rx';
+import {
+  AppBar,
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Container,
+  Drawer,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  Select,
+  TextField,
+  Toolbar,
+  Typography,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { styled } from "@mui/system";
+import { FiMenu, FiSearch, FiShoppingCart } from "react-icons/fi";
+import Link from "next/link";
+
+const SearchWrapper = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: 2,
+  marginBottom: 3,
+}));
 
 const Orders = () => {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showOrders, setShowOrders] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState("");
+    const [page, setPage] = useState(1);
   interface OrderItem {
     id: number;
     name: string;
@@ -76,9 +115,30 @@ const Orders = () => {
     }
   ];
 
-  const filteredItems = activeCategory === "All"
-    ? liquorItems
-    : liquorItems.filter(item => item.category === activeCategory);
+  const handleCategoryChange = (category: any) => {
+    setSelectedCategories((prev: any) =>
+      prev.includes(category)
+        ? prev.filter((cat: any) => cat !== category)
+        : [...prev, category]
+    );
+  };
+
+  const filteredItems = liquorItems
+    .filter((product) =>
+      searchQuery
+        ? product.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : true
+    )
+    .filter((product) =>
+      selectedCategories.length > 0
+        ? selectedCategories.includes(product.category)
+        : true
+    )
+    .sort((a, b) => {
+      if (sortBy === "priceLowToHigh") return a.price - b.price;
+      if (sortBy === "priceHighToLow") return b.price - a.price;
+      return 0;
+    });
 
   const addToOrders = (item: any) => {
     const existingItem = currentOrders.find(order => order.id === item.id);
@@ -115,8 +175,38 @@ const Orders = () => {
     return { subtotal, tax, total };
   };
 
+  const drawer = (
+      <div className="flex">
+          <Box sx={{ p: 2, width: "100%" }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+              Categories
+          </Typography>
+          <FormGroup sx={{ flexDirection: "row" }}>
+              {categories.map((category) => (
+              <FormControlLabel
+                  key={category}
+                  control={
+                  <Checkbox
+                      checked={selectedCategories.includes(category)}
+                      onChange={() => handleCategoryChange(category)}
+                  />
+                  }
+                  label={category}
+              />
+              ))}
+          </FormGroup>
+          </Box>
+      </div>
+    );
+
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
+      {showOrders && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setShowOrders(false)}
+        ></div>
+      )}
       <header className="bg-[#F2F2F2] shadow-md p-4 sticky">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-[#303030]">E&nbsp;k&nbsp;h&nbsp;a&nbsp;y&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;a&nbsp;r&nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;o&nbsp;u&nbsp;n&nbsp;g&nbsp;e</h1>
@@ -131,8 +221,8 @@ const Orders = () => {
         </div>
       </header>
 
-      <div className="container mx-auto p-4">
-        <div className="flex flex-wrap gap-2 mb-6">
+      <div className="container mx-auto p-0">
+        {/* <div className="flex flex-wrap gap-2 mb-6">
           {categories.map(category => (
             <button
               key={category}
@@ -142,105 +232,106 @@ const Orders = () => {
               {category}
             </button>
           ))}
-        </div>
+        </div> */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map(item => (
-            <div key={item.id} className="bg-[#f2f2f2] rounded-lg shadow-md overflow-hidden">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">{item.name}</h3>
-                <p className="text-gray-600">{item.category}</p>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-lg font-bold">R{item.price}</span>
-                  <button
-                    onClick={() => addToOrders(item)}
-                    className="bg-[#D62929] text-[#f2f2f2] px-4 py-2 rounded-lg hover:placeholder-opacity-90 transition-opacity"
-                  >
-                    Add to Orders
-                  </button>
+        {/* {!isMobile && ( */}
+        <Grid item xs={12} sm={3}>
+        {drawer}
+        </Grid>
+        {/* )} */}
+
+        <main className="w-full h-full flex overflow-auto">
+        <Box sx={{ flexGrow: 1 }}>
+        <Container sx={{ mt: 0, mb: 8 }}>
+            <Grid item xs={12} sm={9}>
+                <SearchWrapper sx={{ mb: 4 }}>
+                <TextField
+                    fullWidth
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    InputProps={{
+                    startAdornment: <FiSearch />,
+                    }}
+                />
+                <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel>Sort By</InputLabel>
+                    <Select
+                    value={sortBy}
+                    label="Sort By"
+                    onChange={(e) => setSortBy(e.target.value)}
+                    >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="priceLowToHigh">Price: Low to High</MenuItem>
+                    <MenuItem value="priceHighToLow">Price: High to Low</MenuItem>
+                    </Select>
+                </FormControl>
+                </SearchWrapper>
+
+                <div className='grid gap-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2'>
+                {filteredItems.map((item) => (
+                    <Grid item xs={12} sm={6} md={4} key={item.id}>
+                <Link href={``}>
+                  <div className='sm:col-span-2 col-span-2 text-[#212322] min-w-full overflow-hidden'>
+                      <div className='overflow-hidden'>
+                          <Image 
+                          src={item.image} 
+                          alt="" 
+                          unoptimized 
+                          priority 
+                          placeholder='blur' 
+                          blurDataURL={"https://firebasestorage.googleapis.com/v0/b/ubac-18e0d.appspot.com/o/base64.jpeg?alt=media&token=3cbefe48-0084-439e-8ce4-3e95fd466c74"}
+                          loading="eager" 
+                          width={300} 
+                          height={300} 
+                          className='w-full md:max-h-[200px] object-cover hover:scale-105 transform transition-transform ease-in-out duration-300 cursor-pointer'/>
+                      </div>
+                      <div className="pb-8 border-b relative">
+                        <div className="font-bold">
+                          <p className="uppercase text-[16px] mt-[16px]">{item.name}</p>
+                        </div>
+                        
+                        <p className="text-gray-400 text-base text-[14px]">{item.category}</p>
+                        
+                        <p className="font-bold text-[16px] mt-0">R{item.price.toFixed(2)}</p>
+                        
+                        <button
+                          onClick={() => addToOrders(item)}
+                          className="absolute bottom-8 right-2 bg-[#D62929] text-[#f2f2f2] px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                        >
+                          Add to Orders
+                        </button>
+                      </div>
+
+                  </div>
+              </Link>
+                    </Grid>
+                ))}
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                </Grid>
+                <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
+                <Pagination
+                    count={Math.ceil(filteredItems.length / 3)}
+                    page={page}
+                    onChange={(e, value) => setPage(value)}
+                    color="primary"
+                />
+                </Box>
+        </Container>
+
+        {/* <Drawer
+            anchor="left"
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+        >
+            {drawer}
+        </Drawer> */}
+        </Box>
+    </main>
       </div>
 
-      <div className={`fixed top-0 right-0 h-full w-full md:w-[700px] bg-[#f2f2f2] shadow-lg transform transition-transform duration-300 ${showOrders ? "translate-x-0" : "translate-x-full"}`}>
+      <div className={`fixed top-0 right-0 h-full w-full md:w-[700px] bg-[#f2f2f2] z-50 shadow-lg transform transition-transform duration-300 ${showOrders ? "translate-x-0" : "translate-x-full"}`}>
         <div className="p-0 h-full flex flex-col">
-          {/* <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Current Orders</h2>
-            <button
-              onClick={() => setShowOrders(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <FaTimes size={24} />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto">
-            {currentOrders.map(item => (
-              <div key={item.id} className="bg-gray-50 rounded-lg p-4 mb-4">
-                <div className="flex gap-4">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-20 h-20 object-cover rounded"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-gray-600">{item.category}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        onClick={() => updateQuantity(item.id, "decrement")}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <FaMinus />
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, "increment")}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <FaPlus />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="font-bold">R{(item.price * item.quantity).toFixed(2)}</span>
-                    <button
-                      onClick={() => removeFromOrders(item.id)}
-                      className="text-red-500 hover:text-red-700 mt-2"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="border-t pt-4 mt-4">
-            <div className="flex justify-between mb-2">
-              <span>Subtotal</span>
-              <span>R{calculateTotal().subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between mb-2">
-              <span>Tax (8%)</span>
-              <span>R{calculateTotal().tax.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between font-bold text-lg mb-4">
-              <span>Total</span>
-              <span>R{calculateTotal().total.toFixed(2)}</span>
-            </div>
-            <button className="w-full bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition-colors">
-              Pay Now
-            </button>
-          </div> */}
           <React.Fragment>
                 <div className='h-full w-full bg-[#f2f2f2] text-[#212322]'>
                   <div className='absolute top-0 w-full md:justify-center md:items-center md:text-center'>
@@ -251,7 +342,6 @@ const Orders = () => {
                     >
                       <FaTimes size={48} />
                     </button>
-                    {/* <hr className='text-[#898989] md:mt-12'/> */}
                   </div>
                   
                   <div className='absolute w-full top-28 md:bottom-[280px] bottom-[200px] overflow-y-auto'>
@@ -264,7 +354,6 @@ const Orders = () => {
                                         <div className='w-full pl-2'>
                                             <p className='font-bold sm:text-2xl text-1xl'>{item.name}</p>
                                             <p className='text-sm'>{item.category}</p>
-                                            {/* <p className='text-sm'>Size: {sale.selectedSize}</p> */}
                                         </div>
                                         <div className='hidden sm:block min-w-[100px]'>
                                         <div className="py-2 px-3 inline-block bg-[#f2f2f2]" data-hs-input-number>
@@ -338,3 +427,107 @@ const Orders = () => {
 };
 
 export default Orders;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{/* <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Current Orders</h2>
+            <button
+              onClick={() => setShowOrders(false)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <FaTimes size={24} />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto">
+            {currentOrders.map(item => (
+              <div key={item.id} className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="flex gap-4">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-20 h-20 object-cover rounded"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{item.name}</h3>
+                    <p className="text-gray-600">{item.category}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, "decrement")}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <FaMinus />
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, "increment")}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <FaPlus />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="font-bold">R{(item.price * item.quantity).toFixed(2)}</span>
+                    <button
+                      onClick={() => removeFromOrders(item.id)}
+                      className="text-red-500 hover:text-red-700 mt-2"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t pt-4 mt-4">
+            <div className="flex justify-between mb-2">
+              <span>Subtotal</span>
+              <span>R{calculateTotal().subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span>Tax (8%)</span>
+              <span>R{calculateTotal().tax.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg mb-4">
+              <span>Total</span>
+              <span>R{calculateTotal().total.toFixed(2)}</span>
+            </div>
+            <button className="w-full bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition-colors">
+              Pay Now
+            </button>
+          </div> */}
