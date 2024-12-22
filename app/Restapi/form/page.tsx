@@ -1,4 +1,4 @@
-import { addItem, deleteCategory, editCategory, editItem, fetchCategory, fetchItems } from '../restapi';
+import { addItem, addTransaction, deleteCategory, deleteItems, deleteTransaction, editCategory, editItem, fetchCategory, fetchItems, fetchTransaction, fetchUserData, fetchUsersMini, modifyTransaction } from '../restapi';
 import { addCategory } from '../restapi';
 
 export default async function NewPage() {
@@ -6,8 +6,25 @@ export default async function NewPage() {
   // console.log(response);
   // const responseTwo = await addCategory("dummyData", "Second insert");
   // console.log(responseTwo);
-  const responseThree = await fetchItems("GIN");
+  const responseThree = await fetchUserData("847f6b56-a156-4dda-85b3-891b56fb9298");
   console.log(responseThree);
+
+  // const responseThree = await deleteItems(
+  //   9           // notes
+  // );
+  // console.log(responseThree);
+
+  // const responseFour = await editItem(
+  //   "Black Label 750 ml",    // item_name
+  //   "Updated Description-Champion Beer",  // description
+  //   "BEERS & CIDERS",     // category
+  //   29.99,                  // price
+  //   50,                     // stock_quantity
+  //   10,                     // reorder_level
+  //   new Date(),
+  //   13            // last_restock_date
+  // );
+  // console.log(responseFour); 
 
   // Function to fetch data and update the DOM
   // const fetchData = async () => {
