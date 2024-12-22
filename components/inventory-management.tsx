@@ -4,8 +4,9 @@ import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
+import CategoryManagement from "./category-management";
 
-const InventoryManagement = () => {
+const InventoryManagement = ({categoriesData}: any) => {
   const [inventory, setInventory] = useState([
     {
       id: 1,
@@ -53,6 +54,7 @@ const InventoryManagement = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [successModalHeader, setSuccessModalHeader] = useState("");
   const [successModalDescription, setSuccessModalDescription] = useState("");
   const [successModalType, setSuccessModalType] = useState("");
@@ -178,12 +180,40 @@ const InventoryManagement = () => {
     outOfStock: inventory.filter((item) => item.status === "Out-of-Stock").length
   };
 
+  const FectchCategories = async () => {
+    try {
+      const response = await fetch("/api/category/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          
+        }),
+      });
+      
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Category added successfully!");
+        console.log(data);
+      } else {
+        console.log(`Error: ${data.error.message}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+      } else {
+        console.log(`Error: ${String(error)}`);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          {/* <h1 className="text-3xl font-bold text-gray-900 mb-4">Inventory Management</h1> */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-lg shadow">
               <p className="text-gray-500">Total Items</p>
@@ -241,6 +271,12 @@ const InventoryManagement = () => {
             >
               <FaPlus /> Add New Item
             </button>
+            <button
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Manage Categories
+          </button>
             <button
               onClick={() => setShowAddCategoryModal(true)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700"
@@ -614,6 +650,7 @@ const InventoryManagement = () => {
           </div>
         )}
       </div>
+      {isCategoryModalOpen && <CategoryManagement setIsCategoryModalOpen={setIsCategoryModalOpen} categoriesData={categoriesData}/>}
     </div>
   );
 };
