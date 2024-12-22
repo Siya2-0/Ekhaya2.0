@@ -1,4 +1,4 @@
-import { deleteCategory, editCategory, fetchCategory } from '../restapi';
+import { addItem, deleteCategory, editCategory, editItem, fetchCategory, fetchItems } from '../restapi';
 import { addCategory } from '../restapi';
 
 export default async function NewPage() {
@@ -6,7 +6,7 @@ export default async function NewPage() {
   // console.log(response);
   // const responseTwo = await addCategory("dummyData", "Second insert");
   // console.log(responseTwo);
-  const responseThree = await fetchCategory();
+  const responseThree = await fetchItems("GIN");
   console.log(responseThree);
 
   // Function to fetch data and update the DOM
