@@ -34,6 +34,7 @@ import { FiMenu, FiSearch, FiShoppingCart } from "react-icons/fi";
 import Link from "next/link";
 import Payments from "@/components/billing";
 import OrderSummary from "@/components/orderSummary";
+import base64 from "@/app/assets/base64.jpeg";
 
 const SearchWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -249,7 +250,7 @@ const NewOrder = () => {
         )}
         {showOrderSummary && (
           <OrderSummary
-            pay={pay} setShowPaymentModal={setShowPaymentModal} setCurrentOrders={setCurrentOrders}
+            pay={pay} setShowPaymentModal={setShowPaymentModal} setCurrentOrders={setCurrentOrders} setShowOrderSummary={setShowOrderSummary}
             // orderItems={currentOrders}
             // handleQuantityChange={updateQuantity}
             // paymentMethod="card"

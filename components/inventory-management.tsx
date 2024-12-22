@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle } from "react-icons/fa";
+import { FiCheckCircle } from "react-icons/fi";
+import { IoMdClose } from "react-icons/io";
 
 const InventoryManagement = () => {
   const [inventory, setInventory] = useState([
@@ -47,8 +49,13 @@ const InventoryManagement = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successModalHeader, setSuccessModalHeader] = useState("");
+  const [successModalDescription, setSuccessModalDescription] = useState("");
+  const [successModalType, setSuccessModalType] = useState("");
   const [selectedItem, setSelectedItem] = useState<{
     id: number;
     name: string;
@@ -69,6 +76,11 @@ const InventoryManagement = () => {
     reorderLevel: 0,
     supplier: "",
     image: ""
+  });
+
+  const [newCategory, setNewCategory] = useState({
+    categoryName: "",
+    cateogryDescription: "",
   });
 
   const categories = ["Drinks", "Snacks", "Supplies"];
@@ -95,6 +107,43 @@ const InventoryManagement = () => {
       supplier: "",
       image: ""
     });
+  };
+
+  const [categoryname, setCategoryName] = useState("Testing add category");
+  const [categorydescription, setCategoryDescription] = useState("testing add category description");
+
+  const handleAddCategory = async () => {
+    try {
+      const response = await fetch("/api/category/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          categoryname: newCategory.categoryName,
+          categorydescription: newCategory.cateogryDescription,
+        }),
+      });
+      
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Category added successfully!");
+        // setSuccessModalType("Category");
+        setSuccessModalDescription("Category added successfully.");
+        setSuccessModalHeader("Successful!");
+        setShowSuccessModal(true);
+        setShowAddCategoryModal(false);
+      } else {
+        console.log(`Error: ${data.error.message}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+      } else {
+        console.log(`Error: ${String(error)}`);
+      }
+    }
   };
 
   const handleEditItem = () => {
@@ -191,6 +240,12 @@ const InventoryManagement = () => {
               className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700"
             >
               <FaPlus /> Add New Item
+            </button>
+            <button
+              onClick={() => setShowAddCategoryModal(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700"
+            >
+              <FaPlus /> Add New Category
             </button>
           </div>
         </div>
@@ -372,6 +427,97 @@ const InventoryManagement = () => {
           </div>
         )}
 
+        {/* Add Category Modal */}
+        {showAddCategoryModal && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg p-8 max-w-md w-full">
+                <h2 className="text-2xl font-bold mb-4">Add New Category</h2>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Category Name"
+                    className="w-full p-2 border rounded"
+                    value={newCategory.categoryName}
+                    onChange={(e) => setNewCategory({ ...newCategory, categoryName: e.target.value })}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Category Description"
+                    className="w-full p-2 border rounded"
+                    value={newCategory.cateogryDescription}
+                    onChange={(e) => setNewCategory({ ...newCategory, cateogryDescription: e.target.value })}
+                  />
+                </div>
+                <div className="mt-6 flex justify-end gap-4">
+                  <button
+                    onClick={() => setShowAddCategoryModal(false)}
+                    className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleAddCategory}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Add Category
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        {showSuccessModal && (
+          <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300"
+        //   onClick={handleOverlayClick}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left shadow-xl transition-all sm:p-8">
+            <div className="absolute right-4 top-4">
+              <button
+                // onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                aria-label="Close modal"
+              >
+                <IoMdClose className="h-6 w-6" />
+              </button>
+            </div>
+    
+            <div className="flex flex-col items-center justify-center">
+              <div className="mb-4 rounded-full bg-green-100 p-3">
+                <FiCheckCircle className="h-12 w-12 text-green-500" />
+              </div>
+    
+              <h2
+                id="modal-title"
+                className="mb-2 text-center text-2xl font-bold text-gray-900"
+              >
+                {successModalHeader}
+              </h2>
+              <p className="mb-6 text-center text-gray-600">
+                {successModalDescription}
+              </p>
+    
+              <div className="flex w-full flex-col gap-3 sm:flex-row">
+                {/* <button
+                //   onClick={onNewOrder}
+                  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  New Order
+                </button> */}
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="flex-1 rounded-lg bg-green-100 px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                >
+                  Finish
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        )}
         {/* Edit Modal */}
         {showEditModal && selectedItem && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
