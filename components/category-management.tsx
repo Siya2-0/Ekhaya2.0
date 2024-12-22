@@ -23,6 +23,7 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
     interface Payload {
       eventType: string;
       new: Category;
+      old: Category;
     }
 
     // Subscribe to real-time updates on 'Categories' table
@@ -39,6 +40,22 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
           console.log("Real-time update:", payload);
           if (payload.eventType === "INSERT") {
             setCategories((prev: Category[]) => [...prev, payload.new]); // Append the new category
+          }
+
+          if (payload.eventType === "UPDATE") {
+            // Update the existing category in the list when an update event happens
+            setCategories((prev: Category[]) =>
+              prev.map((category) =>
+                category.id === payload.new.id ? payload.new : category
+              )
+            );
+          }
+
+          if (payload.eventType === "DELETE") {
+            // Remove the deleted category from the list when a delete event happens
+            setCategories((prev: Category[]) =>
+              prev.filter((category) => category.id !== payload.old.id)
+            );
           }
         }
       )
@@ -124,14 +141,6 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
 
   return (
     <div className="font-sans">
-      {/* <button
-        onClick={() => setIsModalOpen(true)}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-      >
-        Manage Categories
-      </button> */}
-
-      {/* {isModalOpen && ( */}
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-auto">
             <div className="p-6">
@@ -284,7 +293,6 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
             </div>
           )}
         </div>
-      {/* )} */}
     </div>
   );
 };
