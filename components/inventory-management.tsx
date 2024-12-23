@@ -148,6 +148,11 @@ const InventoryManagement = ({categoriesData}: any) => {
     }
   };
 
+  const handleFinish = () => {
+    setShowSuccessModal(false); // Close the modal
+    window.location.reload(); // Refresh the page
+  };
+
   const handleEditItem = () => {
     if (!selectedItem) return;
     const updatedInventory = inventory.map((item) =>
@@ -544,7 +549,7 @@ const InventoryManagement = ({categoriesData}: any) => {
                   New Order
                 </button> */}
                 <button
-                  onClick={() => setShowSuccessModal(false)}
+                  onClick={handleFinish}
                   className="flex-1 rounded-lg bg-green-100 px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 >
                   Finish

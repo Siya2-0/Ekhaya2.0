@@ -15,7 +15,7 @@ const InventoryPage = async () => {
   let categories = [];
   if (response.ok) {
     categories = await response.json();
-    console.log(categories.Categories);
+    // console.log(categories.Categories);
   } else {
     console.error("Failed to fetch categories:", await response.text());
   }

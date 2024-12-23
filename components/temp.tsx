@@ -8,7 +8,7 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "ascending" });
   const [loading, setLoading] = useState(false);
-  
+
   type Category = {
     id: number;
     category_name: string;
@@ -21,18 +21,11 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
 
   useEffect(() => {
-    // Define the Payload type for the real-time event
-    interface Payload {
-      eventType: string;
-      new: Category;
-      old: Category;
-    }
-
     // Subscribe to real-time updates on 'Categories' table
     const subscription = supabase
       .channel("realtime:categories")
       .on(
-        'postgres_changes', // Correct event name
+        'postgres_changes',
         {
           event: "*", // Listen for all events
           schema: "public",
@@ -44,21 +37,20 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
             setCategories((prev: Category[]) => [...prev, payload.new]); // Append the new category
           }
 
-          if (payload.eventType === "UPDATE") {
-            // Update the existing category in the list when an update event happens
+          if (payload.eventType === "UPDATE" && payload.new) {
             setCategories((prev: Category[]) =>
-              prev.map((category) =>
+              prev.map((category) => 
                 category.id === payload.new.id ? payload.new : category
               )
             );
+            
           }
-
-          if (payload.eventType === "DELETE") {
-            // Remove the deleted category from the list when a delete event happens
+          
+          if (payload.eventType === "DELETE" && payload.old) {
             setCategories((prev: Category[]) =>
               prev.filter((category) => category.id !== payload.old.id)
             );
-          }
+          }          
         }
       )
       .subscribe();
@@ -77,7 +69,7 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
     setSortConfig({ key, direction });
   };
 
-  const sortedCategories = [...categories].sort((a, b) => {
+  const sortedCategories = [...categoriesData].sort((a, b) => {
     if (!sortConfig.key) return 0;
     const aValue = (a[sortConfig.key] as string).toLowerCase();
     const bValue = (b[sortConfig.key] as string).toLowerCase();
@@ -86,39 +78,14 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
       : aValue < bValue ? 1 : -1;
   });
 
-  const filteredCategories = sortedCategories.filter((category) => {
-    return (
-      (category.category_name ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (category.category_description ?? "").toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const filteredCategories = sortedCategories.filter((category) =>
+    (category.category_name ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (category.category_description ?? "").toLowerCase().includes(searchTerm.toLowerCase())
+  );
   
 
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
-  };
-
-  const handleEditCategory = async (categoryname: string, categorydescription: string, id: any) => {
-    try {
-      const response = await fetch("/api/category/edit", {
-        method: "POST", // Use PUT or PATCH for updates
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ categoryname, categorydescription, id }),
-      });
-  
-      const data = await response;
-      if (response.ok) {
-        console.log("Category updated successfully!");
-        return data;
-      } else {
-        const errorData = await response.json();
-        console.error(`Error: ${errorData}`);
-      }
-    } catch (error) {
-      console.error("Error updating category:", error);
-    }
   };
 
   const handleUpdate = async () => {
@@ -134,18 +101,35 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
   
       if (updatedCategory) {
         // Update the local state with the edited category
-        // setCategories((prevCategories: any) =>
-        //   prevCategories.map((cat: any) => {
-        //     cat.id === editingCategory.id ? updatedCategory : cat;
-        //     // console.log("cat: "+cat);
-        //     // console.log("prev: "+updatedCategory);
-        //   }
-        //   )
-        // );
+        setCategories((prevCategories: any) =>
+          prevCategories.map((cat: any) => {
+            cat.id === editingCategory.id ? updatedCategory : cat;
+            // console.log("cat: "+cat);
+            // console.log("prev: "+updatedCategory);
+          }
+          )
+        );
         setEditingCategory(null);
       }
     } catch (error) {
       console.error("Failed to update the category:", error);
+    }
+  };
+  
+
+  const handleDelete = async (id: any) => {
+    setLoading(true); // Start loading
+    try {
+      // Call the handleDeleteCategory function to perform the API call
+      await handleDeleteCategory(id);
+  
+      // If successful, remove the category from the state
+      setCategories(categories.filter((cat: any) => cat.id !== id));
+      setShowDeleteConfirm(null);
+    } catch (error) {
+      console.error("Failed to delete the category:", error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -177,51 +161,29 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
     }
   };
 
-  const handleDelete = async (id: any) => {
-    setLoading(true); // Start loading
+  const handleEditCategory = async (categoryname: string, categorydescription: string, id: any) => {
     try {
-      // Call the handleDeleteCategory function to perform the API call
-      await handleDeleteCategory(id);
-  
-      // If successful, remove the category from the state
-      setCategories(categories.filter((cat: any) => cat.id !== id));
-      setShowDeleteConfirm(null);
-    } catch (error) {
-      console.error("Failed to delete the category:", error);
-    } finally {
-      setLoading(false); // Stop loading
-    }
-  };
-
-
-  const FectchCategories = async () => {
-    try {
-      const response = await fetch("/api/category/add", {
-        method: "POST",
+      const response = await fetch("/api/category/edit", {
+        method: "POST", // Use PUT or PATCH for updates
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          
-        }),
+        body: JSON.stringify({ categoryname, categorydescription, id }),
       });
-      
-
-      const data = await response.json();
+  
+      const data = await response;
       if (response.ok) {
-        console.log("Category added successfully!");
-        console.log(data);
+        console.log("Category updated successfully!");
+        return data;
       } else {
-        console.log(`Error: ${data.error.message}`);
+        const errorData = await response.json();
+        console.error(`Error: ${errorData}`);
       }
     } catch (error) {
-      if (error instanceof Error) {
-        console.log(`Error: ${error.message}`);
-      } else {
-        console.log(`Error: ${String(error)}`);
-      }
+      console.error("Error updating category:", error);
     }
   };
+  
 
   return (
     <div className="font-sans">
@@ -322,6 +284,7 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
                               >
                                 Save
                               </button>
+
                               <button
                                 onClick={() => setEditingCategory(null)}
                                 className="text-gray-600 hover:text-gray-900"
@@ -396,6 +359,7 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
                       "Delete"
                     )}
                   </button>
+
                 </div>
               </div>
             </div>

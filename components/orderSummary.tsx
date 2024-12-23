@@ -210,11 +210,8 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
         </div>
       )}
       {showSuccessModal && (
-  <>
-    {console.log("OrderSuccessModal is rendering.")}
-    <OrderSuccessModal />
-  </>
-)}
+        <OrderSuccessModal />
+      )}
 
     </div>
   );

@@ -26,11 +26,11 @@ export async function addCategory(categoryname: string, categorydescription: str
     const { data: Categories, error } = await supabase.from('Categories').update({category_name:categoryname, category_description:categorydescription})
     .eq('id', id)
     if (error){
+      console.log(error.message);
       return new Response(JSON.stringify({ error }), {
         headers: { 'Content-Type': 'application/json' },
         status: 400,
       })
-
     }
    
     return new Response(JSON.stringify({ Categories }), {
