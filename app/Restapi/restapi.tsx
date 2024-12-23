@@ -1,11 +1,29 @@
 "use server"
 
 import { createClient } from "@/utils/supabase/server";
+import  validator  from 'validator';
 
 
 
 export async function addCategory(categoryname: string, categorydescription: string ) {
-    const supabase = await createClient();
+
+  if (!validator.isLength(categoryname, { min: 1, max: 50 })) {
+    return new Response(JSON.stringify({ error: 'Invalid category name ' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  if (!validator.isLength(categorydescription, { min: 1, max: 255 })) {
+    return new Response(JSON.stringify({ error: 'Invalid category description' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+  categoryname = validator.escape(categoryname);
+  categorydescription = validator.escape(categorydescription);
+
+  const supabase = await createClient();
     const { data: Categories, error } = await supabase.from('Categories').insert({category_name:categoryname, category_description:categorydescription})
     if (error){
       return new Response(JSON.stringify({ error }), {
@@ -22,6 +40,30 @@ export async function addCategory(categoryname: string, categorydescription: str
   }
 
   export const editCategory = async (categoryname: string, categorydescription: string, id: number) => {
+
+    if (!validator.isLength(categoryname, { min: 1, max: 50 })) {
+      return new Response(JSON.stringify({ error: 'Invalid category name ' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    if (!validator.isLength(categorydescription, { min: 1, max: 255 })) {
+      return new Response(JSON.stringify({ error: 'Invalid category description' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return new Response(JSON.stringify({ error: 'Invalid category ID' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+    categoryname = validator.escape(categoryname);
+    categorydescription = validator.escape(categorydescription);
+
     const supabase = await createClient();
     const { data: Categories, error } = await supabase.from('Categories').update({category_name:categoryname, category_description:categorydescription})
     .eq('id', id)
@@ -41,6 +83,14 @@ export async function addCategory(categoryname: string, categorydescription: str
 
 
   export const deleteCategory = async (id: number) => {
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return new Response(JSON.stringify({ error: 'Invalid category ID' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+
     const supabase = await createClient();
     const { data: Categories, error } = await supabase.from('Categories').delete().eq('id', id)
     if (error){
@@ -119,6 +169,55 @@ export async function addCategory(categoryname: string, categorydescription: str
     last_restock_date: Date,
     id:number
   ) {
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return new Response(JSON.stringify({ error: 'Invalid category ID' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+    // Validate and sanitize input
+  if (!validator.isLength(item_name, { min: 1, max: 255 })) {
+    return new Response(JSON.stringify({ error: 'Invalid item name length' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  if (!validator.isLength(description, { min: 1, max: 500 })) {
+    return new Response(JSON.stringify({ error: 'Invalid description length' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  if (!validator.isLength(category, { min: 1, max: 50 })) {
+    return new Response(JSON.stringify({ error: 'Invalid category length' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  if (price < 0) {
+    return new Response(JSON.stringify({ error: 'Invalid price' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  if (stock_quantity < 0) {
+    return new Response(JSON.stringify({ error: 'Invalid stock quantity' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  if (reorder_level < 0) {
+    return new Response(JSON.stringify({ error: 'Invalid reorder level' }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
     const supabase = await createClient();
     const { data: Inventory, error } = await supabase
       .from('Inventory')
