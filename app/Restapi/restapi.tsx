@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 import  validator  from 'validator';
 
-
+import {v4 as uuidv4} from 'uuid';
 
 export async function addCategory(categoryname: string, categorydescription: string ) {
 
@@ -131,8 +131,56 @@ export async function addCategory(categoryname: string, categorydescription: str
     price: number,
     stock_quantity: number,
     reorder_level: number,
-    last_restock_date: Date
+    last_restock_date: Date,
+    Image_url: string
   ) {
+    if (!validator.isLength(item_name, { min: 1, max: 255 })) {
+      return new Response(JSON.stringify({ error: 'Invalid item name length' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    if (!validator.isLength(description, { min: 0, max: 500 })) {
+      return new Response(JSON.stringify({ error: 'Invalid description length' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    if (!validator.isLength(category, { min: 1, max: 50 })) {
+      return new Response(JSON.stringify({ error: 'Invalid category length' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    if (price < 0) {
+      return new Response(JSON.stringify({ error: 'Invalid price' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    if (stock_quantity < 0) {
+      return new Response(JSON.stringify({ error: 'Invalid stock quantity' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    if (reorder_level < 0) {
+      return new Response(JSON.stringify({ error: 'Invalid reorder level' }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+
+    item_name = validator.escape(item_name);
+    description = validator.escape(description);
+    category = validator.escape(category);
+  
+
     const supabase = await createClient();
     const { data: Inventory, error } = await supabase
       .from('Inventory')
@@ -143,7 +191,8 @@ export async function addCategory(categoryname: string, categorydescription: str
         price,
         stock_quantity,
         reorder_level,
-        last_restock_date: last_restock_date.toISOString() // Convert Date to ISO string
+        last_restock_date: last_restock_date.toISOString(), // Convert Date to ISO string
+        Image_url
       });
   
     if (error) {
@@ -167,6 +216,7 @@ export async function addCategory(categoryname: string, categorydescription: str
     stock_quantity: number,
     reorder_level: number,
     last_restock_date: Date,
+    Image_url,
     id:number
   ) {
 
@@ -184,7 +234,7 @@ export async function addCategory(categoryname: string, categorydescription: str
     });
   }
 
-  if (!validator.isLength(description, { min: 1, max: 500 })) {
+  if (!validator.isLength(description, { min: 0, max: 500 })) {
     return new Response(JSON.stringify({ error: 'Invalid description length' }), {
       headers: { 'Content-Type': 'application/json' },
       status: 400,
@@ -228,7 +278,8 @@ export async function addCategory(categoryname: string, categorydescription: str
         price,
         stock_quantity,
         reorder_level,
-        last_restock_date: last_restock_date.toISOString() // Convert Date to ISO string
+        last_restock_date: last_restock_date.toISOString(), // Convert Date to ISO string
+        Image_url
       }).eq('id', id);
   
     if (error) {
@@ -490,6 +541,17 @@ export async function addCategory(categoryname: string, categorydescription: str
       status: 200,
     });
   };
+
+  // Upload file using standard upload
+  export async function uploadFile(file: any) {
+    const supabase = await createClient();
+    const { data, error } = await supabase.storage.from('Ekhaya_Bucket').upload('image/'+uuidv4()+'.jpg', file);
+    if (error) {
+      console.error('Error uploading file:', error.message);
+    } else {
+      console.log('File uploaded successfully:', data);
+    }
+  }
 
 
 

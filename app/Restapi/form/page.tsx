@@ -1,16 +1,28 @@
-import { addItem, addTransaction, deleteCategory, deleteItems, deleteTransaction, editCategory, editItem, fetchCategory, fetchItems, fetchTransaction, fetchUserData, fetchUsersMini, modifyTransaction } from '../restapi';
+import { useState } from 'react';
+import { addItem, addTransaction, deleteCategory, deleteItems, deleteTransaction, editCategory, editItem, fetchCategory, fetchItems, fetchTransaction, fetchUserData, fetchUsersMini, modifyTransaction, uploadFile } from '../restapi';
 import { addCategory } from '../restapi';
+
+import {v4 as uuidv4} from 'uuid';
 
 export default async function NewPage() {
   // const response = await editCategory("onetwo threefour five", "yrmpern ofnm", 20);
   // console.log(response);
   // const responseTwo = await addCategory("dummyData", "Second insert");
   // console.log(responseTwo);
-  const responseThree = await fetchUserData();
+  const responseThree = await addItem(
+  "4th Street 4 litre",
+  "",
+  "WINE",
+  99.99,
+  11,
+  5,
+  new Date(),
+  "https://shoponclick.ng/wp-content/uploads/2020/12/4th-Street-Wine-750ml.png"
+  );
   console.log(responseThree);
 
   // const responseThree = await deleteItems(
-  //   9           // notes
+  //   14           // notes
   // );
   // console.log(responseThree);
 
@@ -48,7 +60,34 @@ export default async function NewPage() {
   // // Call fetchData when the page loads
   // if (typeof window !== 'undefined') {
   //   window.onload = fetchData;
+
   // }
+  // const [result, setResult] = useState('');
+  // const [image, setImage] = useState<File | null>(null);
+
+  // const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0] || null;
+  //   setImage(file);
+  // };
+
+  // const handleSubmit = async (event: React.FormEvent) => {
+  //   event.preventDefault();
+  //   if (!image) {
+  //     setResult('Please select an image to upload.');
+  //     return;
+  //   }
+
+  //   // const filePath = `images/${uuidv4()}.${image.name.split('.').pop()}`;
+  //   // const { data, error } = await supabase.storage.from('Ekhaya_Bucket').upload(filePath, image);
+
+  //   // if (error) {
+  //   //   setResult(`Error uploading file: ${error.message}`);
+  //   // } else {
+  //   //   setResult(`File uploaded successfully: ${data.Key}`);
+  //   // }
+  //   uploadFile(image);
+  // };
+
 
   return (
     <main className="min-h-screen min-w-full items-center justify-center flex bg-[#F2F2F2]">
@@ -57,7 +96,15 @@ export default async function NewPage() {
           <h1 className="text-[#303030]">Add a New Category</h1>
         </div>
         <div className="column right-column">
-          <form id="result-form" className="result-form">
+          <form id="result-form" className="result-form" >
+            <label htmlFor="image">Upload Image</label>
+            <input
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+             
+            />
             <label htmlFor="result">Result</label>
             <textarea
               id="result"
@@ -65,14 +112,17 @@ export default async function NewPage() {
               readOnly
               rows={10}
               cols={50}
+              
             />
-            <button type="submit" >Log in now</button>
+            <button type="submit">Submit</button>
           </form>
         </div>
       </div>
     </main>
   );
 }
+
+
 /*{ <form className="flex-1 flex flex-col min-w-64">
       <h1 className="text-2xl font-medium">Sign in</h1>
       <p className="text-sm text-foreground">
