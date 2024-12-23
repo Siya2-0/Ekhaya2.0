@@ -6,7 +6,7 @@ export default async function NewPage() {
   // console.log(response);
   // const responseTwo = await addCategory("dummyData", "Second insert");
   // console.log(responseTwo);
-  const responseThree = await fetchUserData("847f6b56-a156-4dda-85b3-891b56fb9298");
+  const responseThree = await fetchUserData();
   console.log(responseThree);
 
   // const responseThree = await deleteItems(

@@ -364,7 +364,33 @@ export async function addCategory(categoryname: string, categorydescription: str
       headers: { 'Content-Type': 'application/json' },
       status: 200,
     });
-  }
+  };
+
+
+  export async function fetchLowStock(checkZeroStock: boolean = false) {
+    const supabase = await createClient();
+    let query = supabase.from('Inventory').select('*');
+  
+    if (checkZeroStock) {
+      query = query.eq('stock_quantity', 0);
+    } else {
+      query = query.lte('stock_quantity', 'reorder_level');
+    }
+  
+    const { data: Inventory, error } = await query;
+  
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    return new Response(JSON.stringify({ Inventory }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    });
+  };
 
 
 
