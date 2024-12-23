@@ -216,7 +216,7 @@ export async function addCategory(categoryname: string, categorydescription: str
     stock_quantity: number,
     reorder_level: number,
     last_restock_date: Date,
-    Image_url:number,
+    Image_url:string,
     id:number
   ) {
 
