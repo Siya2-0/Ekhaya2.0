@@ -5,21 +5,21 @@ import { addCategory } from '../restapi';
 import {v4 as uuidv4} from 'uuid';
 
 export default async function NewPage() {
-  // const response = await editCategory("onetwo threefour five", "yrmpern ofnm", 20);
-  // console.log(response);
+   const response = await editCategory("onetwo threefour five", "yrmpern ofnm", 13);
+   console.log(response);
   // const responseTwo = await addCategory("dummyData", "Second insert");
   // console.log(responseTwo);
-  const responseThree = await addItem(
-  "4th Street 4 litre",
-  "",
-  "WINE",
-  99.99,
-  11,
-  5,
-  new Date(),
-  "https://shoponclick.ng/wp-content/uploads/2020/12/4th-Street-Wine-750ml.png"
-  );
-  console.log(responseThree);
+  // const responseThree = await addItem(
+  // "4th Street 4 litre",
+  // "",
+  // "WINE",
+  // 99.99,
+  // 11,
+  // 5,
+  // new Date(),
+  // "https://shoponclick.ng/wp-content/uploads/2020/12/4th-Street-Wine-750ml.png"
+  // );
+  // console.log(responseThree);
 
   // const responseThree = await deleteItems(
   //   14           // notes
