@@ -16,6 +16,7 @@ type InventoryItem = {
   last_restock_date: string;
   reorder_level: number;
   Image_url: string;
+  image_file: File | null,
   description: string;
   created_at: string;
   update_at: string;
@@ -58,7 +59,17 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     description: string;
     dateAdded: string;
   } | null>(null);
-  const [newItem, setNewItem] = useState({
+  const [newItem, setNewItem] = useState<{
+    item_name: string;
+    description: string;
+    category: string;
+    price: number;
+    stock_quantity: number;
+    reorder_level: number;
+    last_restock_date: string;
+    Image_url: string;
+    image_file: File | null;
+  }>({
     item_name: "",
     description: "",
     category: "",
@@ -66,7 +77,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     stock_quantity: 0,
     reorder_level: 0,
     last_restock_date: new Date("2023-10-05").toISOString(),
-    Image_url: ""
+    Image_url: "",
+    image_file: null,
   });
 
   const [newCategory, setNewCategory] = useState({
@@ -125,6 +137,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   };
 
   const handleAddItem = async () => {
+    // console.log(newItem.image_file);
     setIsAdding(true);
     try {
       const response = await fetch("/api/item/add", {
@@ -140,7 +153,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           stock_quantity: newItem.stock_quantity,
           reorder_level: newItem.reorder_level,
           last_restock_date: new Date("2023-10-05").toISOString(),
-          Image_url: newItem.Image_url,
+          Image_url: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fheineken.png?alt=media&token=8e9e171f-da87-4066-971e-46e6d217c3c6",
         }),
       });
       
@@ -590,13 +603,17 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   type="file"
                   accept="image/*"
                   className="w-full p-2 border rounded"
-                  onChange={(e) =>
-                    setNewItem({
-                      ...newItem,
-                      Image_url: e.target.files ? URL.createObjectURL(e.target.files[0]) : ""
-                    })
-                  }
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      const file = e.target.files[0]; // Get the File object
+                      setNewItem({
+                        ...newItem,
+                        image_file: file, // Save the File directly
+                      });
+                    }
+                  }}
                 />
+
               </div>
               <div className="mt-6 flex justify-end gap-4">
                 <button

@@ -132,8 +132,10 @@ export async function addCategory(categoryname: string, categorydescription: str
     stock_quantity: number,
     reorder_level: number,
     last_restock_date: Date,
-    Image_url: string
+    Image_url: string,
   ) {
+    // uploadFile(image_file);
+
     if (!validator.isLength(item_name, { min: 1, max: 255 })) {
       return new Response(JSON.stringify({ error: 'Invalid item name length' }), {
         headers: { 'Content-Type': 'application/json' },
@@ -179,8 +181,6 @@ export async function addCategory(categoryname: string, categorydescription: str
     item_name = validator.escape(item_name);
     description = validator.escape(description);
     category = validator.escape(category);
-    
-    uploadFile(Image_url);
 
     const supabase = await createClient();
     const { data: Inventory, error } = await supabase
@@ -544,12 +544,44 @@ export async function addCategory(categoryname: string, categorydescription: str
   };
 
   // Upload file using standard upload
-  export async function uploadFile(file: any) {
+  export async function uploadFile(file: File) {
     const supabase = await createClient();
-    const { data, error } = await supabase.storage.from('Ekhaya_Bucket').upload('image/'+uuidv4()+'.jpg', file);
-    if (error) {
-      console.error('Error uploading file:', error.message);
-    } else {
+    // console.log('File object:', file);
+    try {
+      if (!file) {
+        throw new Error('No file provided');
+      }
+  
+      if (!file.name) {
+        throw new Error('File is missing a valid name');
+      }
+  
+      console.log('Uploading file:', file);
+  
+      // Generate unique file path
+      const fileExtension = file.name.split('.').pop(); // Extract the file extension
+      const filePath = `image/${uuidv4()}.${fileExtension}`;
+  
+      // Upload the file to the specified bucket
+      const { data, error } = await supabase.storage
+        .from('Ekhaya_Bucket') // Replace with your actual bucket name
+        .upload(filePath, file);
+  
+      if (error) {
+        console.error('Error uploading file:', error.message);
+        throw error;
+      }
+  
       console.log('File uploaded successfully:', data);
+  
+      // Optionally generate and return the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('Ekhaya_Bucket')
+        .getPublicUrl(filePath);
+  
+      return { data, publicUrl }; // Return the response and URL
+    } catch (error) {
+      console.error('Error in uploadFile:', (error as any).message);
+      throw error; // Optionally propagate the error for further handling
     }
   }
