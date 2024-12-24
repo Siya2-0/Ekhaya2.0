@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import AuthButton from "@/components/header-auth";
 import { useState } from "react";
-import { uploadFile } from "../Restapi/restapi";
+//import { uploadFile } from "../Restapi/restapi";
 
 export default function ProtectedPage() {
   // const [result, setResult] = useState('');

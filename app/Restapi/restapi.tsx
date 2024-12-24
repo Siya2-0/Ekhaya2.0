@@ -543,15 +543,15 @@ export async function addCategory(categoryname: string, categorydescription: str
   };
 
   // Upload file using standard upload
-  export async function uploadFile(file: any) {
-    const supabase = await createClient();
-    const { data, error } = await supabase.storage.from('Ekhaya_Bucket').upload('image/'+uuidv4()+'.jpg', file);
-    if (error) {
-      console.error('Error uploading file:', error.message);
-    } else {
-      console.log('File uploaded successfully:', data);
-    }
-  }
+  // export async function uploadFile(file: any, filePath:string) {
+  //   const supabase = await createClient();
+  //   const { data, error } = await supabase.storage.from('Ekhaya_Bucket').upload(filePath, file);
+  //   if (error) {
+  //     console.error('Error uploading file:', error.message);
+  //   } else {
+  //     console.log('File uploaded successfully:', data);
+  //   }
+  // }
 
 
 
