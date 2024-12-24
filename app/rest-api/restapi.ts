@@ -180,7 +180,7 @@ export async function addCategory(categoryname: string, categorydescription: str
 
     item_name = validator.escape(item_name);
     description = validator.escape(description);
-    category = validator.escape(category);
+    //category = validator.escape(category);
 
     const supabase = await createClient();
     const { data: Inventory, error } = await supabase

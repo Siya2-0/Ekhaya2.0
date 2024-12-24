@@ -75,7 +75,7 @@ const POSDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500">Daily Sales</p>
-              <h3 className="text-2xl font-bold">$5,670</h3>
+              <h3 className="text-2xl font-bold">R5,670</h3>
             </div>
             <FaShoppingCart className="text-blue-500 text-2xl" />
           </div>
