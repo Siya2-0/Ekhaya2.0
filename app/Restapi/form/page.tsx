@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { addItem, addTransaction, deleteCategory, deleteItems, deleteTransaction, editCategory, editItem, fetchCategory, fetchItems, fetchTransaction, fetchUserData, fetchUsersMini, modifyTransaction, uploadFile } from '../restapi';
 import { addCategory } from '../restapi';
 
 import {v4 as uuidv4} from 'uuid';
 
 export default async function NewPage() {
-   const response = await editCategory("onetwo threefour five", "yrmpern ofnm", 13);
-   console.log(response);
+  //  const response = await editCategory("onetwo threefour five", "yrmpern ofnm", 13);
+  //  console.log(response);
+
   // const responseTwo = await addCategory("dummyData", "Second insert");
   // console.log(responseTwo);
   // const responseThree = await addItem(
@@ -87,8 +88,15 @@ export default async function NewPage() {
   //   // }
   //   uploadFile(image);
   // };
-
-
+  
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(e.target.files)
+    {
+      const fileArray=Array.from(e.target.files)
+      const newImageUrls= fileArray.map((file)=> URL.createObjectURL(file))
+    }
+  }
+  const imageInputRef=useRef<HTMLInputElement>(null);
   return (
     <main className="min-h-screen min-w-full items-center justify-center flex bg-[#F2F2F2]">
       <div className="card">
@@ -103,8 +111,11 @@ export default async function NewPage() {
               id="image"
               name="image"
               accept="image/*"
-             
+              ref={imageInputRef }
+             hidden
+             onChange={handleImageChange}
             />
+            <button className="bg-slate-600 py-2 w-40 rounded-lg" onClick={()=> imageInputRef.current?.click()}></button>
             <label htmlFor="result">Result</label>
             <textarea
               id="result"
