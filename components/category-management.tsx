@@ -133,15 +133,6 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
       );
   
       if (updatedCategory) {
-        // Update the local state with the edited category
-        // setCategories((prevCategories: any) =>
-        //   prevCategories.map((cat: any) => {
-        //     cat.id === editingCategory.id ? updatedCategory : cat;
-        //     // console.log("cat: "+cat);
-        //     // console.log("prev: "+updatedCategory);
-        //   }
-        //   )
-        // );
         setEditingCategory(null);
       }
     } catch (error) {

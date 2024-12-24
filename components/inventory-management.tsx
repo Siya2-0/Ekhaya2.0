@@ -129,7 +129,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           stock_quantity: newItem.stock_quantity,
           reorder_level: newItem.reorder_level,
           last_restock_date: new Date("2023-10-05").toISOString(),
-          Image_url: newItem.Image_url,
+          Image_url: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fheineken.png?alt=media&token=8e9e171f-da87-4066-971e-46e6d217c3c6",
         }),
       });
       
@@ -188,7 +188,12 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
 
   const handleFinish = () => {
     setShowSuccessModal(false); // Close the modal
-    window.location.reload(); // Refresh the page
+    if(successModalDescription === "Category added successfully.") {
+      window.location.reload();
+    }
+    else {
+      setShowAddModal(false);
+    }
   };
 
   const handleEditItem = () => {
@@ -199,15 +204,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     setInventory(updatedInventory);
     setShowEditModal(false);
     setSelectedItem(null);
-  };
-
-  const handleDeleteItem = () => {
-    if (selectedItem) {
-      const updatedInventory = inventory.filter((item: InventoryItem) => item.id !== selectedItem.id);
-      setInventory(updatedInventory);
-      setShowDeleteModal(false);
-      setSelectedItem(null);
-    }
   };
 
   const getStatus = (stock_quantity: number, reorder_level: number) => {
@@ -228,6 +224,63 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     lowStock: inventory.filter((item: InventoryItem) => getStatus(item.stock_quantity, item.reorder_level) === "Low-Stock").length,
     outOfStock: inventory.filter((item: InventoryItem) => getStatus(item.stock_quantity, item.reorder_level) === "Out-of-Stock").length
   };
+
+  const handleDeleteItem = async (id: any) => {
+    try {
+      const response = await fetch("/api/item/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id
+        }),
+      });
+      
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Delete added successfully!");
+      } else {
+        console.log(`Error: ${data.error.message}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+      } else {
+        console.log(`Error: ${String(error)}`);
+      }
+    }
+  };
+
+  const handleDelete = async (id: any) => {
+    // setLoading(true); // Start loading
+    try {
+      // Call the handleDeleteCategory function to perform the API call
+      await handleDeleteItem(id);
+  
+      // If successful, remove the category from the state
+      if (selectedItem) {
+        const updatedInventory = inventory.filter((item: InventoryItem) => item.id !== selectedItem.id);
+        setInventory(updatedInventory);
+        setShowDeleteModal(false);
+        setSelectedItem(null);
+      }
+    } catch (error) {
+      console.error("Failed to delete the category:", error);
+    } finally {
+      // setLoading(false); // Stop loading
+    }
+  };
+
+  // const handleDeleteItem = () => {
+  //   if (selectedItem) {
+  //     const updatedInventory = inventory.filter((item: InventoryItem) => item.id !== selectedItem.id);
+  //     setInventory(updatedInventory);
+  //     setShowDeleteModal(false);
+  //     setSelectedItem(null);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">
@@ -675,7 +728,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleDeleteItem}
+                  onClick={() => handleDelete(selectedItem.id)}
                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                 >
                   Delete
