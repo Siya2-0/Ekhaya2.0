@@ -38,6 +38,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   const [successModalDescription, setSuccessModalDescription] = useState("");
   const [successModalType, setSuccessModalType] = useState("");
   const [selectedItem, setSelectedItem] = useState<{
+    editing: boolean,
     id: number;
     name: string;
     category: string;
@@ -197,20 +198,10 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     }
   };
 
-  // const handleEditItem = () => {
-  //   if (!selectedItem) return;
-  //   const updatedInventory = inventory.map((item: InventoryItem) =>
-  //     item.id === selectedItem.id ? selectedItem : item
-  //   );
-  //   setInventory(updatedInventory);
-  //   setShowEditModal(false);
-  //   setSelectedItem(null);
-  // };
-
   const handleEditItem = async (item_name: string, description: string, category: string, price: number, stock_quantity: number, reorder_level: number, last_restock_date: Date, Image_url:string, id:number) => {
     try {
       const response = await fetch("/api/item/edit", {
-        method: "POST", // Use PUT or PATCH for updates
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -231,7 +222,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   };
 
   const handleUpdate = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem || !selectedItem.editing) return;
   
     try {
       // Call the API to update the category
@@ -466,6 +457,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <button
                       onClick={() => {
                         setSelectedItem({
+                          editing: false,
                           id: item.id,
                           name: item.item_name,
                           category: item.category,
@@ -486,6 +478,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <button
                       onClick={() => {
                         setSelectedItem({
+                          editing: false,
                           id: item.id,
                           name: item.item_name,
                           category: item.category,
@@ -697,7 +690,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   className="w-full p-2 border rounded"
                   value={selectedItem.name}
                   onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, name: e.target.value })
+                    setSelectedItem({ ...selectedItem, name: e.target.value, editing: true })
                   }
                 />
                 <input
@@ -706,14 +699,14 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   className="w-full p-2 border rounded"
                   value={selectedItem.description}
                   onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, description: e.target.value })
+                    setSelectedItem({ ...selectedItem, description: e.target.value, editing: true })
                   }
                 />
                 <select
                   className="w-full p-2 border rounded"
                   value={selectedItem.category}
                   onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, category: e.target.value })
+                    setSelectedItem({ ...selectedItem, category: e.target.value, editing: true })
                   }
                 >
                   {categories.map((category) => (
@@ -730,7 +723,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   onChange={(e) =>
                     setSelectedItem({
                       ...selectedItem,
-                      quantity: parseInt(e.target.value)
+                      quantity: parseInt(e.target.value),
+                      editing: true
                     })
                   }
                 />
@@ -742,7 +736,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   onChange={(e) =>
                     setSelectedItem({
                       ...selectedItem,
-                      reorderLevel: parseInt(e.target.value)
+                      reorderLevel: parseInt(e.target.value), editing: true
                     })
                   }
                 />
@@ -755,7 +749,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   onChange={(e) =>
                     setSelectedItem({
                       ...selectedItem,
-                      unitPrice: parseFloat(e.target.value)
+                      unitPrice: parseFloat(e.target.value),
+                      editing: true
                     })
                   }
                 />

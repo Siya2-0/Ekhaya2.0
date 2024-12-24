@@ -10,7 +10,6 @@ export async function POST(req: Request) {
       last_restock_date = new Date(last_restock_date);
     }
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: "Invalid date format" }, { status: 400 });
   }
   try {
@@ -18,7 +17,6 @@ export async function POST(req: Request) {
     const response = await editItem(item_name, description, category, price, stock_quantity, reorder_level, last_restock_date, Image_url, id);
     return NextResponse.json(await response.json(), { status: response.status });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

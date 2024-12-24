@@ -24,10 +24,8 @@ export async function POST(req: Request) {
         reorder_level,
         last_restock_date,
         Image_url);
-    console.log(response);
     return NextResponse.json(await response.json(), { status: response.status });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
