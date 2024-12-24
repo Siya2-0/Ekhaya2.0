@@ -6,6 +6,12 @@ import { FiCheckCircle } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import CategoryManagement from "./category-management";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from '@supabase/supabase-js';
+import { v4 as uuidv4 } from 'uuid';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type InventoryItem = {
   id: number;
@@ -32,6 +38,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   const [categories, setCategories] = useState<Category[]>(categoriesData || []);
 
   const [isAdding, setIsAdding] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [isEditingItem, setIsEditingItem] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -80,6 +87,13 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     Image_url: "",
     image_file: null,
   });
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setFile(event.target.files[0]);
+      setNewItem({...newItem, image_file: event.target.files[0]});
+    }
+  };
 
   const [newCategory, setNewCategory] = useState({
     categoryName: "",
@@ -137,9 +151,16 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   };
 
   const handleAddItem = async () => {
-    // console.log(newItem.image_file);
     setIsAdding(true);
     try {
+      // Wait for the image to be uploaded and URL to be returned
+      const storageImageUrl = await handleUpload();
+  
+      if (!storageImageUrl) {
+        throw new Error("Image upload failed.");
+      }
+  
+      // Proceed with adding the item
       const response = await fetch("/api/item/add", {
         method: "POST",
         headers: {
@@ -153,11 +174,10 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           stock_quantity: newItem.stock_quantity,
           reorder_level: newItem.reorder_level,
           last_restock_date: new Date("2023-10-05").toISOString(),
-          Image_url: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fheineken.png?alt=media&token=8e9e171f-da87-4066-971e-46e6d217c3c6",
+          Image_url: storageImageUrl, // Use the uploaded image URL
         }),
       });
-      
-
+  
       const data = await response.json();
       if (response.ok) {
         console.log("Item added successfully!");
@@ -165,19 +185,17 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         setSuccessModalHeader("Successful!");
         setShowSuccessModal(true);
         setShowAddCategoryModal(false);
-        setIsAdding(false);
       } else {
         console.log(`Error: ${data.error.message}`);
-        setIsAdding(false);
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log(`Error: ${error.message}`);
-        setIsAdding(false);
+        console.error(`Error: ${error.message}`);
       } else {
-        console.log(`Error: ${String(error)}`);
-        setIsAdding(false);
+        console.error(`Error: ${String(error)}`);
       }
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -347,6 +365,29 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       console.error("Failed to delete the category:", error);
     } finally {
       // setLoading(false); // Stop loading
+    }
+  };
+
+  const uploadFile = async (file: File, filePath: string) => {
+    const { data, error } = await supabase.storage.from('Ekhaya_Bucket').upload(filePath, file);
+    if (error) {
+      console.log(`Error uploading file: ${error.message}`);
+    } else {
+      const { data: url } = await supabase.storage.from('Ekhaya_Bucket').getPublicUrl(filePath);
+      console.log(url.publicUrl);
+      console.log(`File uploaded successfully: ${data}`);
+      return url.publicUrl;
+    }
+  };
+
+  const handleUpload = async () => {
+    if (file) {
+      // setUploading(true);
+      const filePath = `image/${uuidv4()}.${file.name.split('.').pop()}`;
+      return uploadFile(file, filePath).finally(() => console.log("Upload complete"));
+    } else {
+      console.log('No file selected');
+      return null;
     }
   };
 
@@ -603,15 +644,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   type="file"
                   accept="image/*"
                   className="w-full p-2 border rounded"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      const file = e.target.files[0]; // Get the File object
-                      setNewItem({
-                        ...newItem,
-                        image_file: file, // Save the File directly
-                      });
-                    }
-                  }}
+                  onChange={handleFileChange}
                 />
 
               </div>
