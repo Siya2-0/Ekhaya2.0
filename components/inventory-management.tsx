@@ -231,24 +231,25 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   };
 
   const handleUpdate = async () => {
-    if (!editingItem || !editingItem.item_name || !editingItem.description || !editingItem.category || !editingItem.price || !editingItem.stock_quantity || !editingItem.reorder_level) return;
+    if (!selectedItem) return;
   
     try {
       // Call the API to update the category
-      const updatedCategory = await handleEditItem(
-        editingItem.item_name,
-        editingItem.description,
-        editingItem.category,
-        editingItem.price,
-        editingItem.stock_quantity,
-        editingItem.reorder_level,
-        new Date(editingItem.last_restock_date),
-        editingItem.Image_url,
-        editingItem.id
+      const updatedItem = await handleEditItem(
+        selectedItem?.name,
+        selectedItem?.description,
+        selectedItem.category,
+        selectedItem?.unitPrice,
+        selectedItem?.quantity,
+        selectedItem?.reorderLevel,
+        new Date(selectedItem?.last_restock_date),
+        selectedItem?.image,
+        selectedItem.id
       );
   
-      if (updatedCategory) {
-        setEditingItem(null);
+      if (updatedItem) {
+        setShowEditModal(false);
+        setSelectedItem(null);
       }
     } catch (error) {
       console.error("Failed to update the category:", error);
@@ -321,15 +322,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       // setLoading(false); // Stop loading
     }
   };
-
-  // const handleDeleteItem = () => {
-  //   if (selectedItem) {
-  //     const updatedInventory = inventory.filter((item: InventoryItem) => item.id !== selectedItem.id);
-  //     setInventory(updatedInventory);
-  //     setShowDeleteModal(false);
-  //     setSelectedItem(null);
-  //   }
-  // };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">
