@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     const response = await deleteItems(id);
     return NextResponse.json(await response.json(), { status: response.status });
   } catch (error) {
-    console.error(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

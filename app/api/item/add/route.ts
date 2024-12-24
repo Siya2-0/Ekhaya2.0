@@ -15,9 +15,6 @@ export async function POST(req: Request) {
     if (typeof last_restock_date === 'string') {
       last_restock_date = new Date(last_restock_date);
     }
-
-    console.log(category);
-    console.log(Image_url);
     
     const response = await addItem(item_name,
         description,
@@ -27,10 +24,8 @@ export async function POST(req: Request) {
         reorder_level,
         last_restock_date,
         Image_url);
-        console.log(response);
     return NextResponse.json(await response.json(), { status: response.status });
   } catch (error) {
-    console.log(error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
