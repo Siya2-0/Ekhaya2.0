@@ -20,9 +20,15 @@ type InventoryItem = {
   created_at: string;
   update_at: string;
 };
+type Category = {
+  id: number;
+  category_name: string;
+  category_description: string;
+};
 
 const InventoryManagement = ({categoriesData, itemsData}: any) => {
   const [inventory, setInventory] = useState(itemsData);
+  const [categories, setCategories] = useState<Category[]>(categoriesData || []);
 
   const [isAdding, setIsAdding] = useState(false);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
@@ -112,7 +118,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     };
   }, [supabase]);
 
-  const categories = ["WINE", "GIN", "VODKA"];
+  // const categories = ["WINE", "GIN", "VODKA"];
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
@@ -382,8 +388,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
             >
               <option value="all">All Categories</option>
               {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+                <option key={category.id} value={category.category_name}>
+                  {category.category_name}
                 </option>
               ))}
             </select>
@@ -540,8 +546,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                 >
                   <option value="">Select Category</option>
                   {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
+                    <option key={category.id} value={category.category_name}>
+                      {category.category_name}
                     </option>
                   ))}
                 </select>
@@ -733,8 +739,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   }
                 >
                   {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
+                    <option key={category.id} value={category.category_name}>
+                      {category.category_name}
                     </option>
                   ))}
                 </select>
