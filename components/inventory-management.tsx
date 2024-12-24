@@ -13,7 +13,7 @@ type InventoryItem = {
   category: string;
   stock_quantity: number;
   price: number;
-  // status: string;
+  last_restock_date: string;
   reorder_level: number;
   Image_url: string;
   description: string;
@@ -24,6 +24,7 @@ type InventoryItem = {
 const InventoryManagement = ({categoriesData, itemsData}: any) => {
   const [inventory, setInventory] = useState(itemsData);
 
+  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
@@ -43,9 +44,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     quantity: number;
     unitPrice: number;
     reorderLevel: number;
-    // status: string;
+    last_restock_date: string;
     image: string;
-    supplier: string;
+    description: string;
     dateAdded: string;
   } | null>(null);
   const [newItem, setNewItem] = useState({
@@ -129,7 +130,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           stock_quantity: newItem.stock_quantity,
           reorder_level: newItem.reorder_level,
           last_restock_date: new Date("2023-10-05").toISOString(),
-          Image_url: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fheineken.png?alt=media&token=8e9e171f-da87-4066-971e-46e6d217c3c6",
+          Image_url: newItem.Image_url,
         }),
       });
       
@@ -196,14 +197,62 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     }
   };
 
-  const handleEditItem = () => {
-    if (!selectedItem) return;
-    const updatedInventory = inventory.map((item: InventoryItem) =>
-      item.id === selectedItem.id ? selectedItem : item
-    );
-    setInventory(updatedInventory);
-    setShowEditModal(false);
-    setSelectedItem(null);
+  // const handleEditItem = () => {
+  //   if (!selectedItem) return;
+  //   const updatedInventory = inventory.map((item: InventoryItem) =>
+  //     item.id === selectedItem.id ? selectedItem : item
+  //   );
+  //   setInventory(updatedInventory);
+  //   setShowEditModal(false);
+  //   setSelectedItem(null);
+  // };
+
+  const handleEditItem = async (item_name: string, description: string, category: string, price: number, stock_quantity: number, reorder_level: number, last_restock_date: Date, Image_url:string, id:number) => {
+    try {
+      const response = await fetch("/api/item/edit", {
+        method: "POST", // Use PUT or PATCH for updates
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ item_name, description, category, price, stock_quantity, reorder_level, last_restock_date, Image_url, id }),
+      });
+  
+      const data = await response;
+      if (response.ok) {
+        console.log("Item updated successfully!");
+        return data;
+      } else {
+        const errorData = await response.json();
+        console.error(`Error: ${errorData}`);
+      }
+    } catch (error) {
+      console.error("Error updating category:", error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!editingItem || !editingItem.item_name || !editingItem.description || !editingItem.category || !editingItem.price || !editingItem.stock_quantity || !editingItem.reorder_level) return;
+  
+    try {
+      // Call the API to update the category
+      const updatedCategory = await handleEditItem(
+        editingItem.item_name,
+        editingItem.description,
+        editingItem.category,
+        editingItem.price,
+        editingItem.stock_quantity,
+        editingItem.reorder_level,
+        new Date(editingItem.last_restock_date),
+        editingItem.Image_url,
+        editingItem.id
+      );
+  
+      if (updatedCategory) {
+        setEditingItem(null);
+      }
+    } catch (error) {
+      console.error("Failed to update the category:", error);
+    }
   };
 
   const getStatus = (stock_quantity: number, reorder_level: number) => {
@@ -430,9 +479,10 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           category: item.category,
                           quantity: item.stock_quantity,
                           unitPrice: item.price,
+                          last_restock_date: item.last_restock_date,
                           reorderLevel: item.reorder_level,
                           image: item.Image_url,
-                          supplier: "", // Add appropriate value for supplier
+                          description: item.description,
                           dateAdded: item.created_at,
                         });
                         setShowEditModal(true);
@@ -450,9 +500,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           quantity: item.stock_quantity,
                           unitPrice: item.price,
                           reorderLevel: item.reorder_level,
-                          // status: item.status,
+                          last_restock_date: item.last_restock_date,
                           image: item.Image_url,
-                          supplier: "", // Add appropriate value for supplier
+                          description: item.description,
                           dateAdded: item.created_at,
                         });
                         setShowDeleteModal(true);
@@ -530,6 +580,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                 />
                 <input
                   type="file"
+                  accept="image/*"
                   className="w-full p-2 border rounded"
                   onChange={(e) =>
                     setNewItem({
@@ -657,6 +708,15 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     setSelectedItem({ ...selectedItem, name: e.target.value })
                   }
                 />
+                <input
+                  type="text"
+                  placeholder="Item Description"
+                  className="w-full p-2 border rounded"
+                  value={selectedItem.description}
+                  onChange={(e) =>
+                    setSelectedItem({ ...selectedItem, description: e.target.value })
+                  }
+                />
                 <select
                   className="w-full p-2 border rounded"
                   value={selectedItem.category}
@@ -684,6 +744,18 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                 />
                 <input
                   type="number"
+                  placeholder="Reorder Level"
+                  className="w-full p-2 border rounded"
+                  value={selectedItem.reorderLevel}
+                  onChange={(e) =>
+                    setSelectedItem({
+                      ...selectedItem,
+                      reorderLevel: parseInt(e.target.value)
+                    })
+                  }
+                />
+                <input
+                  type="number"
                   step="0.01"
                   placeholder="Unit Price"
                   className="w-full p-2 border rounded"
@@ -704,7 +776,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleEditItem}
+                  onClick={handleUpdate}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   Save Changes
