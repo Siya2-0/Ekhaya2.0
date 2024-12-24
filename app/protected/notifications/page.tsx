@@ -3,6 +3,7 @@ import EmployeeTable from '@/components/table'
 import React from 'react'
 
 const Notifications = () => {
+  
   return (
     <div>
         <main className="relative flex min-h-screen flex-col bg-[#F2F2F2] pt-12">

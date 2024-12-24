@@ -1,5 +1,5 @@
 import AuthButton from '@/components/header-auth';
-import InventoryManagement from '@/components/inventory-management';
+import NewOrderManagement from '@/components/new-order';
 import React from 'react';
 
 const fetchData = async (url: any, body = {}) => {
@@ -23,7 +23,7 @@ const fetchData = async (url: any, body = {}) => {
   }
 };
 
-const InventoryPage = async () => {
+const NewOrder = async () => {
   const [categoriesResponse, itemsResponse] = await Promise.all([
     fetchData("http://localhost:3000/api/category/fetch"),
     fetchData("http://localhost:3000/api/item/fetch"),
@@ -36,11 +36,11 @@ const InventoryPage = async () => {
     <div>
       <main className="relative flex min-h-screen flex-col bg-[#F2F2F2] pt-12">
         <p className="text-[#303030] font-bold text-[32px] ml-8">Inventory Management</p>
-        <AuthButton />
-        <InventoryManagement categoriesData={categories} itemsData={items} />
+        {/* <AuthButton /> */}
+        <NewOrderManagement categoriesData={categories} itemsData={items} />
       </main>
     </div>
   );
 };
 
-export default InventoryPage;
+export default NewOrder;
