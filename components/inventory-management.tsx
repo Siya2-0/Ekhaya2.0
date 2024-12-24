@@ -5,46 +5,24 @@ import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine,
 import { FiCheckCircle } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import CategoryManagement from "./category-management";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-const InventoryManagement = ({categoriesData}: any) => {
-  const [inventory, setInventory] = useState([
-    {
-      id: 1,
-      name: "Cola",
-      category: "Drinks",
-      quantity: 50,
-      unitPrice: 2.99,
-      reorderLevel: 20,
-      status: "In-Stock",
-      image: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b",
-      supplier: "Beverage Corp",
-      dateAdded: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "Chips",
-      category: "Snacks",
-      quantity: 15,
-      unitPrice: 1.99,
-      reorderLevel: 25,
-      status: "Low-Stock",
-      image: "https://images.unsplash.com/photo-1566478989037-eec170784d0b",
-      supplier: "Snack Foods Inc",
-      dateAdded: "2024-01-10"
-    },
-    {
-      id: 3,
-      name: "Water",
-      category: "Drinks",
-      quantity: 0,
-      unitPrice: 0.99,
-      reorderLevel: 30,
-      status: "Out-of-Stock",
-      image: "https://images.unsplash.com/photo-1621873495914-1c921811e37b",
-      supplier: "Pure Water Co",
-      dateAdded: "2024-01-05"
-    }
-  ]);
+type InventoryItem = {
+  id: number;
+  item_name: string;
+  category: string;
+  stock_quantity: number;
+  price: number;
+  // status: string;
+  reorder_level: number;
+  Image_url: string;
+  description: string;
+  created_at: string;
+  update_at: string;
+};
+
+const InventoryManagement = ({categoriesData, itemsData}: any) => {
+  const [inventory, setInventory] = useState(itemsData);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -65,19 +43,20 @@ const InventoryManagement = ({categoriesData}: any) => {
     quantity: number;
     unitPrice: number;
     reorderLevel: number;
-    status: string;
+    // status: string;
     image: string;
     supplier: string;
     dateAdded: string;
   } | null>(null);
   const [newItem, setNewItem] = useState({
-    name: "",
+    item_name: "",
+    description: "",
     category: "",
-    quantity: 0,
-    unitPrice: 0,
-    reorderLevel: 0,
-    supplier: "",
-    image: ""
+    price: 0,
+    stock_quantity: 0,
+    reorder_level: 0,
+    last_restock_date: new Date("2023-10-05").toISOString(),
+    Image_url: ""
   });
 
   const [newCategory, setNewCategory] = useState({
@@ -85,34 +64,94 @@ const InventoryManagement = ({categoriesData}: any) => {
     cateogryDescription: "",
   });
 
-  const categories = ["Drinks", "Snacks", "Supplies"];
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    // Subscribe to real-time updates on 'Categories' table
+    const subscription = supabase
+      .channel("realtime:inventory")
+      .on(
+        'postgres_changes', // Correct event name
+        {
+          event: "*", // Listen for all events
+          schema: "public",
+          table: "Inventory",
+        },
+        (payload: any) => {
+          console.log("Real-time update:", payload);
+          if (payload.eventType === "INSERT") {
+            setInventory((prev: InventoryItem[]) => [...prev, payload.new]); // Append the new category
+          }
+
+          if (payload.eventType === "UPDATE") {
+            // Update the existing category in the list when an update event happens
+            setInventory((prev: InventoryItem[]) =>
+              prev.map((item) =>
+                item.id === payload.new.id ? payload.new : item
+              )
+            );
+          }
+
+          if (payload.eventType === "DELETE") {
+            // Remove the deleted category from the list when a delete event happens
+            setInventory((prev: InventoryItem[]) =>
+              prev.filter((item) => item.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup the subscription on component unmount
+    return () => {
+      supabase.removeChannel(subscription); // Clean up the subscription
+    };
+  }, [supabase]);
+
+  const categories = ["WINE", "GIN", "VODKA"];
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleAddItem = () => {
-    const item = {
-      ...newItem,
-      id: inventory.length + 1,
-      status: "In-Stock",
-      dateAdded: new Date().toISOString().split("T")[0]
-    };
-    setInventory([...inventory, { ...item, image: item.image || "default-image-url" }]);
-    setShowAddModal(false);
-    setNewItem({
-      name: "",
-      category: "",
-      quantity: 0,
-      unitPrice: 0,
-      reorderLevel: 0,
-      supplier: "",
-      image: ""
-    });
-  };
+  const handleAddItem = async () => {
+    try {
+      const response = await fetch("/api/item/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          item_name: newItem.item_name,
+          description: newItem.description,
+          category: newItem.category,
+          price: newItem.price,
+          stock_quantity: newItem.stock_quantity,
+          reorder_level: newItem.reorder_level,
+          last_restock_date: new Date("2023-10-05").toISOString(),
+          Image_url: newItem.Image_url,
+        }),
+      });
+      
 
-  const [categoryname, setCategoryName] = useState("Testing add category");
-  const [categorydescription, setCategoryDescription] = useState("testing add category description");
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Item added successfully!");
+        setSuccessModalDescription("Item added successfully.");
+        setSuccessModalHeader("Successful!");
+        setShowSuccessModal(true);
+        setShowAddCategoryModal(false);
+      } else {
+        console.log(`Error: ${data.error.message}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+      } else {
+        console.log(`Error: ${String(error)}`);
+      }
+    }
+  };
 
   const handleAddCategory = async () => {
     try {
@@ -131,7 +170,6 @@ const InventoryManagement = ({categoriesData}: any) => {
       const data = await response.json();
       if (response.ok) {
         console.log("Category added successfully!");
-        // setSuccessModalType("Category");
         setSuccessModalDescription("Category added successfully.");
         setSuccessModalHeader("Successful!");
         setShowSuccessModal(true);
@@ -155,7 +193,7 @@ const InventoryManagement = ({categoriesData}: any) => {
 
   const handleEditItem = () => {
     if (!selectedItem) return;
-    const updatedInventory = inventory.map((item) =>
+    const updatedInventory = inventory.map((item: InventoryItem) =>
       item.id === selectedItem.id ? selectedItem : item
     );
     setInventory(updatedInventory);
@@ -165,53 +203,30 @@ const InventoryManagement = ({categoriesData}: any) => {
 
   const handleDeleteItem = () => {
     if (selectedItem) {
-      const updatedInventory = inventory.filter((item) => item.id !== selectedItem.id);
+      const updatedInventory = inventory.filter((item: InventoryItem) => item.id !== selectedItem.id);
       setInventory(updatedInventory);
       setShowDeleteModal(false);
       setSelectedItem(null);
     }
   };
 
-  const filteredInventory = inventory.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || item.status === filterStatus;
+  const getStatus = (stock_quantity: number, reorder_level: number) => {
+    if (stock_quantity === 0) return "Out-of-Stock";
+    if (stock_quantity <= reorder_level) return "Low-Stock";
+    return "In-Stock";
+  };
+
+  const filteredInventory = inventory.filter((item: InventoryItem) => {
+    const matchesSearch = item.item_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === "all" || getStatus(item.stock_quantity, item.reorder_level) === filterStatus;
     const matchesCategory = filterCategory === "all" || item.category === filterCategory;
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
   const stats = {
     total: inventory.length,
-    lowStock: inventory.filter((item) => item.status === "Low-Stock").length,
-    outOfStock: inventory.filter((item) => item.status === "Out-of-Stock").length
-  };
-
-  const FectchCategories = async () => {
-    try {
-      const response = await fetch("/api/category/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          
-        }),
-      });
-      
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Category added successfully!");
-        console.log(data);
-      } else {
-        console.log(`Error: ${data.error.message}`);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(`Error: ${error.message}`);
-      } else {
-        console.log(`Error: ${String(error)}`);
-      }
-    }
+    lowStock: inventory.filter((item: InventoryItem) => getStatus(item.stock_quantity, item.reorder_level) === "Low-Stock").length,
+    outOfStock: inventory.filter((item: InventoryItem) => getStatus(item.stock_quantity, item.reorder_level) === "Out-of-Stock").length
   };
 
   return (
@@ -317,17 +332,17 @@ const InventoryManagement = ({categoriesData}: any) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredInventory.map((item) => (
+              {filteredInventory.map((item: InventoryItem) => (
                 <tr key={item.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item.Image_url}
+                        alt={item.item_name}
                         className="h-10 w-10 rounded-full object-cover"
                       />
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{item.name}</div>
+                        <div className="text-sm font-medium text-gray-900">{item.item_name}</div>
                       </div>
                     </div>
                   </td>
@@ -335,28 +350,38 @@ const InventoryManagement = ({categoriesData}: any) => {
                     {item.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.quantity}
+                    {item.stock_quantity}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    R{item.unitPrice.toFixed(2)}
+                    R{item.price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
+                  <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        item.status === "In-Stock"
+                        getStatus(item.stock_quantity, item.reorder_level) === "In-Stock"
                           ? "bg-green-100 text-green-800"
-                          : item.status === "Low-Stock"
+                          : getStatus(item.stock_quantity, item.reorder_level) === "Low-Stock"
                           ? "bg-yellow-100 text-yellow-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {item.status}
+                      {getStatus(item.stock_quantity, item.reorder_level)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       onClick={() => {
-                        setSelectedItem(item);
+                        setSelectedItem({
+                          id: item.id,
+                          name: item.item_name,
+                          category: item.category,
+                          quantity: item.stock_quantity,
+                          unitPrice: item.price,
+                          reorderLevel: item.reorder_level,
+                          image: item.Image_url,
+                          supplier: "", // Add appropriate value for supplier
+                          dateAdded: item.created_at,
+                        });
                         setShowEditModal(true);
                       }}
                       className="text-blue-600 hover:text-blue-900 mr-4"
@@ -365,7 +390,18 @@ const InventoryManagement = ({categoriesData}: any) => {
                     </button>
                     <button
                       onClick={() => {
-                        setSelectedItem(item);
+                        setSelectedItem({
+                          id: item.id,
+                          name: item.item_name,
+                          category: item.category,
+                          quantity: item.stock_quantity,
+                          unitPrice: item.price,
+                          reorderLevel: item.reorder_level,
+                          // status: item.status,
+                          image: item.Image_url,
+                          supplier: "", // Add appropriate value for supplier
+                          dateAdded: item.created_at,
+                        });
                         setShowDeleteModal(true);
                       }}
                       className="text-red-600 hover:text-red-900"
@@ -389,8 +425,8 @@ const InventoryManagement = ({categoriesData}: any) => {
                   type="text"
                   placeholder="Item Name"
                   className="w-full p-2 border rounded"
-                  value={newItem.name}
-                  onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                  value={newItem.item_name}
+                  onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
                 />
                 <select
                   className="w-full p-2 border rounded"
@@ -408,9 +444,9 @@ const InventoryManagement = ({categoriesData}: any) => {
                   type="number"
                   placeholder="Quantity"
                   className="w-full p-2 border rounded"
-                  value={newItem.quantity}
+                  value={newItem.stock_quantity}
                   onChange={(e) =>
-                    setNewItem({ ...newItem, quantity: parseInt(e.target.value) })
+                    setNewItem({ ...newItem, stock_quantity: parseInt(e.target.value) })
                   }
                 />
                 <input
@@ -418,26 +454,26 @@ const InventoryManagement = ({categoriesData}: any) => {
                   step="0.01"
                   placeholder="Unit Price"
                   className="w-full p-2 border rounded"
-                  value={newItem.unitPrice}
+                  value={newItem.price}
                   onChange={(e) =>
-                    setNewItem({ ...newItem, unitPrice: parseFloat(e.target.value) })
+                    setNewItem({ ...newItem, price: parseFloat(e.target.value) })
                   }
                 />
                 <input
                   type="number"
                   placeholder="Reorder Level"
                   className="w-full p-2 border rounded"
-                  value={newItem.reorderLevel}
+                  value={newItem.reorder_level}
                   onChange={(e) =>
-                    setNewItem({ ...newItem, reorderLevel: parseInt(e.target.value) })
+                    setNewItem({ ...newItem, reorder_level: parseInt(e.target.value) })
                   }
                 />
                 <input
                   type="text"
                   placeholder="Supplier"
                   className="w-full p-2 border rounded"
-                  value={newItem.supplier}
-                  onChange={(e) => setNewItem({ ...newItem, supplier: e.target.value })}
+                  value={newItem.description}
+                  onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                 />
                 <input
                   type="file"
@@ -445,7 +481,7 @@ const InventoryManagement = ({categoriesData}: any) => {
                   onChange={(e) =>
                     setNewItem({
                       ...newItem,
-                      image: e.target.files ? URL.createObjectURL(e.target.files[0]) : ""
+                      Image_url: e.target.files ? URL.createObjectURL(e.target.files[0]) : ""
                     })
                   }
                 />
@@ -542,12 +578,6 @@ const InventoryManagement = ({categoriesData}: any) => {
               </p>
     
               <div className="flex w-full flex-col gap-3 sm:flex-row">
-                {/* <button
-                //   onClick={onNewOrder}
-                  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  New Order
-                </button> */}
                 <button
                   onClick={handleFinish}
                   className="flex-1 rounded-lg bg-green-100 px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
