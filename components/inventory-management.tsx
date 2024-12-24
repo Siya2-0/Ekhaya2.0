@@ -24,7 +24,9 @@ type InventoryItem = {
 const InventoryManagement = ({categoriesData, itemsData}: any) => {
   const [inventory, setInventory] = useState(itemsData);
 
-  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [isEditingItem, setIsEditingItem] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
@@ -117,6 +119,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   };
 
   const handleAddItem = async () => {
+    setIsAdding(true);
     try {
       const response = await fetch("/api/item/add", {
         method: "POST",
@@ -143,19 +146,24 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         setSuccessModalHeader("Successful!");
         setShowSuccessModal(true);
         setShowAddCategoryModal(false);
+        setIsAdding(false);
       } else {
         console.log(`Error: ${data.error.message}`);
+        setIsAdding(false);
       }
     } catch (error) {
       if (error instanceof Error) {
         console.log(`Error: ${error.message}`);
+        setIsAdding(false);
       } else {
         console.log(`Error: ${String(error)}`);
+        setIsAdding(false);
       }
     }
   };
 
   const handleAddCategory = async () => {
+    setIsAddingCategory(true);
     try {
       const response = await fetch("/api/category/add", {
         method: "POST",
@@ -176,14 +184,18 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         setSuccessModalHeader("Successful!");
         setShowSuccessModal(true);
         setShowAddCategoryModal(false);
+        setIsAddingCategory(false);
       } else {
         console.log(`Error: ${data.error.message}`);
+        setIsAddingCategory(false);
       }
     } catch (error) {
       if (error instanceof Error) {
         console.log(`Error: ${error.message}`);
+        setIsAddingCategory(false);
       } else {
         console.log(`Error: ${String(error)}`);
+        setIsAddingCategory(false);
       }
     }
   };
@@ -222,7 +234,11 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   };
 
   const handleUpdate = async () => {
-    if (!selectedItem || !selectedItem.editing) return;
+    setIsEditingItem(true);
+    if (!selectedItem || !selectedItem.editing) {
+      setIsEditingItem(false);
+      return;
+    };
   
     try {
       // Call the API to update the category
@@ -241,6 +257,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       if (updatedItem) {
         setShowEditModal(false);
         setSelectedItem(null);
+        setIsEditingItem(false);
       }
     } catch (error) {
       console.error("Failed to update the category:", error);
@@ -584,9 +601,12 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                 </button>
                 <button
                   onClick={handleAddItem}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className={`px-4 py-2 rounded-lg ${
+                    isAdding ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+                  } text-white`}
+                  disabled={isAdding} // Disable button while loading
                 >
-                  Add Item
+                  {isAdding ? "Adding..." : "Add Item"}
                 </button>
               </div>
             </div>
@@ -623,9 +643,12 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   </button>
                   <button
                     onClick={handleAddCategory}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className={`px-4 py-2 rounded-lg ${
+                      isAddingCategory ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+                    } text-white`}
+                    disabled={isAddingCategory} // Disable button while loading
                   >
-                    Add Category
+                    {isAddingCategory ? "Adding..." : "Add Category"}
                   </button>
                 </div>
               </div>
@@ -764,9 +787,12 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                 </button>
                 <button
                   onClick={handleUpdate}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className={`px-4 py-2 rounded-lg ${
+                    isEditingItem ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+                  } text-white`}
+                  disabled={isEditingItem} // Disable button while loading
                 >
-                  Save Changes
+                  {isEditingItem ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </div>
