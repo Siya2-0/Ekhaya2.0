@@ -2,11 +2,10 @@ import AuthButton from '@/components/header-auth';
 import NewOrderManagement from '@/components/new-order';
 import React from 'react';
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+const fetchData = async (path: string, body = {}) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // Use environment variable
+  const url = `${baseUrl}${path}`;
 
-const fetchData = async (url: any, body = {}) => {
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -29,8 +28,8 @@ const fetchData = async (url: any, body = {}) => {
 
 const NewOrder = async () => {
   const [categoriesResponse, itemsResponse] = await Promise.all([
-    fetchData(`${defaultUrl}/api/category/fetch`),
-    fetchData(`${defaultUrl}/api/item/fetch`),
+    fetchData(`/api/category/fetch`),
+    fetchData(`/api/item/fetch`),
   ]);
 
   const categories = categoriesResponse?.Categories || [];
@@ -39,8 +38,6 @@ const NewOrder = async () => {
   return (
     <div>
       <main className="relative flex min-h-screen flex-col bg-[#F2F2F2]">
-        {/* <p className="text-[#303030] font-bold text-[32px] ml-8">Inventory Management</p> */}
-        {/* <AuthButton /> */}
         <NewOrderManagement categoriesData={categories} itemsData={items} />
       </main>
     </div>

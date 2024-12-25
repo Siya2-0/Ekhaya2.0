@@ -2,11 +2,10 @@ import AuthButton from '@/components/header-auth';
 import InventoryManagement from '@/components/inventory-management';
 import React from 'react';
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
-const fetchData = async (url: any, body = {}) => {
+const fetchData = async (path: string, body = {}) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // Use environment variable
+  const url = `${baseUrl}${path}`;
+  
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -29,8 +28,8 @@ const fetchData = async (url: any, body = {}) => {
 
 const InventoryPage = async () => {
   const [categoriesResponse, itemsResponse] = await Promise.all([
-    fetchData(`${defaultUrl}/api/category/fetch`),
-    fetchData(`${defaultUrl}/api/item/fetch`),
+    fetchData(`/api/category/fetch`),
+    fetchData(`/api/item/fetch`),
   ]);
 
   const categories = categoriesResponse?.Categories || [];
