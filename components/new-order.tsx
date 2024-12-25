@@ -64,9 +64,10 @@ type InventoryItem = {
     category_description: string;
   };
 
-const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
+const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
     const [liquorItems, setLiquorItems] = useState(itemsData);
     const [categories, setCategories] = useState<Category[]>(categoriesData || []);
+    const [newOrder, setNewOrder] = useState({});
 
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -228,6 +229,7 @@ const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
       };
       // Store the new order separately
       const newOrders = [...currentOrders];
+      setNewOrder(newOrder);
       // Store the new order separately
       const ordersHistory = JSON.parse(localStorage.getItem('ordersHistory') || '[]');
       ordersHistory.push(newOrder);
@@ -235,8 +237,8 @@ const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
       // setCurrentOrders([]);
       // setCurrentOrders([]);
       // setShowPaymentModal(false);
-      setShowOrderSummary(true);
       setPay(paymentMethod === "card");
+      setShowOrderSummary(true);
     };
 
     const PaymentModal = () => (
@@ -262,7 +264,7 @@ const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
         )}
         {showOrderSummary && (
           <OrderSummary
-            pay={pay} setShowPaymentModal={setShowPaymentModal} setCurrentOrders={setCurrentOrders} setShowOrderSummary={setShowOrderSummary}
+            pay={pay} setShowPaymentModal={setShowPaymentModal} setCurrentOrders={setCurrentOrders} setShowOrderSummary={setShowOrderSummary} newOrder={newOrder} username={username}
             // orderItems={currentOrders}
             // handleQuantityChange={updateQuantity}
             // paymentMethod="card"

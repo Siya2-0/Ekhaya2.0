@@ -1,28 +1,58 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaCreditCard, FaMoneyBillWave, FaMobile, FaGift, FaPrint, FaEnvelope, FaPlus, FaMinus } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import OrderSuccessModal from "./order-success-modal";
+// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderSummary}: any) => {
+// const supabase = createClientComponentClient();
+
+interface OrderItem {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
+interface NewOrder {
+  id: number;
+  items: OrderItem[];
+  total: number;
+  status: string;
+  timestamp: string;
+}
+
+const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrderSummary, newOrder, username }: any) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [orderItems, setOrderItems] = useState([
-    { id: 1, name: "Classic Martini", quantity: 2, price: 12.99 },
-    { id: 2, name: "Craft Beer", quantity: 3, price: 8.99 },
-    { id: 3, name: "Wine Bottle", quantity: 1, price: 45.99 }
-  ]);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>(newOrder.items);
 
   const [tip, setTip] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [cashTendered, setCashTendered] = useState(0);
+  const [selectedTip, setSelectedTip] = useState(0);
+  const [customerName, setCustomerName] = useState("");
+  const [user, setUser] = useState<any>(username);
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const {
+  //       data: { user },
+  //     } = await supabase.auth.getUser();
+  //     setUser(user);
+  //   };
+
+  //   fetchUser();
+  // }, []);
 
   const subtotal = orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const tax = subtotal * 0.08;
-  const total = subtotal + tax + tip - discount;
+  const total = subtotal + tip;
 
-  const handleQuantityChange = (id: any, increment: any) => {
+  const handleQuantityChange = (id: number, increment: number) => {
     setOrderItems(items =>
       items.map(item =>
         item.id === id
@@ -32,16 +62,62 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
     );
   };
 
-  const handleTipSelection = (percentage: any) => {
+  const handleTipSelection = (percentage: number) => {
     setTip(subtotal * (percentage / 100));
+    setSelectedTip(percentage);
+  };
+
+  const handleAddTransaction = async () => {
+    // setIsAddingCategory(true);
+    console.log("User:"+user);
+    try {
+      const response = await fetch("/api/transaction/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer_name: customerName,
+          employee_username: user,
+          items: JSON.stringify({ orderItems }),
+          total_price: total.toFixed(2),
+          payment_method: paymentMethod,
+          status: 'pending',
+          notes: cashTendered === 0 ? "No notes" : cashTendered
+        }),
+      });
+      
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Category added successfully!");
+        handlePrint();
+        // setSuccessModalDescription("Category added successfully.");
+        // setSuccessModalHeader("Successful!");
+        // setShowSuccessModal(true);
+        // setShowAddCategoryModal(false);
+        // setIsAddingCategory(false);
+      } else {
+        console.log(`Error: ${data.error.message}`);
+        // setIsAddingCategory(false);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+        // setIsAddingCategory(false);
+      } else {
+        console.log(`Error: ${String(error)}`);
+        // setIsAddingCategory(false);
+      }
+    }
   };
 
   const handlePrint = () => {
     console.log("Printing receipt...");
     setShowSuccessModal(true);
     setCurrentOrders([]);
-    // setShowPaymentModal(false);
-    // setShowOrderSummary(false);
+    setShowPaymentModal(false);
+    setShowOrderSummary(false);
   };
 
   const handleEmailReceipt = () => {
@@ -49,10 +125,6 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
     setShowPaymentModal(false);
     setShowOrderSummary(false);
   };
-
-  const successModal = () => {
-    return <OrderSuccessModal/>;
-  }
 
   return (
     <div className="min-h-screen bg-transparent p-6">
@@ -100,53 +172,57 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {pay && (
-                  <div className="space-y-4">
-                  <h3 className="text-xl font-semibold">Payment Methods</h3>
-                  
-                  <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
+                {pay && (
+                  <div className="">
+                    <h3 className="text-xl font-semibold">Payment Methods</h3>
+                    
+                    <div className="grid grid-cols-2 gap-4">
                       <button
-                      onClick={() => setPaymentMethod("cash")}
-                      className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "cash" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
+                        onClick={() => setPaymentMethod("Cash")}
+                        className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "cash" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                       >
-                      <FaMoneyBillWave /> Cash
+                        <FaMoneyBillWave /> Cash
                       </button>
                       <button
-                      onClick={() => setPaymentMethod("card")}
-                      className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "card" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
+                        onClick={() => setPaymentMethod("Credit Card")}
+                        className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "card" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                       >
-                      <FaCreditCard /> Card
+                        <FaCreditCard /> Card
                       </button>
-                      <button
-                      onClick={() => setPaymentMethod("mobile")}
-                      className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "mobile" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
-                      >
-                      <FaMobile /> Mobile Pay
-                      </button>
-                      <button
-                      onClick={() => setPaymentMethod("gift")}
-                      className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "gift" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
-                      >
-                      <FaGift /> Gift Card
-                      </button>
-                  </div>
+                    </div>
 
-                  {paymentMethod === "cash" && (
+                    {paymentMethod === "cash" && (
                       <div className="space-y-2">
-                      <label className="block">Cash Tendered</label>
-                      <input
+                        <label className="block">Cash Tendered</label>
+                        <input
                           type="number"
                           value={cashTendered}
                           onChange={(e) => setCashTendered(parseFloat(e.target.value) || 0)}
                           className="w-full p-2 border rounded"
-                      />
-                      <div className="text-lg font-semibold">
+                        />
+                        <div className="text-lg font-semibold">
                           Change Due: R{Math.max(0, cashTendered - total).toFixed(2)}
+                        </div>
                       </div>
-                      </div>
-                  )}
+                    )}
                   </div>
-              )}
+                )}
+                <div>
+                        <label className="block text-sm font-medium text-gray-700 mt-8 mb-2 capitalize">
+                          Customer Name (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={customerName}
+                          className="pl-10 w-full p-2 border rounded-lg"
+                          placeholder="Customer Name"
+                          onChange={(e) =>
+                            setCustomerName(e.target.value)
+                          }
+                        />
+                      </div>
+              </div>
 
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold">Order Total</h3>
@@ -156,18 +232,18 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
                     <span>Subtotal:</span>
                     <span>R{subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <span>Tax (8%):</span>
                     <span>R{tax.toFixed(2)}</span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between">
                     <span>Tip:</span>
                     <span>R{tip.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <span>Discount:</span>
                     <span>R{discount.toFixed(2)}</span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between text-xl font-bold pt-2 border-t">
                     <span>Total:</span>
                     <span>R{total.toFixed(2)}</span>
@@ -177,11 +253,13 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
                 <div className="space-y-2">
                   <h4 className="font-semibold">Suggested Tips</h4>
                   <div className="grid grid-cols-3 gap-2">
-                    {[10, 15, 20].map((percentage) => (
+                    {[0, 10, 15, 20].map((percentage) => (
                       <button
                         key={percentage}
                         onClick={() => handleTipSelection(percentage)}
-                        className="p-2 bg-gray-100 rounded hover:bg-gray-200"
+                        className={`p-2 rounded hover:opacity-90 ${
+                          selectedTip === percentage ? "bg-blue-600 text-white" : "bg-gray-100"
+                        }`}
                       >
                         {percentage}% (R{(subtotal * (percentage / 100)).toFixed(2)})
                       </button>
@@ -193,8 +271,7 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
 
             <div className="mt-6 flex justify-end space-x-4">
               <button
-                onClick={handlePrint}
-                // onClick={() => setShowSuccessModal(true)}
+                onClick={handleAddTransaction}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
                 <FaPrint /> Print Receipt
@@ -212,7 +289,6 @@ const OrderSummary = ({pay, setShowPaymentModal, setCurrentOrders, setShowOrderS
       {showSuccessModal && (
         <OrderSuccessModal />
       )}
-
     </div>
   );
 };

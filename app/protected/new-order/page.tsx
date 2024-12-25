@@ -1,6 +1,7 @@
 import AuthButton from '@/components/header-auth';
 import NewOrderManagement from '@/components/new-order';
 import React from 'react';
+import { createClient } from "@/utils/supabase/server";
 
 const fetchData = async (path: string, body = {}) => {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // Use environment variable
@@ -35,10 +36,16 @@ const NewOrder = async () => {
   const categories = categoriesResponse?.Categories || [];
   const items = itemsResponse?.items || [];
 
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <div>
       <main className="relative flex min-h-screen flex-col bg-[#F2F2F2]">
-        <NewOrderManagement categoriesData={categories} itemsData={items} />
+        <NewOrderManagement categoriesData={categories} itemsData={items} username={user?.email} />
       </main>
     </div>
   );

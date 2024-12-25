@@ -29,9 +29,9 @@ const Sidebar = () => {
     { name: "Orders", icon: <PiTrolley />, id: "orders", path: "/protected/orders" },
     { name: "Inventory", icon: <MdOutlineInventory />, id: "inventory", path: "/protected/inventory" },
     { name: "Staff", icon: <PiUsersFourLight />, id: "staff", path: "/protected/staff" },
-    { name: "Billing & Payments", icon: <BsCashCoin />, id: "billing", path: "/protected/billing" },
-    { name: "Reports", icon: <TbReportSearch />, id: "reports", path: "/protected/reports" },
-    { name: "Notifications", icon: <IoIosNotificationsOutline />, id: "notifications", path: "/protected/notifications" },
+    // { name: "Billing & Payments", icon: <BsCashCoin />, id: "billing", path: "/protected/billing" },
+    // { name: "Reports", icon: <TbReportSearch />, id: "reports", path: "/protected/reports" },
+    // { name: "Notifications", icon: <IoIosNotificationsOutline />, id: "notifications", path: "/protected/notifications" },
     { name: "Profile", icon: <FaUser />, id: "profile", path: "/protected/profile" },
     // { name: "Settings", icon: <IoSettingsOutline />, id: "settings", path: "/protected/settings" },
   ];
