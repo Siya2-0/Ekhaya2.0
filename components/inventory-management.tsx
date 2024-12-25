@@ -185,6 +185,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         setSuccessModalHeader("Successful!");
         setShowSuccessModal(true);
         setShowAddCategoryModal(false);
+        resetNewItem();
       } else {
         console.log(`Error: ${data.error.message}`);
       }
@@ -391,6 +392,25 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     }
   };
 
+  const resetNewItem = () => {
+    setNewItem({
+      item_name: "",
+      description: "",
+      category: "",
+      price: 0,
+      stock_quantity: 0,
+      reorder_level: 0,
+      last_restock_date: new Date("2023-10-05").toISOString(),
+      Image_url: "",
+      image_file: null,
+    });
+  };
+
+  const handleCancel = () => {
+    resetNewItem(); // Reset fields on cancel
+    setShowAddModal(false); // Close modal
+  };
+
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">
       <div className="max-w-7xl mx-auto">
@@ -586,6 +606,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
             <div className="bg-white rounded-lg p-8 max-w-md w-full">
               <h2 className="text-2xl font-bold mb-4">Add New Item</h2>
               <div className="space-y-4">
+                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                  Item Name
+                </label>
                 <input
                   type="text"
                   placeholder="Item Name"
@@ -593,6 +616,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   value={newItem.item_name}
                   onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
                 />
+                <label className="block text-sm font-medium text-gray-700 capitalize">
+                  Category
+                </label>
                 <select
                   className="w-full p-2 border rounded"
                   value={newItem.category}
@@ -605,15 +631,26 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     </option>
                   ))}
                 </select>
+                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                  Quantity
+                </label>
                 <input
                   type="number"
                   placeholder="Quantity"
                   className="w-full p-2 border rounded"
-                  value={newItem.stock_quantity}
-                  onChange={(e) =>
-                    setNewItem({ ...newItem, stock_quantity: parseInt(e.target.value) })
-                  }
+                  value={newItem.stock_quantity ?? ''}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewItem({
+                      ...newItem,
+                      stock_quantity: value ? parseInt(value, 10) : 0, // Set `0` for empty input
+                    });
+                  }}
                 />
+
+                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                  Unit Price (R)
+                </label>
                 <input
                   type="number"
                   step="0.01"
@@ -624,6 +661,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     setNewItem({ ...newItem, price: parseFloat(e.target.value) })
                   }
                 />
+                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                  Reorder Level
+                </label>
                 <input
                   type="number"
                   placeholder="Reorder Level"
@@ -633,13 +673,19 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     setNewItem({ ...newItem, reorder_level: parseInt(e.target.value) })
                   }
                 />
+                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                  Item Description
+                </label>
                 <input
                   type="text"
-                  placeholder="Supplier"
+                  placeholder="Item Description"
                   className="w-full p-2 border rounded"
                   value={newItem.description}
                   onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                 />
+                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                  Item Image
+                </label>
                 <input
                   type="file"
                   accept="image/*"
@@ -650,7 +696,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
               </div>
               <div className="mt-6 flex justify-end gap-4">
                 <button
-                  onClick={() => setShowAddModal(false)}
+                  onClick={handleCancel}
                   className="px-4 py-2 border rounded-lg hover:bg-gray-50"
                 >
                   Cancel
@@ -675,6 +721,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
               <div className="bg-white rounded-lg p-8 max-w-md w-full">
                 <h2 className="text-2xl font-bold mb-4">Add New Category</h2>
                 <div className="space-y-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                    Category Name
+                  </label>
                   <input
                     type="text"
                     placeholder="Category Name"
@@ -682,6 +731,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     value={newCategory.categoryName}
                     onChange={(e) => setNewCategory({ ...newCategory, categoryName: e.target.value })}
                   />
+                  <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                    Category Description
+                  </label>
                   <input
                     type="text"
                     placeholder="Category Description"

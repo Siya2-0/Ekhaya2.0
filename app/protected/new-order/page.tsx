@@ -2,6 +2,10 @@ import AuthButton from '@/components/header-auth';
 import NewOrderManagement from '@/components/new-order';
 import React from 'react';
 
+const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
 const fetchData = async (url: any, body = {}) => {
   try {
     const response = await fetch(url, {
@@ -25,8 +29,8 @@ const fetchData = async (url: any, body = {}) => {
 
 const NewOrder = async () => {
   const [categoriesResponse, itemsResponse] = await Promise.all([
-    fetchData("https://ekhaya2-0-git-main-siya2-0s-projects.vercel.app/api/category/fetch"),
-    fetchData("https://ekhaya2-0-git-main-siya2-0s-projects.vercel.app/api/item/fetch"),
+    fetchData(`${defaultUrl}/api/category/fetch`),
+    fetchData(`${defaultUrl}/api/item/fetch`),
   ]);
 
   const categories = categoriesResponse?.Categories || [];

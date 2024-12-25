@@ -134,62 +134,6 @@ const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
 
   const [currentOrders, setCurrentOrders] = useState<OrderItem[]>([]);
 
-//   const categories = [
-//     "All",
-//     "Brandy",
-//     "Tequila",
-//     "Vodka",
-//     "Whisky",
-//     "Rum",
-//     "Gin",
-//     "Liqueurs"
-//   ];
-
-//   const liquorItems = [
-//     {
-//       id: 1,
-//       name: "Heineken Premium Larger",
-//       category: "Whisky",
-//       price: 59.99,
-//       image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fheineken.png?alt=media&token=8e9e171f-da87-4066-971e-46e6d217c3c6"
-//     },
-//     {
-//       id: 2,
-//       name: "Savanna Dry Cider",
-//       category: "Tequila",
-//       price: 45.99,
-//       image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fsavanna.png?alt=media&token=d57f7cc6-f625-4a21-9cd0-2d671246f4fd"
-//     },
-//     {
-//       id: 3,
-//       name: "Castle Lite Lager",
-//       category: "Vodka",
-//       price: 32.99,
-//       image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fcastle.png?alt=media&token=3c27a545-6ad7-4d5a-94c8-7ebd334b41d7"
-//     },
-//     {
-//       id: 4,
-//       name: "Gordon's London Gin",
-//       category: "Whisky",
-//       price: 59.99,
-//       image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fgordons.png?alt=media&token=0c5926fb-1ed0-4dda-9abd-cf2ec3804cb0"
-//     },
-//     {
-//       id: 5,
-//       name: "Corona",
-//       category: "Tequila",
-//       price: 45.99,
-//       image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Fcorona.png?alt=media&token=e28236c2-99a1-443d-a288-22923781a3aa"
-//     },
-//     {
-//       id: 6,
-//       name: "Castle Lager",
-//       category: "Vodka",
-//       price: 32.99,
-//       image: "https://firebasestorage.googleapis.com/v0/b/glammedup-boutique.appspot.com/o/liquor%2Flarger.png?alt=media&token=5a43eb96-8f6c-4e90-bf7d-2f6655740b7d"
-//     }
-//   ];
-
   const handleCategoryChange = (category: any) => {
     setSelectedCategories((prev: any) =>
       prev.includes(category)
@@ -226,7 +170,7 @@ const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
     } else {
       setCurrentOrders([...currentOrders, { id: item.id, name: item.item_name, category: item.category, price: item.price, image: item.Image_url, quantity: 1 }]);
     }
-    setShowOrders(true);
+    // setShowOrders(true);
   };
 
   const removeFromOrders = (itemId: any) => {
@@ -245,8 +189,8 @@ const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
 
   const calculateTotal = () => {
     const subtotal = currentOrders.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const tax = subtotal * 0.08;
-    const total = subtotal + tax;
+    const tax = subtotal;
+    const total = subtotal;
     return { subtotal, tax, total };
   };
 
@@ -344,7 +288,7 @@ const NewOrderManagement = ({ categoriesData, itemsData }: any) => {
             className="flex items-center gap-2 bg-[#D62929] text-white px-4 py-2 rounded-lg hover:placeholder-opacity-90 transition-opacity"
           >
             <FaShoppingCart />
-            Current Orders
+            Current Orders ({currentOrders.length})
           </button>
         </div>
       </header>
