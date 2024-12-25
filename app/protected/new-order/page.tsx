@@ -25,8 +25,8 @@ const fetchData = async (url: any, body = {}) => {
 
 const NewOrder = async () => {
   const [categoriesResponse, itemsResponse] = await Promise.all([
-    fetchData("http://localhost:3000/api/category/fetch"),
-    fetchData("http://localhost:3000/api/item/fetch"),
+    fetchData("https://ekhaya2-0-git-main-siya2-0s-projects.vercel.app/api/category/fetch"),
+    fetchData("https://ekhaya2-0-git-main-siya2-0s-projects.vercel.app/api/item/fetch"),
   ]);
 
   const categories = categoriesResponse?.Categories || [];
