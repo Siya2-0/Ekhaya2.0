@@ -72,6 +72,7 @@
   body {
     /* @apply bg-background text-foreground; */
     background-color: #FFFFFF;
+    color: #303030;
   }
 }
 
@@ -111,6 +112,7 @@ body {
   background-color: white;
   display: flex;
   border-radius: 20px;
+  color: #303030;
   overflow: auto;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   margin: auto;

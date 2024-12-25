@@ -14,6 +14,7 @@ import {
   Legend,
   ArcElement
 } from "chart.js";
+import Link from "next/link";
 
 ChartJS.register(
   CategoryScale,
@@ -174,22 +175,30 @@ const POSDashboard = () => {
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
-            <button className="flex items-center justify-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-              <FaPlus className="mr-2" />
-              New Order
-            </button>
-            <button className="flex items-center justify-center p-3 bg-green-500 text-white rounded-lg hover:bg-green-600">
-              <FaBoxes className="mr-2" />
-              Inventory
-            </button>
-            <button className="flex items-center justify-center p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
-              <FaChartLine className="mr-2" />
-              Reports
-            </button>
-            <button className="flex items-center justify-center p-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
-              <FaCog className="mr-2" />
-              Settings
-            </button>
+            <Link href={"/protected/new-order"}>
+              <button className="flex items-center justify-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                <FaPlus className="mr-2" />
+                New Order
+              </button>
+            </Link>
+            <Link href={"/protected/inventory"}>
+              <button className="flex items-center justify-center p-3 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                <FaBoxes className="mr-2" />
+                Inventory
+              </button>
+            </Link>
+            <Link href={"/protected/reports"}>
+              <button className="flex items-center justify-center p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
+                <FaChartLine className="mr-2" />
+                Reports
+              </button>
+            </Link>
+            <Link href={"/protected/settings"}>
+              <button className="flex items-center justify-center p-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                <FaCog className="mr-2" />
+                Settings
+              </button>
+            </Link>
           </div>
         </div>
       </div>
