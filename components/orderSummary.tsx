@@ -180,13 +180,13 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                     <div className="grid grid-cols-2 gap-4">
                       <button
                         onClick={() => setPaymentMethod("Cash")}
-                        className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "cash" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
+                        className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "Cash" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                       >
                         <FaMoneyBillWave /> Cash
                       </button>
                       <button
                         onClick={() => setPaymentMethod("Credit Card")}
-                        className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "card" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
+                        className={`p-4 rounded-lg flex items-center justify-center gap-2 ${paymentMethod === "Credit Card" ? "bg-blue-600 text-white" : "bg-gray-100"}`}
                       >
                         <FaCreditCard /> Card
                       </button>
