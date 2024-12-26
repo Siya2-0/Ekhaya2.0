@@ -36,6 +36,7 @@ import Payments from "@/components/billing";
 import OrderSummary from "@/components/orderSummary";
 import base64 from "@/app/assets/base64.jpeg";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import toast, { Toaster } from 'react-hot-toast';
 
 const SearchWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -160,19 +161,19 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
       return 0;
     });
 
-  const addToOrders = (item: InventoryItem) => {
-    const existingItem = currentOrders.find(order => order.id === item.id);
-    if (existingItem) {
-      setCurrentOrders(currentOrders.map(order =>
-        order.id === item.id
-          ? { ...order, quantity: order.quantity + 1 }
-          : order
-      ));
-    } else {
-      setCurrentOrders([...currentOrders, { id: item.id, name: item.item_name, category: item.category, price: item.price, image: item.Image_url, quantity: 1 }]);
-    }
-    // setShowOrders(true);
-  };
+    const addToOrders = (item: InventoryItem) => {
+      const existingItem = currentOrders.find(order => order.id === item.id);
+      if (existingItem) {
+        setCurrentOrders(currentOrders.map(order =>
+          order.id === item.id
+            ? { ...order, quantity: order.quantity + 1 }
+            : order
+        ));
+      } else {
+        setCurrentOrders([...currentOrders, { id: item.id, name: item.item_name, category: item.category, price: item.price, image: item.Image_url, quantity: 1 }]);
+      }
+      toast.success(`${item.item_name} added to orders`);
+    };
 
   const removeFromOrders = (itemId: any) => {
     setCurrentOrders(currentOrders.filter(item => item.id !== itemId));
@@ -265,9 +266,6 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
         {showOrderSummary && (
           <OrderSummary
             pay={pay} setShowPaymentModal={setShowPaymentModal} setCurrentOrders={setCurrentOrders} setShowOrderSummary={setShowOrderSummary} newOrder={newOrder} username={username}
-            // orderItems={currentOrders}
-            // handleQuantityChange={updateQuantity}
-            // paymentMethod="card"
           />
         )}
       </div>
@@ -275,6 +273,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
+      <Toaster />
       {showOrders && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
