@@ -82,7 +82,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
           items: JSON.stringify({ orderItems }),
           total_price: total.toFixed(2),
           payment_method: paymentMethod,
-          status: 'pending',
+          status: 'Pending',
           notes: cashTendered === 0 ? "No notes" : cashTendered
         }),
       });
@@ -192,7 +192,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                       </button>
                     </div>
 
-                    {paymentMethod === "cash" && (
+                    {paymentMethod === "Cash" && (
                       <div className="space-y-2">
                         <label className="block">Cash Tendered</label>
                         <input

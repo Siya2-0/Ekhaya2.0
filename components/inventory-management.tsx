@@ -39,6 +39,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
 
   const [isAdding, setIsAdding] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [updatedImageFile, setUpdatedImageFile] = useState<File | null>(null);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [isEditingItem, setIsEditingItem] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,6 +95,22 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       setNewItem({...newItem, image_file: event.target.files[0]});
     }
   };
+
+  const handleImageUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setUpdatedImageFile(file); // Store the file for further use (e.g., upload).
+      const fileUrl = URL.createObjectURL(file); // Create a temporary URL for the image preview.
+      if (selectedItem) {
+        setSelectedItem({ 
+          ...selectedItem, 
+          image: fileUrl, 
+          editing: true 
+        }); // Update the image preview in the selected item.
+      }
+    }
+  };
+  
 
   const [newCategory, setNewCategory] = useState({
     categoryName: "",
@@ -248,14 +265,43 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     }
   };
 
-  const handleEditItem = async (item_name: string, description: string, category: string, price: number, stock_quantity: number, reorder_level: number, last_restock_date: Date, Image_url:string, id:number) => {
+  const handleEditItem = async (
+    item_name: string,
+    description: string,
+    category: string,
+    price: number,
+    stock_quantity: number,
+    reorder_level: number,
+    last_restock_date: Date,
+    Image_url: string,
+    id: number
+  ) => {
     try {
+      let storageImageUrl: any | null = await handleUpdateImageUpload();
+      if (storageImageUrl === null || storageImageUrl === undefined) {
+        storageImageUrl = Image_url;
+      }
+      if (!storageImageUrl) {
+        throw new Error("Image upload failed.");
+      }
+  
+      // Ensure the correct key name for the image URL
       const response = await fetch("/api/item/edit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ item_name, description, category, price, stock_quantity, reorder_level, last_restock_date, Image_url, id }),
+        body: JSON.stringify({
+          item_name,
+          description,
+          category,
+          price,
+          stock_quantity,
+          reorder_level,
+          last_restock_date,
+          Image_url: storageImageUrl, // Use the correct key
+          id,
+        }),
       });
   
       const data = await response;
@@ -270,6 +316,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       console.error("Error updating category:", error);
     }
   };
+  
 
   const handleUpdate = async () => {
     setIsEditingItem(true);
@@ -386,6 +433,17 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       // setUploading(true);
       const filePath = `image/${uuidv4()}.${file.name.split('.').pop()}`;
       return uploadFile(file, filePath).finally(() => console.log("Upload complete"));
+    } else {
+      console.log('No file selected');
+      return null;
+    }
+  };
+
+  const handleUpdateImageUpload = async () => {
+    if (updatedImageFile) {
+      // setUploading(true);
+      const filePath = `image/${uuidv4()}.${updatedImageFile.name.split('.').pop()}`;
+      return uploadFile(updatedImageFile, filePath).finally(() => console.log("Upload complete"));
     } else {
       console.log('No file selected');
       return null;
@@ -692,7 +750,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   className="w-full p-2 border rounded"
                   onChange={handleFileChange}
                 />
-
               </div>
               <div className="mt-6 flex justify-end gap-4">
                 <button
@@ -812,100 +869,163 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         {/* Edit Modal */}
         {showEditModal && selectedItem && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <div className="bg-white rounded-lg p-8 max-w-[60%] w-full">
               <h2 className="text-2xl font-bold mb-4">Edit Item</h2>
               <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Item Name"
-                  className="w-full p-2 border rounded"
-                  value={selectedItem.name}
-                  onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, name: e.target.value, editing: true })
-                  }
-                />
-                <input
-                  type="text"
-                  placeholder="Item Description"
-                  className="w-full p-2 border rounded"
-                  value={selectedItem.description}
-                  onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, description: e.target.value, editing: true })
-                  }
-                />
-                <select
-                  className="w-full p-2 border rounded"
-                  value={selectedItem.category}
-                  onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, category: e.target.value, editing: true })
-                  }
-                >
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.category_name}>
-                      {category.category_name}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  placeholder="Quantity"
-                  className="w-full p-2 border rounded"
-                  value={selectedItem.quantity}
-                  onChange={(e) =>
-                    setSelectedItem({
-                      ...selectedItem,
-                      quantity: parseInt(e.target.value),
-                      editing: true
-                    })
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Reorder Level"
-                  className="w-full p-2 border rounded"
-                  value={selectedItem.reorderLevel}
-                  onChange={(e) =>
-                    setSelectedItem({
-                      ...selectedItem,
-                      reorderLevel: parseInt(e.target.value), editing: true
-                    })
-                  }
-                />
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder="Unit Price"
-                  className="w-full p-2 border rounded"
-                  value={selectedItem.unitPrice}
-                  onChange={(e) =>
-                    setSelectedItem({
-                      ...selectedItem,
-                      unitPrice: parseFloat(e.target.value),
-                      editing: true
-                    })
-                  }
-                />
-              </div>
-              <div className="mt-6 flex justify-end gap-4">
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleUpdate}
-                  className={`px-4 py-2 rounded-lg ${
-                    isEditingItem ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
-                  } text-white`}
-                  disabled={isEditingItem} // Disable button while loading
-                >
-                  {isEditingItem ? "Saving..." : "Save Changes"}
-                </button>
+                <div className="flex justify-center items-center w-full mb-16">
+                  <div className="w-32 h-32">
+                    <img
+                      src={selectedItem.image}
+                      alt="Profile"
+                      className="h-full w-full rounded-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).onerror = null;
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1633332755192-727a05c4013d";
+                      }}
+                    />
+                    {/* <button className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-2 text-white hover:bg-blue-700 transition-colors">
+                      <FaEdit className="h-4 w-4" />
+                    </button> */}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
+                      Item Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Item Name"
+                      className="w-full p-4 border rounded"
+                      value={selectedItem.name}
+                      onChange={(e) =>
+                        setSelectedItem({ ...selectedItem, name: e.target.value, editing: true })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
+                      Item Description
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Item Description"
+                      className="w-full p-4 border rounded"
+                      value={selectedItem.description}
+                      onChange={(e) =>
+                        setSelectedItem({ ...selectedItem, description: e.target.value, editing: true })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
+                      Item Category
+                    </label>
+                    <select
+                      className="w-full p-4 border rounded"
+                      value={selectedItem.category}
+                      onChange={(e) =>
+                        setSelectedItem({ ...selectedItem, category: e.target.value, editing: true })
+                      }
+                    >
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.category_name}>
+                          {category.category_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
+                      Quantity
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Quantity"
+                      className="w-full p-4 border rounded"
+                      value={selectedItem.quantity}
+                      onChange={(e) =>
+                        setSelectedItem({
+                          ...selectedItem,
+                          quantity: parseInt(e.target.value),
+                          editing: true,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
+                      Reorder Level
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Reorder Level"
+                      className="w-full p-4 border rounded"
+                      value={selectedItem.reorderLevel}
+                      onChange={(e) =>
+                        setSelectedItem({
+                          ...selectedItem,
+                          reorderLevel: parseInt(e.target.value),
+                          editing: true,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
+                      Unit Price
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="Unit Price"
+                      className="w-full p-4 border rounded"
+                      value={selectedItem.unitPrice}
+                      onChange={(e) =>
+                        setSelectedItem({
+                          ...selectedItem,
+                          unitPrice: parseFloat(e.target.value),
+                          editing: true,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
+                        Update Item Image
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="w-full p-2 border rounded"
+                        onChange={handleImageUpdate}
+                      />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end gap-4">
+                  <button
+                    onClick={() => setShowEditModal(false)}
+                    className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleUpdate}
+                    className={`px-4 py-2 rounded-lg ${
+                      isEditingItem ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+                    } text-white`}
+                    disabled={isEditingItem} // Disable button while loading
+                  >
+                    {isEditingItem ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
+
 
         {/* Delete Modal */}
         {showDeleteModal && selectedItem && (
