@@ -79,7 +79,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
         body: JSON.stringify({
           customer_name: customerName,
           employee_username: user,
-          items: JSON.stringify({ orderItems }),
+          items: JSON.stringify({ orderItems, tip }),
           total_price: total.toFixed(2),
           payment_method: paymentMethod,
           status: 'Pending',
@@ -92,22 +92,14 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
       if (response.ok) {
         console.log("Category added successfully!");
         handlePrint();
-        // setSuccessModalDescription("Category added successfully.");
-        // setSuccessModalHeader("Successful!");
-        // setShowSuccessModal(true);
-        // setShowAddCategoryModal(false);
-        // setIsAddingCategory(false);
       } else {
         console.log(`Error: ${data.error.message}`);
-        // setIsAddingCategory(false);
       }
     } catch (error) {
       if (error instanceof Error) {
         console.log(`Error: ${error.message}`);
-        // setIsAddingCategory(false);
       } else {
         console.log(`Error: ${String(error)}`);
-        // setIsAddingCategory(false);
       }
     }
   };
