@@ -82,7 +82,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
           items: JSON.stringify({ orderItems, tip }),
           total_price: total.toFixed(2),
           payment_method: paymentMethod,
-          status: 'Pending',
+          status: 'unpaid',
           notes: cashTendered === 0 ? "No notes" : cashTendered
         }),
       });
