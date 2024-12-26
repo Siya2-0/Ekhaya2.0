@@ -542,6 +542,29 @@ export async function addCategory(categoryname: string, categorydescription: str
     });
   };
 
+  export async function fetchTransactionHistory(transactionId?: number) {
+    const supabase = await createClient();
+    let query = supabase.from('Transaction_history').select('*');
+  
+    if (transactionId) {
+      query = query.eq('transaction_id', transactionId);
+    }
+  
+    const { data: items, error } = await query;
+  
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    return new Response(JSON.stringify({ items }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    });
+  };
+
   // Upload file using standard upload
   // export async function uploadFile(file: any, filePath:string) {
   //   const supabase = await createClient();
