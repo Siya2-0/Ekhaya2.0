@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { FaCheck, FaTimes, FaSearch, FaPlus, FaHistory } from "react-icons/fa";
+import TransactionHistory from "./transaction-history";
 
 const OrderDashboard = ({ transactions }: any) => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -10,6 +11,9 @@ const OrderDashboard = ({ transactions }: any) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [viewHistoryOrderId, setViewHistoryOrderId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     const parsedOrders = transactions.map((order: any) => {
@@ -76,6 +80,10 @@ const OrderDashboard = ({ transactions }: any) => {
         order.id === orderId ? { ...order, status: "paid" } : order
       )
     );
+  };
+
+  const handleViewHistoryClick = (orderId: number) => {
+    setViewHistoryOrderId(orderId);
   };
 
   const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
@@ -156,7 +164,7 @@ const OrderDashboard = ({ transactions }: any) => {
             </div>
 
             <div className="mt-6 flex justify-between">
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              <button onClick={() => handleViewHistoryClick(order.id)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 <FaHistory /> View History
               </button>
               {order.status === "unpaid" && (
@@ -282,6 +290,10 @@ const OrderDashboard = ({ transactions }: any) => {
           order={selectedOrder}
           onClose={() => setIsModalOpen(false)}
         />
+      )}
+
+{viewHistoryOrderId && (
+        <TransactionHistory orderId={viewHistoryOrderId} />
       )}
     </div>
   );
