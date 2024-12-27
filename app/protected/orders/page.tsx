@@ -28,12 +28,15 @@ const fetchData = async (path: string, body = {}) => {
 };
 
 const Orders = async () => {
-  const [transactionResponse] = await Promise.all([
+  const [transactionResponse, itemsResponse, categoriesResponse] = await Promise.all([
     fetchData(`/api/transaction/fetch`),
-    // fetchData(`/api/item/fetch`),
+    fetchData(`/api/item/fetch`),
+    fetchData(`/api/category/fetch`),
   ]);
 
   const transactions = transactionResponse?.Transactions || [];
+  const categories = categoriesResponse?.Categories || [];
+  const items = itemsResponse?.items || [];
   console.log(transactions);
   // const items = itemsResponse?.items || [];
 
@@ -47,7 +50,7 @@ const Orders = async () => {
     <main className='className="relative flex min-h-screen flex-col bg-[#F2F2F2] pt-12'>
       <p className="text-[#303030] font-bold text-[32px] ml-8">Orders Dashboard</p>
       <AuthButton/>
-      <OrderDashboard transactions={transactions}/>
+      <OrderDashboard transactions={transactions} categoriesData={categories} itemsData={items} username={user?.email}/>
     </main>
   );
 };

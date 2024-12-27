@@ -3,13 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { FaCheck, FaTimes, FaSearch, FaPlus, FaHistory } from "react-icons/fa";
 import TransactionHistory from "./transaction-history";
+import AddOrders from "./add-orders";
 
-const OrderDashboard = ({ transactions }: any) => {
+const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: any) => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddMoreOpen, setIsAddMoreOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
   const [viewHistoryOrderId, setViewHistoryOrderId] = useState<number | null>(
     null
@@ -67,6 +69,10 @@ const OrderDashboard = ({ transactions }: any) => {
   const handleOrderClick = (order: Order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
+  };
+  const handleAddOrderClick = () => {
+    // setSelectedOrder(order);
+    setIsAddMoreOpen(true);
   };
 
   const formatDateTime = (dateTimeString: string) => {
@@ -175,7 +181,7 @@ const OrderDashboard = ({ transactions }: any) => {
                   >
                     <FaCheck /> Mark as Paid
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                  <button onClick={() => handleAddOrderClick()} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
                     <FaPlus /> Add More Items
                   </button>
                 </>
@@ -292,8 +298,11 @@ const OrderDashboard = ({ transactions }: any) => {
         />
       )}
 
-{viewHistoryOrderId && (
-        <TransactionHistory orderId={viewHistoryOrderId} />
+      {viewHistoryOrderId && (
+        <TransactionHistory orderId={viewHistoryOrderId} setViewHistoryOrderId={setViewHistoryOrderId}/>
+      )}
+      {isAddMoreOpen && (
+        <AddOrders categoriesData={categoriesData} itemsData={itemsData} username={username} setIsAddMoreOpen={setIsAddMoreOpen}/>
       )}
     </div>
   );
