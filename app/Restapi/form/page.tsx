@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { v4 as uuidv4 } from 'uuid';
-import { addTransaction, deleteTransaction, fetchTransactionHistory, modifyTransaction } from '../restapi';
+import { addTransaction, deleteTransaction, fetchTransactionHistory, modifyTransaction, UpdateInventory } from '../restapi';
 
 // const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 // const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
@@ -13,7 +13,7 @@ export default async function NewPage() {
 
   // const responseThree = await modifyTransaction(27,"Sibusiso2232", "johimok750@chosenx.com", "item1, item2, item3", 189.99, "Cash","Pending", "siya hlangana extreme" );
   // console.log(responseThree);
-  const response = await fetchTransactionHistory(27);
+  const response = await UpdateInventory(48);
   console.log(response);
   // const [file, setFile] = useState<File | null>(null);
   // const [uploading, setUploading] = useState(false);

@@ -565,6 +565,159 @@ export async function addCategory(categoryname: string, categorydescription: str
     });
   };
 
+  type OrderItem = {
+    id: number;
+    name: string;
+    category: string;
+    price: number;
+    image: string;
+    quantity: number;
+  };
+  
+  type Change = {
+    id: number;
+    quantityChange: number;
+  };
+  
+  type Result = {
+    addition: Change[];
+    refunds: Change[];
+  };
+
+  function compareOrders(order1: OrderItem[], order2: OrderItem[]): Result {
+    const addition: Change[] = [];
+    const refunds: Change[] = [];
+  
+    const order1Map = new Map<number, OrderItem>();
+    const order2Map = new Map<number, OrderItem>();
+  
+    // Populate maps for quick lookup
+    order1.forEach(item => order1Map.set(item.id, item));
+    order2.forEach(item => order2Map.set(item.id, item));
+  
+    // Check for additions and quantity increases
+    order2.forEach(item2 => {
+      const item1 = order1Map.get(item2.id);
+      if (item1) {
+        const quantityChange = item2.quantity - item1.quantity;
+        if (quantityChange > 0) {
+          addition.push({ id: item2.id, quantityChange });
+        } else if (quantityChange < 0) {
+          refunds.push({ id: item2.id, quantityChange: -quantityChange });
+        }
+      } else {
+        addition.push({ id: item2.id, quantityChange: item2.quantity });
+      }
+    });
+  
+    // Check for refunds (items in order1 but not in order2)
+    order1.forEach(item1 => {
+      if (!order2Map.has(item1.id)) {
+        refunds.push({ id: item1.id, quantityChange: item1.quantity });
+      }
+    });
+  
+    return { addition, refunds };
+  }
+  
+  
+  export async function UpdateInventory(transaction_id: number) {
+    const supabase = await createClient();
+    const { data, error, count } = await supabase
+    .from("Transaction_history")
+    .select("transaction_id, transaction_data, changed_at", { count: "exact" })
+    .eq("transaction_id", transaction_id)
+    .order("changed_at", { ascending: false }); // Sort by changed_at in descending order
+
+    if (error) {
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        { headers: { "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+    if (count === 1) {
+      const transactionData = data[0].transaction_data;
+      const parsedData = JSON.parse(transactionData);
+      const orderItems = JSON.parse(parsedData.items).orderItems;
+
+      const items = orderItems.map((item: { id: number; quantity: number }) => ({
+        id: item.id,
+        quantity: item.quantity,
+      }));
+     
+      for (const item of items) {
+
+        const { data, error } = await supabase.rpc('decrement_stock', { item_id:item.id,quantity: item.quantity })
+        // const { error: updateError } = await supabase
+        //   .from("Inventory")
+        //   .update({ stock_quantity: supabase.rpc('decrement_stock', { quantity: item.quantity }) })
+        //   .eq("id", item.id);
+
+        if (error) {
+          return new Response(
+            JSON.stringify({ error: error.message }),
+            { headers: { "Content-Type": "application/json" }, status: 400 }
+          );
+        }
+      }
+      console.log("Here");
+    } else if (count !== null && count > 1) {
+      const transactionData = data[0].transaction_data;
+      const parsedData = JSON.parse(transactionData);
+      const orderItems2 = JSON.parse(parsedData.items).orderItems;
+      const transactionData2 = data[1].transaction_data;
+      const parsedData2 = JSON.parse(transactionData2);
+      const orderItems1 = JSON.parse(parsedData2.items).orderItems;
+
+      const result = compareOrders(orderItems1, orderItems2);
+
+      // Update the Inventory table for each item in the result
+      for (const item of result.addition) {
+        const { data, error } = await supabase.rpc('decrement_stock', { item_id:item.id ,quantity: item.quantityChange })
+        // const { error: updateError } = await supabase
+        //   .from("Inventory")
+        //   .update({ stock_quantity: supabase.rpc('increment_stock', { quantity: item.quantityChange }) })
+        //   .eq("id", item.id);
+
+        if (error) {
+          return new Response(
+            JSON.stringify({ error: error.message }),
+            { headers: { "Content-Type": "application/json" }, status: 400 }
+          );
+        }
+      }
+
+      for (const item of result.refunds) {
+        const { data, error } = await supabase.rpc('increment_stock', { item_id:item.id,quantity: item.quantityChange })
+        // const { error: updateError } = await supabase
+        //   .from("Inventory")
+        //   .update({ stock_quantity: supabase.rpc('decrement_stock', { quantity: item.quantityChange }) })
+        //   .eq("id", item.id);
+
+        if (error) {
+          return new Response(
+            JSON.stringify({ error: error.message }),
+            { headers: { "Content-Type": "application/json" }, status: 400 }
+          );
+        }
+      }
+
+      
+    } else {
+      return new Response(
+        JSON.stringify({ error: "Transaction not found or unexpected issue occurred." }),
+        { headers: { "Content-Type": "application/json" }, status: 404 }
+      );
+    
+    }
+
+    
+    return new Response(JSON.stringify({ data }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    });
+  };
+
   // Upload file using standard upload
   // export async function uploadFile(file: any, filePath:string) {
   //   const supabase = await createClient();
