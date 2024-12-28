@@ -274,25 +274,14 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
   return (
     <div className="min-h-screen bg-[#F2F2F2]">
       <Toaster />
-      {showOrders && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setShowOrders(false)}
-        ></div>
-      )}
-      <header className="bg-[#F2F2F2] shadow-md p-4 sticky top-0 z-50">
+      <div className="flex">
+        {/* Left column: Occupies remaining space */}
+        <div className="flex-1 bg-[#F2F2F2] min-h-screen">
+      {/* <header className="bg-[#F2F2F2] shadow-md p-4 sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold text-[#303030]">E&nbsp;k&nbsp;h&nbsp;a&nbsp;y&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;a&nbsp;r&nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;o&nbsp;u&nbsp;n&nbsp;g&nbsp;e</h1>
-
-          <button
-            onClick={() => setShowOrders(!showOrders)}
-            className="flex items-center gap-2 bg-[#D62929] text-white px-4 py-2 rounded-lg hover:placeholder-opacity-90 transition-opacity"
-          >
-            <FaShoppingCart />
-            Current Orders ({currentOrders.length})
-          </button>
         </div>
-      </header>
+      </header> */}
 
       <div className="container mx-auto p-0">
 
@@ -378,30 +367,33 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
         </Box>
     </main>
       </div>
+        </div>
 
-      <div className={`fixed top-0 right-0 h-full w-full md:w-[700px] bg-[#f2f2f2] z-50 shadow-lg transform transition-transform duration-300 ${showOrders ? "translate-x-0" : "translate-x-full"}`}>
+        {/* Right column: Fixed width */}
+        <div className="w-[600px] bg-[#F2F2F2] min-h-screen">
+        <div className={`fixed top-0 right-0 h-full w-full md:w-[600px] bg-[#f2f2f2] z-50 shadow-lg`}>
         <div className="p-0 h-full flex flex-col">
           <React.Fragment>
                 <div className='h-full w-full bg-[#f2f2f2] text-[#212322]'>
                   <div className='absolute top-0 w-full md:justify-center md:items-center md:text-center'>
                     <h2 className='sm:text-5xl text-4xl font-bold md:mt-8 mt-4 ml-4'>Current Orders</h2>
-                    <button
+                    {/* <button
                       onClick={() => setShowOrders(false)}
                       className="text-gray-500 hover:text-gray-700 top-2 right-2 absolute"
                     >
                       <FaTimes size={48} />
-                    </button>
+                    </button> */}
                   </div>
                   
-                  <div className='absolute w-full top-28 md:bottom-[280px] bottom-[200px] overflow-y-auto'>
+                  <div className='absolute w-full top-28 md:bottom-[200px] bottom-[200px] overflow-y-auto'>
                     {currentOrders.map(item => (
                         <React.Fragment key={item.id}>
                                   <div className='mb-2' key={item.id}>
                                     <hr />
                                     <div className='flex items-center sm:space-x-4 w-full'>
-                                        <Image src={item.image} alt='' width={100} height={100} className='sm:w-36 sm:h-36'style={{objectFit:"cover"}} unoptimized />
+                                        <Image src={item.image} alt='' width={100} height={100} className='sm:w-24 sm:h-24'style={{objectFit:"cover"}} unoptimized />
                                         <div className='w-full pl-2'>
-                                            <p className='font-bold sm:text-2xl text-1xl'>{item.name}</p>
+                                            <p className='font-bold sm:text-[18px] text-1xl'>{item.name}</p>
                                             <p className='text-sm'>{item.category}</p>
                                         </div>
                                         <div className='hidden sm:block min-w-[100px]'>
@@ -458,10 +450,10 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                       <p className='mr-0 text-[#212322] text-3xl font-normal relative'>R{calculateTotal().total.toFixed(2)}</p>
                       </div>
                     </div>
-                    <button onClick={() => setShowOrders(false)} disabled={currentOrders.length === 0} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} bg-[#f2f2f2] ${(currentOrders.length === 0) ? "text-[#898989]":"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#D62929]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
+                    {/* <button onClick={() => setShowOrders(false)} disabled={currentOrders.length === 0} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} bg-[#f2f2f2] ${(currentOrders.length === 0) ? "text-[#898989]":"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#D62929]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
                       <span className={`top-0 flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#D62929]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#D62929]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} group-hover:before:h-full group-hover:after:h-full`}></span>
                       <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#898989]":"group-hover:text-[#ffffff]"} text-[18px] font-semibold`}>Continue Ordering</span>
-                    </button>
+                    </button> */}
                     <button onClick={() => setShowPaymentModal(true)} disabled={currentOrders.length === 0}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#D62929]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#D62929]"} hover:before:h-full hover:after:h-full`}>
                       <span className={`top-[0] flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 hover:text-black group-hover:before:h-full group-hover:after:h-full`}></span>
                       <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#ffffff]":"group-hover:text-[#D62929]"} text-[18px] font-semibold`}>Process Payment</span>
@@ -469,6 +461,8 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                   </div>
                 </div>
               </React.Fragment>
+        </div>
+      </div>
         </div>
       </div>
       {showPaymentModal && <PaymentModal />}

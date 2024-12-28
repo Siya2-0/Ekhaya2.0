@@ -71,7 +71,7 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
           <div className="flex items-center gap-2">
             <FaCalendar className="text-gray-500" />
             <div>
@@ -102,7 +102,23 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
               R{totalPrice ? totalPrice.toFixed(2) : "N/A"}
             </p>
           </div>
+
+          <div>
+            <p className="text-sm text-gray-500">Status</p>
+            <p
+              className={`text-xl font-bold ${
+                JSON.parse(order.transaction_data).status === "paid"
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {JSON.parse(order.transaction_data).status || "N/A"}
+            </p>
+
+          </div>
         </div>
+
+        
 
         <div className="border-t pt-4">
           <h4 className="font-medium mb-3">Order Items</h4>
@@ -142,10 +158,14 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
               </button>
             </div>
             <div className="space-y-6">
-              {historyData.map((order: any) => (
-                <OrderCard key={order.transaction_id} order={order} />
+              {historyData.map((order: any, index: number) => (
+                <OrderCard 
+                  key={order.id || `${order.transaction_date_time}-${index}`} 
+                  order={order} 
+                />
               ))}
             </div>
+
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow">

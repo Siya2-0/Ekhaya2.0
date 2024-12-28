@@ -1,9 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { FaCheck, FaTimes, FaSearch, FaPlus, FaHistory } from "react-icons/fa";
 import TransactionHistory from "./transaction-history";
 import AddOrders from "./add-orders";
+import EmployeeProfile from "@/app/protected/profile/page";
+import AddOrderManagement from "./add-orders";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 
 const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: any) => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -16,6 +20,52 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
   const [viewHistoryOrderId, setViewHistoryOrderId] = useState<number | null>(
     null
   );
+
+  const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
+
+  const supabase = createClientComponentClient();
+
+    useEffect(() => {
+      // Subscribe to real-time updates on 'Categories' table
+      const subscription = supabase
+        .channel("realtime:transactions")
+        .on(
+          'postgres_changes', // Correct event name
+          {
+            event: "*", // Listen for all events
+            schema: "public",
+            table: "Transactions",
+          },
+          (payload: any) => {
+            console.log("Real-time update:", payload);
+            if (payload.eventType === "INSERT") {
+              setOrders((prev: Order[]) => [...prev, payload.new]);
+            }
+  
+            if (payload.eventType === "UPDATE") {
+              // Update the existing category in the list when an update event happens
+              setOrders((prev: Order[]) =>
+                prev.map((item) =>
+                  item.id === payload.new.id ? payload.new : item
+                )
+              );
+            }
+  
+            if (payload.eventType === "DELETE") {
+              // Remove the deleted category from the list when a delete event happens
+              setOrders((prev: Order[]) =>
+                prev.filter((item) => item.id !== payload.old.id)
+              );
+            }
+          }
+        )
+        .subscribe();
+  
+      // Cleanup the subscription on component unmount
+      return () => {
+        supabase.removeChannel(subscription); // Clean up the subscription
+      };
+    }, [supabase]);
 
   useEffect(() => {
     const parsedOrders = transactions.map((order: any) => {
@@ -35,17 +85,25 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     setOrders(parsedOrders);
   }, [transactions]);
 
-  const filteredOrders: Order[] = orders.filter(
-    (order: Order) =>
-      (order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.employee_username.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (statusFilter === "all" || order.status === statusFilter)
+  // Filter orders based on search and status
+  const filteredOrders = useMemo(
+    () =>
+      orders.filter(
+        (order) =>
+          (order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            order.id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+            order.employee_username.toLowerCase().includes(searchQuery.toLowerCase())) &&
+          (statusFilter === "all" || order.status === statusFilter)
+      ),
+    [orders, searchQuery, statusFilter]
   );
 
   interface OrderItem {
+    id: number;
     name: string;
     price: number;
+    category: string;
+    image: string;
     quantity: number;
   }
 
@@ -70,8 +128,8 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     setSelectedOrder(order);
     setIsModalOpen(true);
   };
-  const handleAddOrderClick = () => {
-    // setSelectedOrder(order);
+  const handleAddOrderClick = (order: Order) => {
+    setCurrentOrder(order);
     setIsAddMoreOpen(true);
   };
 
@@ -80,11 +138,48 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     return date.toLocaleString();
   };
 
+  const handleEditTransaction = async (order: Order) => {
+    try {
+      const response = await fetch("/api/transaction/edit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: order.id,
+          customer_name: order.customer_name,
+          employee_username: order.employee_username,
+          items: {orderItems: order.items},
+          total_price: order.total_price,
+          payment_method: order.payment_method,
+          status: order.status,
+          notes: order.notes,
+        }),
+      });
+  
+      const data = await response;
+      if (response.ok) {
+        console.log("Transaction updated successfully!");
+        return data;
+      } else {
+        const errorData = await response.json();
+        console.error(`Error: ${errorData}`);
+      }
+    } catch (error) {
+      console.error("Error updating Transaction:", error);
+    }
+  };
+
   const handleMarkAsPaid = (orderId: number): void => {
     setOrders(
-      orders.map((order: Order) =>
-        order.id === orderId ? { ...order, status: "paid" } : order
-      )
+      orders.map((order: Order) => {
+        if (order.id === orderId) {
+          const updatedOrder = { ...order, status: "paid" };
+          handleEditTransaction(updatedOrder);
+          return updatedOrder;
+        }
+        return order;
+      })
     );
   };
 
@@ -181,7 +276,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                   >
                     <FaCheck /> Mark as Paid
                   </button>
-                  <button onClick={() => handleAddOrderClick()} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                  <button onClick={() => handleAddOrderClick(order)} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
                     <FaPlus /> Add More Items
                   </button>
                 </>
@@ -302,7 +397,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
         <TransactionHistory orderId={viewHistoryOrderId} setViewHistoryOrderId={setViewHistoryOrderId}/>
       )}
       {isAddMoreOpen && (
-        <AddOrders categoriesData={categoriesData} itemsData={itemsData} username={username} setIsAddMoreOpen={setIsAddMoreOpen}/>
+        <AddOrderManagement categoriesData={categoriesData} itemsData={itemsData} username={username} setIsAddMoreOpen={setIsAddMoreOpen} currentOrder={currentOrder}/>
       )}
     </div>
   );
