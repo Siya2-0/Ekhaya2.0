@@ -1,10 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { FaCalendar, FaCreditCard, FaEye, FaTimes, FaUser } from "react-icons/fa";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
-  const [historyData, setHistoryData] = useState([]);
+  const [historyData, setHistoryData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const supabase = createClientComponentClient();
+
+    useEffect(() => {
+      // Subscribe to real-time updates on 'Categories' table
+      const subscription = supabase
+        .channel("realtime:transaction_history")
+        .on(
+          'postgres_changes', // Correct event name
+          {
+            event: "*", // Listen for all events
+            schema: "public",
+            table: "Transaction_history",
+          },
+          (payload: any) => {
+            console.log("Real-time update:", payload);
+            if (payload.eventType === "INSERT") {
+              setHistoryData((prev: any[]) => [...prev, payload.new]);
+            }
+  
+            if (payload.eventType === "UPDATE") {
+              // Update the existing category in the list when an update event happens
+              setHistoryData((prev: any) =>
+                prev.map((item: any) =>
+                  item.id === payload.new.id ? payload.new : item
+                )
+              );
+            }
+  
+            if (payload.eventType === "DELETE") {
+              // Remove the deleted category from the list when a delete event happens
+              setHistoryData((prev: any) =>
+                prev.filter((item: any) => item.id !== payload.old.id)
+              );
+            }
+          }
+        )
+        .subscribe();
+  
+      // Cleanup the subscription on component unmount
+      return () => {
+        supabase.removeChannel(subscription); // Clean up the subscription
+      };
+    }, [supabase]);
 
   useEffect(() => {
     const fetchOrderHistoryData = async () => {
