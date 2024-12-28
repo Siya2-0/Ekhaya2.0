@@ -25,65 +25,89 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
 
   const supabase = createClientComponentClient();
 
-    useEffect(() => {
-      // Subscribe to real-time updates on 'Categories' table
-      const subscription = supabase
-        .channel("realtime:transactions")
-        .on(
-          'postgres_changes', // Correct event name
-          {
-            event: "*", // Listen for all events
-            schema: "public",
-            table: "Transactions",
-          },
-          (payload: any) => {
-            console.log("Real-time update:", payload);
-            if (payload.eventType === "INSERT") {
-              setOrders((prev: Order[]) => [...prev, payload.new]);
-            }
-  
-            if (payload.eventType === "UPDATE") {
-              // Update the existing category in the list when an update event happens
-              setOrders((prev: Order[]) =>
-                prev.map((item) =>
-                  item.id === payload.new.id ? payload.new : item
-                )
-              );
-            }
-  
-            if (payload.eventType === "DELETE") {
-              // Remove the deleted category from the list when a delete event happens
-              setOrders((prev: Order[]) =>
-                prev.filter((item) => item.id !== payload.old.id)
-              );
-            }
+  useEffect(() => {
+    const subscription = supabase
+      .channel("realtime:transactions")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "Transactions",
+        },
+        (payload: any) => {
+          console.log("Real-time update:", payload);
+
+          if (payload.eventType === "INSERT") {
+            setOrders((prev) => [...prev, payload.new]);
           }
-        )
-        .subscribe();
+
+          if (payload.eventType === "UPDATE") {
+            const parsedOrders = (() => {
+              let itemsArray = [];
+              try {
+                const parsedItems = JSON.parse(payload.new.items); // If `items` is JSON
+                itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
+              } catch (error) {
+                console.warn(`Invalid items format for order ID ${payload.new.id}:`, error);
+              }
+          
+              return {
+                ...payload.new,
+                items: itemsArray, // Ensure `items` is always an array
+              };
+            })();
+            setOrders((prev) =>
+              prev.map((order) =>
+                order.id === payload.new.id ? parsedOrders : order
+              )
+            );
+          }
+
+          if (payload.eventType === "DELETE") {
+            setOrders((prev) =>
+              prev.filter((order) => order.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, [supabase]);
   
-      // Cleanup the subscription on component unmount
-      return () => {
-        supabase.removeChannel(subscription); // Clean up the subscription
-      };
-    }, [supabase]);
 
   useEffect(() => {
-    const parsedOrders = transactions.map((order: any) => {
-      let itemsArray = [];
-      try {
-        const parsedItems = JSON.parse(order.items);
-        itemsArray = parsedItems?.orderItems || [];
-      } catch (error) {
-        console.warn(`Invalid items format for order ID ${order.id}:`, error);
+    if (selectedOrder) {
+      const updatedOrder = orders.find((order) => order.id === selectedOrder.id);
+      if (updatedOrder) {
+        console.log("Updated Order:", updatedOrder); // Pass the object as a separate argument
+        setSelectedOrder(updatedOrder);
       }
+    }
+  }, [orders, selectedOrder]);
+  
 
-      return {
-        ...order,
-        items: itemsArray,
-      };
-    });
-    setOrders(parsedOrders);
-  }, [transactions]);
+    useEffect(() => {
+      const parsedOrders = transactions.map((order: any) => {
+        let itemsArray = [];
+        try {
+          const parsedItems = JSON.parse(order.items); // If `items` is JSON
+          itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
+        } catch (error) {
+          console.warn(`Invalid items format for order ID ${order.id}:`, error);
+        }
+    
+        return {
+          ...order,
+          items: itemsArray, // Ensure `items` is always an array
+        };
+      });
+      setOrders(parsedOrders);
+    }, [transactions]);
+    
 
   // Filter orders based on search and status
   const filteredOrders = useMemo(
@@ -171,17 +195,24 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
   };
 
   const handleMarkAsPaid = (orderId: number): void => {
-    setOrders(
-      orders.map((order: Order) => {
-        if (order.id === orderId) {
-          const updatedOrder = { ...order, status: "paid" };
-          handleEditTransaction(updatedOrder);
-          return updatedOrder;
-        }
-        return order;
-      })
-    );
+    setOrders((prevOrders) => {
+      const updatedOrders = prevOrders.map((order) =>
+        order.id === orderId ? { ...order, status: "paid" } : order
+      );
+      const updatedOrder = updatedOrders.find((order) => order.id === orderId);
+  
+      // Update selectedOrder if it's the current one
+      if (selectedOrder?.id === orderId && updatedOrder) {
+        setSelectedOrder(updatedOrder);
+      }
+  
+      if (selectedOrder) {
+        handleEditTransaction({ ...selectedOrder, status: "paid" });
+      }
+      return updatedOrders;
+    });
   };
+  
 
   const handleViewHistoryClick = (orderId: number) => {
     setViewHistoryOrderId(orderId);
