@@ -355,7 +355,8 @@ export async function addCategory(categoryname: string, categorydescription: str
         payment_method,
         status,
         notes
-      });
+      })
+      .select();
   
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
@@ -412,7 +413,8 @@ export async function addCategory(categoryname: string, categorydescription: str
         status,
         notes
       })
-      .eq('id', id);
+      .eq('id', id)
+      .select();
   
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
