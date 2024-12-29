@@ -118,10 +118,7 @@ export async function addCategory(categoryname: string, categorydescription: str
 
     }
    
-    return new Response(JSON.stringify({ Categories }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 200,
-    })
+    return Categories;
   };
 
   export async function addItem(
@@ -312,10 +309,7 @@ export async function addCategory(categoryname: string, categorydescription: str
       });
     }
   
-    return new Response(JSON.stringify({ items }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 200,
-    });
+    return items;
   };
 
   export const deleteItems = async (id: number) => {
@@ -462,10 +456,7 @@ export async function addCategory(categoryname: string, categorydescription: str
       });
     }
   
-    return new Response(JSON.stringify({ Transactions }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 200,
-    });
+    return Transactions;
   };
 
   export async function updateMetadata(first_name:string, last_name:string, phone_number:string,role:string, image_url:string, LOA:string, status:string )

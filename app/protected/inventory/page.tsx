@@ -1,39 +1,12 @@
 import AuthButton from '@/components/header-auth';
 import InventoryManagement from '@/components/inventory-management';
 import React from 'react';
-
-const fetchData = async (path: string, body = {}) => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // Use environment variable
-  const url = `${baseUrl}${path}`;
-  
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      cache: 'no-store', // Always fetch fresh data
-    });
-
-    if (response.ok) {
-      return await response.json();
-    } else {
-      console.error(`Failed to fetch from ${url}:`, await response.text());
-      return null;
-    }
-  } catch (error) {
-    console.error(`Error fetching from ${url}:`, error);
-    return null;
-  }
-};
+import { fetchItems } from "@/app/rest-api/restapi";
+import { fetchCategory } from "@/app/rest-api/restapi";
 
 const InventoryPage = async () => {
-  const [categoriesResponse, itemsResponse] = await Promise.all([
-    fetchData(`/api/category/fetch`),
-    fetchData(`/api/item/fetch`),
-  ]);
-
-  const categories = categoriesResponse?.Categories || [];
-  const items = itemsResponse?.items || [];
+  const categories = await fetchCategory();
+    const items = await fetchItems();
 
   return (
     <div>

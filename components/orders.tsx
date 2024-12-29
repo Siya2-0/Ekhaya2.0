@@ -25,6 +25,8 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
 
   const supabase = createClientComponentClient();
 
+  // console.log("Transaction: ", transactions);
+
   useEffect(() => {
     const subscription = supabase
       .channel("realtime:transactions")
