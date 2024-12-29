@@ -452,6 +452,7 @@ export async function addCategory(categoryname: string, categorydescription: str
       query = query.eq('employee_username', employee_username);
     }
   
+    query = query.order('transaction_date_time', { ascending: false });
     const { data: Transactions, error } = await query;
   
     if (error) {
@@ -549,6 +550,7 @@ export async function addCategory(categoryname: string, categorydescription: str
     if (transactionId) {
       query = query.eq('transaction_id', transactionId);
     }
+    query = query.order('changed_at', { ascending: false });
   
     const { data: items, error } = await query;
   
