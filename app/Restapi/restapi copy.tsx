@@ -58,6 +58,28 @@ export  const fetchUsers = async () => {
 
 }
 
+
+export async function UpdaterUser(LOA:string, uuid:string)
+{
+  const { data: user, error } = await adminAuthClient.updateUserById(
+    uuid,
+    { user_metadata: { LOA: LOA } });
+
+    if (error){
+      return new Response(JSON.stringify({ error }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      })
+  
+    }
+    
+    return new Response(JSON.stringify({ user }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    })
+
+
+};
   
   
   // Upload file using standard upload

@@ -718,6 +718,8 @@ export async function addCategory(categoryname: string, categorydescription: str
     });
   };
 
+
+
   // Upload file using standard upload
   // export async function uploadFile(file: any, filePath:string) {
   //   const supabase = await createClient();

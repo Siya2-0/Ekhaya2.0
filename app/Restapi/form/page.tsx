@@ -1,12 +1,12 @@
 import { UpdateInventory } from "../restapi";
-import { deleteUser, fetchUsers } from "../restapi copy";
+import { deleteUser, fetchUsers, UpdaterUser } from "../restapi copy";
 
 
 
 export default async function FormPage() {
   // const [users, setUsers] = useState([]);
 
-  const response = await  UpdateInventory(57);
+  const response = await UpdaterUser("Management", "212cf816-95f8-42ff-8638-9e6a178b6119");
   console.log(response)
 
   // useEffect(() => {
