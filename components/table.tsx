@@ -70,42 +70,6 @@ interface User {
 }
 
 const EmployeeTable = ({ users }: { users: User[] }) => {
-  const initialEmployees = [
-    {
-      id: 1,
-      name: "John",
-      surname: "Doe",
-      role: "Waiter",
-      email: "john.doe@example.com",
-      cellphone: "+1-555-0123",
-      createdAt: "2023-01-15",
-      status: "Active",
-      authority: "Senior"
-    },
-    {
-      id: 2,
-      name: "Jane",
-      surname: "Smith",
-      role: "Bartender",
-      email: "jane.smith@example.com",
-      cellphone: "+1-555-0124",
-      createdAt: "2023-02-20",
-      status: "Active",
-      authority: "Mid"
-    },
-    {
-      id: 3,
-      name: "Robert",
-      surname: "Johnson",
-      role: "Manager",
-      email: "robert.j@example.com",
-      cellphone: "+1-555-0125",
-      createdAt: "2023-03-10",
-      status: "Inactive",
-      authority: "Lead"
-    }
-  ];
-
   const [employees, setEmployees] = useState<User[]>(users);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("");

@@ -296,7 +296,7 @@ const drawer = (
         body: JSON.stringify({
           id: order.id,
           customer_name: order.customer_name,
-          employee_username: order.employee_username,
+          employee_username: username,
           items: {orderItems: updatedItems},
           total_price: (order.total_price + calculateTotal().total),
           payment_method: order.payment_method,

@@ -29,7 +29,6 @@ export const deleteUser = async (uuid: string) => {
   return { success: true, data };
 };
 
-
 export const fetchUsers = async () => {
   const { data: { users }, error } = await adminAuthClient.listUsers();
 
