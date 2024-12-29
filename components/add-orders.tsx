@@ -30,7 +30,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { FiMenu, FiSearch, FiShoppingCart } from "react-icons/fi";
+import { FiMenu, FiPlusCircle, FiSearch, FiShoppingCart } from "react-icons/fi";
 import Link from "next/link";
 import Payments from "@/components/billing";
 import OrderSummary from "@/components/orderSummary";
@@ -363,45 +363,46 @@ const drawer = (
                   </FormControl>
                   </SearchWrapper>
 
-                  <div className='grid gap-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2'>
-                  {filteredItems.map((item: InventoryItem) => (
-                      <Grid item xs={12} sm={6} md={4} key={item.id}>
-                  <Link href={``}>
-                    <div className='sm:col-span-2 col-span-2 text-[#212322] min-w-full overflow-hidden'>
-                        <div className='overflow-hidden'>
-                            <Image 
-                            src={item.Image_url} 
-                            alt="" 
-                            unoptimized 
-                            priority 
-                            placeholder='blur' 
-                            blurDataURL={"https://firebasestorage.googleapis.com/v0/b/ubac-18e0d.appspot.com/o/base64.jpeg?alt=media&token=3cbefe48-0084-439e-8ce4-3e95fd466c74"}
-                            loading="eager" 
-                            width={300} 
-                            height={300} 
-                            className='w-full md:max-h-[250px] object-cover hover:scale-105 transform transition-transform ease-in-out duration-300 cursor-pointer'/>
-                        </div>
-                        <div className="pb-8 border-b relative">
-                          <div className="font-bold">
-                            <p className="uppercase text-[16px] mt-[16px]">{item.item_name}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                    {filteredItems.map((item: InventoryItem) => (
+                      <div
+                        key={item.id}
+                        className="bg-[#FFFFFF] rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                      >
+                        <div className="flex flex-col md:flex-row h-full">
+                          <div className="h-32 md:h-auto pt-4 pl-4 relative overflow-hidden">
+                            <Image
+                              src={item.Image_url}
+                              alt="" 
+                              unoptimized 
+                              priority 
+                              placeholder='blur' 
+                              blurDataURL={"https://firebasestorage.googleapis.com/v0/b/ubac-18e0d.appspot.com/o/base64.jpeg?alt=media&token=3cbefe48-0084-439e-8ce4-3e95fd466c74"}
+                              loading="eager" 
+                              width={300} 
+                              height={300}
+                              className="w-full h-[100px] object-cover transition-transform duration-300 hover:scale-110"
+                            />
                           </div>
-                          
-                          <p className="text-gray-400 text-base text-[14px]">{item.category}</p>
-                          
-                          <p className="font-bold text-[16px] mt-0">R{item.price.toFixed(2)}</p>
-                          
-                          <button
-                            onClick={() => addToOrders(item)}
-                            className="absolute bottom-8 right-2 bg-[#D62929] text-[#f2f2f2] px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
-                          >
-                            Add to Orders
-                          </button>
+                          <div className="p-4 flex-1 justify-between">
+                            <div>
+                              <h3 className="text-xl font-semibold text-[#303030] mb-2">{item.item_name}</h3>
+                              <p className="text-gray-400 text-sm mb-2">{item.category}</p>
+                              <p className="text-[#303030] font-bold text-[24px]">R{item.price.toFixed(2)}</p>
+                            </div>
+                            <div className="w-full mt-[-32px] justify-end items-end flex">
+                              <button
+                                onClick={() => addToOrders(item)}
+                                className="mt-4 flex items-center justify-center bg-[#D62929] hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity duration-300"
+                              >
+                                <FiPlusCircle className="mr-2" />
+                                Add to Order
+                              </button>
+                            </div>
+                          </div>
                         </div>
-
-                    </div>
-                </Link>
-                      </Grid>
-                  ))}
+                      </div>
+                    ))}
                   </div>
                   </Grid>
                   <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
@@ -419,19 +420,13 @@ const drawer = (
           </div>
 
           {/* Right column: Fixed width */}
-          <div className="w-[600px] bg-[#F2F2F2] min-h-screen">
-          <div className={`fixed top-0 right-0 h-full w-full md:w-[600px] bg-[#f2f2f2] z-50 shadow-lg`}>
+          <div className="w-[550px] bg-[#F2F2F2] min-h-screen">
+          <div className={`fixed top-0 right-0 h-full w-full md:w-[550px] bg-[#f2f2f2] z-50 shadow-lg`}>
           <div className="p-0 h-full flex flex-col">
             <React.Fragment>
                   <div className='h-full w-full bg-[#f2f2f2] text-[#212322]'>
                     <div className='absolute top-0 w-full md:justify-center md:items-center md:text-center'>
                       <h2 className='sm:text-5xl text-4xl font-bold md:mt-8 mt-4 ml-4'>Current Orders</h2>
-                      {/* <button
-                        onClick={() => setShowOrders(false)}
-                        className="text-gray-500 hover:text-gray-700 top-2 right-2 absolute"
-                      >
-                        <FaTimes size={48} />
-                      </button> */}
                     </div>
                     
                     <div className='absolute w-full top-28 md:bottom-[200px] bottom-[200px] overflow-y-auto'>
@@ -440,7 +435,7 @@ const drawer = (
                                     <div className='mb-2' key={item.id}>
                                       <hr />
                                       <div className='flex items-center sm:space-x-4 w-full'>
-                                          <Image src={item.image} alt='' width={100} height={100} className='sm:w-24 sm:h-24'style={{objectFit:"cover"}} unoptimized />
+                                          {/* <Image src={item.image} alt='' width={100} height={100} className='sm:w-24 sm:h-24'style={{objectFit:"cover"}} unoptimized /> */}
                                           <div className='w-full pl-2'>
                                               <p className='font-bold sm:text-[18px] text-1xl'>{item.name}</p>
                                               <p className='text-sm'>{item.category}</p>
@@ -475,8 +470,8 @@ const drawer = (
                                             <p className='text-center text-2xl font-bold'>R{(item.price * item.quantity).toFixed(2)}</p>
                                           </div>
                                           <div className='md:block hidden pr-0'>
-                                            <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[128px] bg-[#f2f2f2] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
-                                              <span className="relative z-10 uppercase">delete</span>
+                                            <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[100px] bg-[#f2f2f2] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
+                                              <span className="relative z-10 uppercase text-[14px]">delete</span>
                                             </button>
                                           </div>
                                           <div className='md:hidden block pr-0'>
@@ -499,7 +494,7 @@ const drawer = (
                         <p className='mr-0 text-[#212322] text-3xl font-normal relative'>R{calculateTotal().total.toFixed(2)}</p>
                         </div>
                       </div>
-                      <button onClick={() => setIsAddMoreOpen(false)} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${(true) ? "border-[#898989]":"border-[#D62929]"} bg-[#f2f2f2] ${"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${"after:bg-[#D62929]"} after:duration-500 ${"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
+                      <button onClick={() => setIsAddMoreOpen(false)} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${"border-[#D62929]"} bg-[#f2f2f2] ${"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${"after:bg-[#D62929]"} after:duration-500 ${"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
                         <span className={`top-0 flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${"before:bg-[#D62929]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${"after:bg-[#D62929]"} after:duration-500 ${"hover:text-[#ffffff]"} group-hover:before:h-full group-hover:after:h-full`}></span>
                         <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${"group-hover:text-[#ffffff]"} text-[18px] font-semibold`}>Back</span>
                       </button>

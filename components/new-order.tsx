@@ -30,7 +30,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { FiMenu, FiSearch, FiShoppingCart } from "react-icons/fi";
+import { FiMenu, FiPlusCircle, FiSearch, FiShoppingCart } from "react-icons/fi";
 import Link from "next/link";
 import Payments from "@/components/billing";
 import OrderSummary from "@/components/orderSummary";
@@ -199,7 +199,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
   const drawer = (
       <div className="flex">
           <Box sx={{ pb: 2, width: "100%" }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
               Categories
           </Typography>
           <FormGroup sx={{ flexDirection: "row" }}>
@@ -277,11 +277,11 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
       <div className="flex">
         {/* Left column: Occupies remaining space */}
         <div className="flex-1 bg-[#F2F2F2] min-h-screen">
-      {/* <header className="bg-[#F2F2F2] shadow-md p-4 sticky top-0 z-50">
+      <header className="bg-[#F2F2F2] shadow-md p-4 sticky top-0 z-50">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-[#303030]">E&nbsp;k&nbsp;h&nbsp;a&nbsp;y&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;a&nbsp;r&nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;o&nbsp;u&nbsp;n&nbsp;g&nbsp;e</h1>
+          <h1 className="text-3xl font-bold text-[#303030]">E&nbsp;k&nbsp;h&nbsp;a&nbsp;y&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;a&nbsp;r&nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;o&nbsp;u&nbsp;n&nbsp;g&nbsp;e&nbsp;&nbsp;&nbsp;&nbsp;m&nbsp;e&nbsp;n&nbsp;u</h1>
         </div>
-      </header> */}
+      </header>
 
       <div className="container mx-auto p-0">
 
@@ -314,45 +314,46 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                 </FormControl>
                 </SearchWrapper>
 
-                <div className='grid gap-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2'>
-                {filteredItems.map((item: InventoryItem) => (
-                    <Grid item xs={12} sm={6} md={4} key={item.id}>
-                <Link href={``}>
-                  <div className='sm:col-span-2 col-span-2 text-[#212322] min-w-full overflow-hidden'>
-                      <div className='overflow-hidden'>
-                          <Image 
-                          src={item.Image_url} 
-                          alt="" 
-                          unoptimized 
-                          priority 
-                          placeholder='blur' 
-                          blurDataURL={"https://firebasestorage.googleapis.com/v0/b/ubac-18e0d.appspot.com/o/base64.jpeg?alt=media&token=3cbefe48-0084-439e-8ce4-3e95fd466c74"}
-                          loading="eager" 
-                          width={300} 
-                          height={300} 
-                          className='w-full md:max-h-[250px] object-cover hover:scale-105 transform transition-transform ease-in-out duration-300 cursor-pointer'/>
-                      </div>
-                      <div className="pb-8 border-b relative">
-                        <div className="font-bold">
-                          <p className="uppercase text-[16px] mt-[16px]">{item.item_name}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                  {filteredItems.map((item: InventoryItem) => (
+                    <div
+                      key={item.id}
+                      className="bg-[#FFFFFF] rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                    >
+                      <div className="flex flex-col md:flex-row h-full">
+                        <div className="h-32 md:h-auto pt-4 pl-4 relative overflow-hidden">
+                          <Image
+                            src={item.Image_url}
+                            alt="" 
+                            unoptimized 
+                            priority 
+                            placeholder='blur' 
+                            blurDataURL={"https://firebasestorage.googleapis.com/v0/b/ubac-18e0d.appspot.com/o/base64.jpeg?alt=media&token=3cbefe48-0084-439e-8ce4-3e95fd466c74"}
+                            loading="eager" 
+                            width={300} 
+                            height={300}
+                            className="w-full h-[100px] object-cover transition-transform duration-300 hover:scale-110"
+                          />
                         </div>
-                        
-                        <p className="text-gray-400 text-base text-[14px]">{item.category}</p>
-                        
-                        <p className="font-bold text-[16px] mt-0">R{item.price.toFixed(2)}</p>
-                        
-                        <button
-                          onClick={() => addToOrders(item)}
-                          className="absolute bottom-8 right-2 bg-[#D62929] text-[#f2f2f2] px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
-                        >
-                          Add to Orders
-                        </button>
+                        <div className="p-4 flex-1 justify-between">
+                          <div>
+                            <h3 className="text-xl font-semibold text-[#303030] mb-2">{item.item_name}</h3>
+                            <p className="text-gray-400 text-sm mb-2">{item.category}</p>
+                            <p className="text-[#303030] font-bold text-[24px]">R{item.price.toFixed(2)}</p>
+                          </div>
+                          <div className="w-full mt-[-32px] justify-end items-end flex">
+                            <button
+                              onClick={() => addToOrders(item)}
+                              className="mt-4 flex items-center justify-center bg-[#D62929] hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity duration-300"
+                            >
+                              <FiPlusCircle className="mr-2" />
+                              Add to Order
+                            </button>
+                          </div>
+                        </div>
                       </div>
-
-                  </div>
-              </Link>
-                    </Grid>
-                ))}
+                    </div>
+                  ))}
                 </div>
                 </Grid>
                 <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
@@ -370,19 +371,13 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
         </div>
 
         {/* Right column: Fixed width */}
-        <div className="w-[600px] bg-[#FFFFFF] min-h-screen">
-        <div className={`fixed top-0 right-0 h-full w-full md:w-[600px] bg-[#FFFFFF] z-50`}>
+        <div className="w-[550px] bg-[#FFFFFF] min-h-screen">
+        <div className={`fixed top-0 right-0 h-full w-full md:w-[550px] bg-[#FFFFFF] z-50`}>
         <div className="p-0 h-full flex flex-col">
           <React.Fragment>
                 <div className='h-full w-full bg-[#FFFFFF] text-[#212322]'>
                   <div className='absolute top-0 w-full md:justify-center md:items-center md:text-center'>
                     <h2 className='sm:text-5xl text-4xl font-bold md:mt-8 mt-4 ml-4'>Current Orders</h2>
-                    {/* <button
-                      onClick={() => setShowOrders(false)}
-                      className="text-gray-500 hover:text-gray-700 top-2 right-2 absolute"
-                    >
-                      <FaTimes size={48} />
-                    </button> */}
                   </div>
                   
                   <div className='absolute w-full top-28 md:bottom-[200px] bottom-[200px] overflow-y-auto'>
@@ -391,7 +386,6 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                                   <div className='mb-2' key={item.id}>
                                     <hr />
                                     <div className='flex items-center sm:space-x-4 w-full'>
-                                        {/* <Image src={item.image} alt='' width={100} height={100} className='sm:w-24 sm:h-24'style={{objectFit:"cover"}} unoptimized /> */}
                                         <div className='w-full pl-2'>
                                             <p className='font-bold sm:text-[18px] text-1xl'>{item.name}</p>
                                             <p className='text-sm'>{item.category}</p>
