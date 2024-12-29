@@ -370,11 +370,11 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
         </div>
 
         {/* Right column: Fixed width */}
-        <div className="w-[600px] bg-[#F2F2F2] min-h-screen">
-        <div className={`fixed top-0 right-0 h-full w-full md:w-[600px] bg-[#f2f2f2] z-50 shadow-lg`}>
+        <div className="w-[600px] bg-[#FFFFFF] min-h-screen">
+        <div className={`fixed top-0 right-0 h-full w-full md:w-[600px] bg-[#FFFFFF] z-50`}>
         <div className="p-0 h-full flex flex-col">
           <React.Fragment>
-                <div className='h-full w-full bg-[#f2f2f2] text-[#212322]'>
+                <div className='h-full w-full bg-[#FFFFFF] text-[#212322]'>
                   <div className='absolute top-0 w-full md:justify-center md:items-center md:text-center'>
                     <h2 className='sm:text-5xl text-4xl font-bold md:mt-8 mt-4 ml-4'>Current Orders</h2>
                     {/* <button
@@ -391,13 +391,13 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                                   <div className='mb-2' key={item.id}>
                                     <hr />
                                     <div className='flex items-center sm:space-x-4 w-full'>
-                                        <Image src={item.image} alt='' width={100} height={100} className='sm:w-24 sm:h-24'style={{objectFit:"cover"}} unoptimized />
+                                        {/* <Image src={item.image} alt='' width={100} height={100} className='sm:w-24 sm:h-24'style={{objectFit:"cover"}} unoptimized /> */}
                                         <div className='w-full pl-2'>
                                             <p className='font-bold sm:text-[18px] text-1xl'>{item.name}</p>
                                             <p className='text-sm'>{item.category}</p>
                                         </div>
                                         <div className='hidden sm:block min-w-[100px]'>
-                                        <div className="py-2 px-3 inline-block bg-[#f2f2f2]" data-hs-input-number>
+                                        <div className="py-2 px-3 inline-block bg-[#FFFFFF]" data-hs-input-number>
                                           <div className="flex items-center gap-x-1.5">
                                           <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#000000] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                             <span className="relative z-10"><FaMinus className='w-[10px] h-[10px]'/></span>
@@ -411,13 +411,13 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                                         </div>
                                         <div>
                                         <div className='sm:hidden block min-w-[100px]'>
-                                        <div className="py-2 px-3 inline-block bg-[#f2f2f2]" data-hs-input-number>
+                                        <div className="py-2 px-3 inline-block bg-[#FFFFFF]" data-hs-input-number>
                                           <div className="flex items-center gap-x-1.5">
-                                          <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
+                                          <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#FFFFFF] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                             <span className="relative z-10"><FaMinus className='w-[10px] h-[10px]'/></span>
                                           </button>
                                             <input className="p-0 w-4 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-[#D62929]" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
-                                            <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-[#D62929] relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
+                                            <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-[#D62929] relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#FFFFFF] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                               <span className="relative z-10"><FaPlus className='w-[10px] h-[10px]'/></span>
                                             </button>
                                           </div>
@@ -426,12 +426,12 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                                           <p className='text-center text-2xl font-bold'>R{(item.price * item.quantity).toFixed(2)}</p>
                                         </div>
                                         <div className='md:block hidden pr-0'>
-                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[128px] bg-[#f2f2f2] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
-                                            <span className="relative z-10 uppercase">delete</span>
+                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[100px] bg-[#FFFFFF] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
+                                            <span className="relative z-10 uppercase text-[14px]">delete</span>
                                           </button>
                                         </div>
                                         <div className='md:hidden block pr-0'>
-                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[128px] bg-[#f2f2f2] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
+                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[100px] bg-[#FFFFFF] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
                                               <span className="relative z-10"><RxCross2 className='w-[25px] h-[25px]'/></span>
                                           </button>
                                         </div>
