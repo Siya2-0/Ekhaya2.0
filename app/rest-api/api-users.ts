@@ -20,40 +20,25 @@ const adminAuthClient = supabase.auth.admin
 
 
 export const deleteUser = async (uuid: string) => {
+  const { data, error } = await adminAuthClient.deleteUser(uuid);
 
-  const { data, error } = await adminAuthClient.deleteUser(
-    uuid
-  )
-  
- 
-  if (error){
-    return new Response(JSON.stringify({ error }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 400,
-    })
-
+  if (error) {
+    return { success: false, error: error.message };
   }
-  
-  return new Response(JSON.stringify({ data }), {
-    headers: { 'Content-Type': 'application/json' },
-    status: 200,
-  })
+
+  return { success: true, data };
 };
 
-export  const fetchUsers = async () => {
-  const { data: { users }, error } = await adminAuthClient.listUsers()
-  if (error){
-    return new Response(JSON.stringify({ error }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 400,
-    })
 
+export const fetchUsers = async () => {
+  const { data: { users }, error } = await adminAuthClient.listUsers();
+
+  if (error) {
+    throw new Error(error.message);
   }
 
-  return new Response(JSON.stringify({ users }), {
-    headers: { 'Content-Type': 'application/json' },
-    status: 200,
-  })
-
-
-}
+  return users.map((user) => ({
+    ...user,
+    created_at: new Date(user.created_at).toLocaleString(),
+  }));
+};

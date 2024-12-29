@@ -2,7 +2,7 @@
 
 import { signUpAction } from "@/app/actions";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiEdit, FiTrash2, FiFilter, FiSearch, FiPlus, FiX } from "react-icons/fi";
 import { BiSortAlt2 } from "react-icons/bi";
 import {
@@ -25,6 +25,9 @@ import {
 import { styled } from "@mui/system";
 import { SubmitButton } from "./submit-button";
 import Link from "next/link";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { deleteUser } from '@/app/rest-api/api-users';
+
 
 const StyledForm = styled("form")(({ theme }: any) => ({
   display: "flex",
@@ -36,7 +39,37 @@ const StyledForm = styled("form")(({ theme }: any) => ({
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
 }));
 
-const EmployeeTable = ({users}: any) => {
+interface User {
+  id: string;
+  aud: string;
+  role: string;
+  email: string;
+  phone: string;
+  confirmation_sent_at: string;
+  app_metadata: {
+    provider: string;
+    providers: string[];
+  };
+  user_metadata: {
+    LOA: string;
+    email: string;
+    email_verified: boolean;
+    first_name: string;
+    image_url: string;
+    last_name: string;
+    phone_number: string;
+    phone_verified: boolean;
+    role: string;
+    status: string;
+    sub: string;
+  };
+  identities: null | Record<string, unknown>; // Replace with a more specific type if you know the structure
+  created_at: string;
+  updated_at: string;
+  is_anonymous: boolean;
+}
+
+const EmployeeTable = ({ users }: { users: User[] }) => {
   const initialEmployees = [
     {
       id: 1,
@@ -73,7 +106,7 @@ const EmployeeTable = ({users}: any) => {
     }
   ];
 
-  const [employees, setEmployees] = useState(initialEmployees);
+  const [employees, setEmployees] = useState<User[]>(users);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -81,6 +114,61 @@ const EmployeeTable = ({users}: any) => {
   const [editEmployee, setEditEmployee] = useState<any>({});
   const [showModal, setShowModal] = useState(false);
   const [showForm, setShowForm] = useState(false);
+
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    const subscription = supabase
+      .channel("realtime:users")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "Users",
+        },
+        (payload: any) => {
+          console.log("Real-time update:", payload);
+
+          if (payload.eventType === "INSERT") {
+            setEmployees((prev) => [...prev, payload.new]);
+          }
+
+          if (payload.eventType === "UPDATE") {
+            const parsedOrders = (() => {
+              let itemsArray = [];
+              try {
+                const parsedItems = JSON.parse(payload.new.items); // If `items` is JSON
+                itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
+              } catch (error) {
+                console.warn(`Invalid items format for order ID ${payload.new.id}:`, error);
+              }
+          
+              return {
+                ...payload.new,
+                items: itemsArray, // Ensure `items` is always an array
+              };
+            })();
+            setEmployees((prev) =>
+              prev.map((user) =>
+                user.id === payload.new.id ? parsedOrders : user
+              )
+            );
+          }
+
+          if (payload.eventType === "DELETE") {
+            setEmployees((prev) =>
+              prev.filter((user) => user.id !== payload.old.id)
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, [supabase]);
 
   const handleSort = (key: any) => {
     let direction = "ascending";
@@ -114,9 +202,23 @@ const EmployeeTable = ({users}: any) => {
     setShowModal(true);
   };
 
-  const handleDelete = (id: any) => {
-    if (window.confirm("Are you sure you want to delete this employee?")) {
-      setEmployees(employees.filter((emp) => emp.id !== id));
+  const handleDelete = async (id: string) => {
+    const confirmed = confirm('Are you sure you want to delete this user?');
+    if (!confirmed) return;
+
+    try {
+      const response = await deleteUser(id);
+      if (response) {
+        alert('User deleted successfully.');
+        setEmployees((prevUsers) => prevUsers.filter((user) => user.id !== id));
+      } else {
+        const errorData = await response;
+        console.error('Error deleting user:', errorData);
+        alert(`Failed to delete user: ${errorData}`);
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('An unexpected error occurred.');
     }
   };
 
@@ -141,7 +243,7 @@ const EmployeeTable = ({users}: any) => {
       filterRole ? employee.role === filterRole : true
     )
     .filter((employee) =>
-      filterStatus ? employee.status === filterStatus : true
+      filterStatus ? employee.user_metadata.status === filterStatus : true
     );
 
     interface FormData {
@@ -309,27 +411,27 @@ const EmployeeTable = ({users}: any) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {filteredEmployees.map((employee) => (
+            {filteredEmployees.map((employee, index) => (
               <tr key={employee.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">{employee.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.surname}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.role}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.cellphone}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.createdAt}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{index}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{employee.user_metadata.first_name}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{employee.user_metadata.last_name}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{employee.user_metadata.role}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{employee.user_metadata.email}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{employee.user_metadata.phone_number}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{employee.created_at}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      employee.status === "Active"
+                      employee.user_metadata.status === "active"
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {employee.status}
+                    {employee.user_metadata.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.authority}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{employee.user_metadata.LOA}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => handleEdit(employee)}
