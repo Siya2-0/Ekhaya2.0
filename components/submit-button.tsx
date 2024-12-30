@@ -20,7 +20,7 @@ export function SubmitButton({
     <Button
       type="submit"
       aria-disabled={pending}
-      className={`py-16 ${className}`} // Adds 54px padding
+      className={`py-32 ${className}`} // Adds 54px padding
       {...props}
     >
       {pending ? pendingText : children}

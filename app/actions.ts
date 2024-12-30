@@ -39,7 +39,6 @@ export const signUpAction = async (formData: FormData) => {
   });
 
   if (error) {
-    console.error(error.code + " " + error.message);
     return { success: false, message: error.message };
   }
 
