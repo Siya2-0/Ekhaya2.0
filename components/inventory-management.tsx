@@ -498,13 +498,13 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
               <input
                 type="text"
                 placeholder="Search items..."
-                className="pl-10 w-full p-2 border rounded-lg"
+                className="pl-10 w-full p-2 border rounded-lg bg-transparent"
                 value={searchTerm}
                 onChange={handleSearch}
               />
             </div>
             <select
-              className="p-2 border rounded-lg"
+              className="p-2 border rounded-lg bg-transparent"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -514,7 +514,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
               <option value="Out-of-Stock">Out of Stock</option>
             </select>
             <select
-              className="p-2 border rounded-lg"
+              className="p-2 border rounded-lg bg-transparent"
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
             >
