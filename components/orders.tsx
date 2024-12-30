@@ -331,7 +331,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
           <input
             type="text"
             placeholder="Search by customer name, employee name or order number..."
-            className="pl-10 pr-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="pl-10 pr-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -341,7 +341,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent"
           >
             <option value="all">All Status</option>
             <option value="paid">Paid</option>
