@@ -661,95 +661,108 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         {/* Add Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <div className="bg-white rounded-lg p-8 max-w-4xl w-full">
               <h2 className="text-2xl font-bold mb-4">Add New Item</h2>
-              <div className="space-y-4">
-                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                  Item Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Item Name"
-                  className="w-full p-2 border rounded"
-                  value={newItem.item_name}
-                  onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
-                />
-                <label className="block text-sm font-medium text-gray-700 capitalize">
-                  Category
-                </label>
-                <select
-                  className="w-full p-2 border rounded"
-                  value={newItem.category}
-                  onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.category_name}>
-                      {category.category_name}
-                    </option>
-                  ))}
-                </select>
-                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                  Quantity
-                </label>
-                <input
-                  type="number"
-                  placeholder="Quantity"
-                  className="w-full p-2 border rounded"
-                  value={newItem.stock_quantity ?? ''}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewItem({
-                      ...newItem,
-                      stock_quantity: value ? parseInt(value, 10) : 0, // Set `0` for empty input
-                    });
-                  }}
-                />
-
-                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                  Unit Price (R)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder="Unit Price"
-                  className="w-full p-2 border rounded"
-                  value={newItem.price}
-                  onChange={(e) =>
-                    setNewItem({ ...newItem, price: parseFloat(e.target.value) })
-                  }
-                />
-                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                  Reorder Level
-                </label>
-                <input
-                  type="number"
-                  placeholder="Reorder Level"
-                  className="w-full p-2 border rounded"
-                  value={newItem.reorder_level}
-                  onChange={(e) =>
-                    setNewItem({ ...newItem, reorder_level: parseInt(e.target.value) })
-                  }
-                />
-                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                  Item Description
-                </label>
-                <input
-                  type="text"
-                  placeholder="Item Description"
-                  className="w-full p-2 border rounded"
-                  value={newItem.description}
-                  onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-                />
-                <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                  Item Image
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full p-2 border rounded"
-                  onChange={handleFileChange}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Item Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Item Name"
+                    className="w-full p-2 border rounded"
+                    value={newItem.item_name}
+                    onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Category
+                  </label>
+                  <select
+                    className="w-full p-2 border rounded"
+                    value={newItem.category}
+                    onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+                  >
+                    <option value="">Select Category</option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.category_name}>
+                        {category.category_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Quantity
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Quantity"
+                    className="w-full p-2 border rounded"
+                    value={newItem.stock_quantity ?? ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setNewItem({
+                        ...newItem,
+                        stock_quantity: value ? parseInt(value, 10) : 0,
+                      });
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Unit Price (R)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="Unit Price"
+                    className="w-full p-2 border rounded"
+                    value={newItem.price}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, price: parseFloat(e.target.value) })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Reorder Level
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Reorder Level"
+                    className="w-full p-2 border rounded"
+                    value={newItem.reorder_level}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, reorder_level: parseInt(e.target.value) })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Item Description
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Item Description"
+                    className="w-full p-2 border rounded"
+                    value={newItem.description}
+                    onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Item Image
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full p-2 border rounded"
+                    onChange={handleFileChange}
+                  />
+                </div>
               </div>
               <div className="mt-6 flex justify-end gap-4">
                 <button
@@ -763,7 +776,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   className={`px-4 py-2 rounded-lg ${
                     isAdding ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
                   } text-white`}
-                  disabled={isAdding} // Disable button while loading
+                  disabled={isAdding}
                 >
                   {isAdding ? "Adding..." : "Add Item"}
                 </button>
@@ -771,6 +784,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
             </div>
           </div>
         )}
+
 
         {/* Add Category Modal */}
         {showAddCategoryModal && (

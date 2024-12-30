@@ -191,7 +191,7 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 pt-0 max-w-[70%] max-h-[80%] overflow-auto w-full mx-4">
         {isLoading ? (
-          <p>Loading history...</p>
+          <p className="text-center justify-center items-center align-middle mt-2">Loading history...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : historyData.length > 0 ? (

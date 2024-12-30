@@ -70,6 +70,7 @@ const AddOrderManagement = ({ categoriesData, itemsData, username, setIsAddMoreO
   const [order, setOrder] = useState<Order>(currentOrder);
   const [categories, setCategories] = useState<Category[]>(categoriesData || []);
   const [newOrder, setNewOrder] = useState({});
+  const [loading, setLoading] = useState(false);
 
 const [activeCategory, setActiveCategory] = useState("All");
 const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -248,9 +249,6 @@ const drawer = (
     const ordersHistory = JSON.parse(localStorage.getItem('ordersHistory') || '[]');
     ordersHistory.push(newOrder);
     localStorage.setItem('ordersHistory', JSON.stringify(ordersHistory));
-    // setCurrentOrders([]);
-    // setCurrentOrders([]);
-    // setShowPaymentModal(false);
     setPay(paymentMethod === "card");
     setShowOrderSummary(true);
   };
@@ -286,6 +284,7 @@ const drawer = (
 
   const handleEditTransaction = async () => {
     try {
+      setLoading(true);
       const updatedItems = [...order.items, ...currentOrders];
 
       const response = await fetch("/api/transaction/edit", {
@@ -309,29 +308,39 @@ const drawer = (
       if (response.ok) {
         console.log("Transaction updated successfully!");
         setIsAddMoreOpen(false);
+        setLoading(false);
         return data;
       } else {
         const errorData = await response.json();
         console.error(`Error: ${errorData}`);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error updating Transaction:", error);
+      setLoading(false);
     }
   };
+
+  const itemsPerPage = 4;
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center overflow-auto justify-center z-50">
       <div className="max-h-[100vh] min-w-full bg-[#F2F2F2]">
         <Toaster />
+        {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100]">
+          <div className="bg-transparent p-6 rounded-lg">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+            <h2 className="text-2xl font-bold text-white">Please wait...</h2>
+          </div>
+        </div>
+      )}
         <div className="flex">
           {/* Left column: Occupies remaining space */}
           <div className="flex-1 bg-[#F2F2F2] min-h-screen">
-        {/* <header className="bg-[#F2F2F2] shadow-md p-4 sticky top-0 z-50">
-          <div className="container mx-auto flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-[#303030]">E&nbsp;k&nbsp;h&nbsp;a&nbsp;y&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;a&nbsp;r&nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;o&nbsp;u&nbsp;n&nbsp;g&nbsp;e</h1>
-          </div>
-        </header> */}
-
         <div className="container mx-auto p-0">
 
           <main className="w-full h-full flex overflow-auto">
@@ -364,7 +373,7 @@ const drawer = (
                   </SearchWrapper>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                    {filteredItems.map((item: InventoryItem) => (
+                    {paginatedItems.map((item: InventoryItem) => (
                       <div
                         key={item.id}
                         className="bg-[#FFFFFF] rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
@@ -406,12 +415,12 @@ const drawer = (
                   </div>
                   </Grid>
                   <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-                  <Pagination
-                      count={Math.ceil(filteredItems.length / 3)}
+                    <Pagination
+                      count={Math.ceil(filteredItems.length / itemsPerPage)}
                       page={page}
                       onChange={(e, value) => setPage(value)}
                       color="primary"
-                  />
+                    />
                   </Box>
           </Container>
           </Box>
@@ -420,11 +429,11 @@ const drawer = (
           </div>
 
           {/* Right column: Fixed width */}
-          <div className="w-[550px] bg-[#F2F2F2] min-h-screen">
-          <div className={`fixed top-0 right-0 h-full w-full md:w-[550px] bg-[#f2f2f2] z-50 shadow-lg`}>
+          <div className="w-[550px] bg-[#ffffff] min-h-screen">
+          <div className={`fixed top-0 right-0 h-full w-full md:w-[550px] bg-[#ffffff] z-50`}>
           <div className="p-0 h-full flex flex-col">
             <React.Fragment>
-                  <div className='h-full w-full bg-[#f2f2f2] text-[#212322]'>
+                  <div className='h-full w-full bg-[#ffffff] text-[#212322]'>
                     <div className='absolute top-0 w-full md:justify-center md:items-center md:text-center'>
                       <h2 className='sm:text-5xl text-4xl font-bold md:mt-8 mt-4 ml-4'>Current Orders</h2>
                     </div>
@@ -435,13 +444,12 @@ const drawer = (
                                     <div className='mb-2' key={item.id}>
                                       <hr />
                                       <div className='flex items-center sm:space-x-4 w-full'>
-                                          {/* <Image src={item.image} alt='' width={100} height={100} className='sm:w-24 sm:h-24'style={{objectFit:"cover"}} unoptimized /> */}
                                           <div className='w-full pl-2'>
                                               <p className='font-bold sm:text-[18px] text-1xl'>{item.name}</p>
                                               <p className='text-sm'>{item.category}</p>
                                           </div>
                                           <div className='hidden sm:block min-w-[100px]'>
-                                          <div className="py-2 px-3 inline-block bg-[#f2f2f2]" data-hs-input-number>
+                                          <div className="py-2 px-3 inline-block bg-[#ffffff]" data-hs-input-number>
                                             <div className="flex items-center gap-x-1.5">
                                             <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#000000] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                               <span className="relative z-10"><FaMinus className='w-[10px] h-[10px]'/></span>
@@ -494,11 +502,11 @@ const drawer = (
                         <p className='mr-0 text-[#212322] text-3xl font-normal relative'>R{calculateTotal().total.toFixed(2)}</p>
                         </div>
                       </div>
-                      <button onClick={() => setIsAddMoreOpen(false)} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${"border-[#D62929]"} bg-[#f2f2f2] ${"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${"after:bg-[#D62929]"} after:duration-500 ${"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
+                      <button onClick={() => setIsAddMoreOpen(false)} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${"border-[#D62929]"} bg-[#ffffff] ${"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${"after:bg-[#D62929]"} after:duration-500 ${"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
                         <span className={`top-0 flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${"before:bg-[#D62929]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${"after:bg-[#D62929]"} after:duration-500 ${"hover:text-[#ffffff]"} group-hover:before:h-full group-hover:after:h-full`}></span>
                         <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${"group-hover:text-[#ffffff]"} text-[18px] font-semibold`}>Back</span>
                       </button>
-                      <button onClick={() => handleEditTransaction()} disabled={currentOrders.length === 0}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#D62929]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#D62929]"} hover:before:h-full hover:after:h-full`}>
+                      <button onClick={() => handleEditTransaction()} disabled={currentOrders.length === 0 || loading}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#D62929]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#D62929]"} hover:before:h-full hover:after:h-full`}>
                         <span className={`top-[0] flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 hover:text-black group-hover:before:h-full group-hover:after:h-full`}></span>
                         <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#ffffff]":"group-hover:text-[#D62929]"} text-[18px] font-semibold`}>Add To Order</span>
                       </button>
