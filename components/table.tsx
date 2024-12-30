@@ -399,38 +399,49 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
         </table>
       </div>
 
-      {showModal && editEmployee && (
+      {(showModal && editEmployee) && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
+            <div className="mt-3 min-w-full">
               <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Edit Employee</h3>
-              <form
+              <form className="min-w-full"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleUpdate(editEmployee);
                 }}
               >
-                <div className="space-y-4">
-                  {Object.keys(editEmployee).map((key) => (
-                    key !== "id" && (
-                      <div key={key}>
-                        <label className="block text-sm font-medium text-gray-700 capitalize">
-                          {key}
-                        </label>
-                        <input
-                          type="text"
-                          value={editEmployee[key]}
-                          onChange={(e) =>
-                            setEditEmployee({
-                              ...editEmployee,
-                              [key]: e.target.value,
-                            })
-                          }
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        />
+                <div className="space-y-4 min-w-full">
+                      <div className="min-w-full">
+                      <TextField
+                          select
+                          variant="outlined"
+                          label="Level of Access"
+                          name="Role"
+                          required
+                          fullWidth
+                          defaultValue={editEmployee.user_metadata.role}
+                        >
+                          <MenuItem value="Waitress">Waitress</MenuItem>
+                          <MenuItem value="Manager">Manager</MenuItem>
+                          <MenuItem value="Security">Security</MenuItem>
+                          <MenuItem value="Sound Engineer">Sound Engineer</MenuItem>
+                        </TextField>
                       </div>
-                    )
-                  ))}
+                      <div className="min-w-full">
+                        <TextField
+                          select
+                          variant="outlined"
+                          label="Level of Access"
+                          name="loa"
+                          required
+                          fullWidth
+                          defaultValue={editEmployee.user_metadata.LOA}
+                        >
+                          <MenuItem value="NonManagement">NonManagement</MenuItem>
+                          <MenuItem value="Management">Management</MenuItem>
+                          <MenuItem value="Admin">Admin</MenuItem>
+                        </TextField>
+                      </div>
                 </div>
                 <div className="mt-4 flex justify-end space-x-3">
                   <button
