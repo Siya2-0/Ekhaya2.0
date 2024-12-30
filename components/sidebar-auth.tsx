@@ -59,7 +59,7 @@ export default async function AuthSidebar() {
           </Button>
         </form>
       </div> */}
-      <Sidebar />    
+      <Sidebar user={user}/>    
     </>
   ) : (
     <div className=""></div>

@@ -8,9 +8,6 @@ import { BiSortAlt2 } from "react-icons/bi";
 import {
   Box,
   Button,
-  Container,
-  FormControl,
-  InputLabel,
   MenuItem,
   Select,
   Snackbar,
@@ -22,22 +19,8 @@ import {
   DialogContent,
   DialogActions
 } from "@mui/material";
-import { styled } from "@mui/system";
-import { SubmitButton } from "./submit-button";
-import Link from "next/link";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { deleteUser } from '@/app/rest-api/api-users';
-
-
-const StyledForm = styled("form")(({ theme }: any) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.spacing(3),
-  padding: theme.spacing(3),
-  backgroundColor: "#ffffff",
-  borderRadius: theme.spacing(1),
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
-}));
 
 interface User {
   id: string;

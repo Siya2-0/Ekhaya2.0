@@ -3,8 +3,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { FaCheck, FaTimes, FaSearch, FaPlus, FaHistory } from "react-icons/fa";
 import TransactionHistory from "./transaction-history";
-import AddOrders from "./add-orders";
-import EmployeeProfile from "@/app/protected/profile/page";
 import AddOrderManagement from "./add-orders";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
