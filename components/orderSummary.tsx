@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { FaCreditCard, FaMoneyBillWave, FaMobile, FaGift, FaPrint, FaEnvelope, FaPlus, FaMinus } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaCreditCard, FaMoneyBillWave, FaPrint, FaPlus, FaMinus } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import OrderSuccessModal from "./order-success-modal";
-// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-
-// const supabase = createClientComponentClient();
 
 interface OrderItem {
   id: number;
@@ -17,17 +14,10 @@ interface OrderItem {
   quantity: number;
 }
 
-interface NewOrder {
-  id: number;
-  items: OrderItem[];
-  total: number;
-  status: string;
-  timestamp: string;
-}
-
 const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrderSummary, newOrder, username }: any) => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [orderItems, setOrderItems] = useState<OrderItem[]>(newOrder.items);
+  const [loading, setLoading] = useState(false);
 
   const [tip, setTip] = useState(0);
   const [discount, setDiscount] = useState(0);
@@ -36,17 +26,6 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
   const [selectedTip, setSelectedTip] = useState(0);
   const [customerName, setCustomerName] = useState("");
   const [user, setUser] = useState<any>(username);
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     const {
-  //       data: { user },
-  //     } = await supabase.auth.getUser();
-  //     setUser(user);
-  //   };
-
-  //   fetchUser();
-  // }, []);
 
   const subtotal = orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const tax = subtotal * 0.08;
@@ -68,8 +47,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
   };
 
   const handleAddTransaction = async () => {
-    // setIsAddingCategory(true);
-    console.log("User:"+user);
+    setLoading(true);
     try {
       const response = await fetch("/api/transaction/add", {
         method: "POST",
@@ -86,7 +64,6 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
           notes: cashTendered === 0 ? "No notes" : cashTendered
         }),
       });
-      
 
       const data = await response.json();
       if (response.ok) {
@@ -101,6 +78,8 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
       } else {
         console.log(`Error: ${String(error)}`);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,6 +99,14 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
 
   return (
     <div className="min-h-screen bg-transparent p-6">
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-transparent p-6 rounded-lg">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+            <h2 className="text-2xl font-bold text-white">Please wait...</h2>
+          </div>
+        </div>
+      )}
       {!showSuccessModal && (
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -201,19 +188,19 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                   </div>
                 )}
                 <div>
-                        <label className="block text-sm font-medium text-gray-700 mt-8 mb-2 capitalize">
-                          Customer Name (Optional)
-                        </label>
-                        <input
-                          type="text"
-                          value={customerName}
-                          className="pl-10 w-full p-2 border rounded-lg"
-                          placeholder="Customer Name"
-                          onChange={(e) =>
-                            setCustomerName(e.target.value)
-                          }
-                        />
-                      </div>
+                  <label className="block text-sm font-medium text-gray-700 mt-8 mb-2 capitalize">
+                    Customer Name (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    className="pl-10 w-full p-2 border rounded-lg"
+                    placeholder="Customer Name"
+                    onChange={(e) =>
+                      setCustomerName(e.target.value)
+                    }
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -224,18 +211,10 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                     <span>Subtotal:</span>
                     <span>R{subtotal.toFixed(2)}</span>
                   </div>
-                  {/* <div className="flex justify-between">
-                    <span>Tax (8%):</span>
-                    <span>R{tax.toFixed(2)}</span>
-                  </div> */}
                   <div className="flex justify-between">
                     <span>Tip:</span>
                     <span>R{tip.toFixed(2)}</span>
                   </div>
-                  {/* <div className="flex justify-between">
-                    <span>Discount:</span>
-                    <span>R{discount.toFixed(2)}</span>
-                  </div> */}
                   <div className="flex justify-between text-xl font-bold pt-2 border-t">
                     <span>Total:</span>
                     <span>R{total.toFixed(2)}</span>
