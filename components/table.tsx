@@ -212,7 +212,7 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
       email: "",
       role: "",
       password: "",
-      status: "Active",
+      status: "active",
       username: "",
       authority: ""
     });
@@ -332,8 +332,8 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
               onChange={handleFilterStatus}
             >
               <option value="">Filter by Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option value="active">active</option>
+              <option value="inactive">inactive</option>
             </select>
           </div>
         </div>

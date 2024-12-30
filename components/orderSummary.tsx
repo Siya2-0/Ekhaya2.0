@@ -46,6 +46,36 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
     setSelectedTip(percentage);
   };
 
+  const handleUpdateInventory = async (id: any) => {
+    // setLoading(true);
+    try {
+      const response = await fetch("/api/item/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        handlePrint();
+      } else {
+        console.log(`Error: ${data.error.message}`);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+      } else {
+        console.log(`Error: ${String(error)}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddTransaction = async () => {
     setLoading(true);
     try {
@@ -60,15 +90,20 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
           items: JSON.stringify({ orderItems, tip }),
           total_price: total.toFixed(2),
           payment_method: paymentMethod,
-          status: 'unpaid',
+          status: pay ? 'paid':'unpaid',
           notes: cashTendered === 0 ? "No notes" : cashTendered
         }),
       });
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Category added successfully!");
-        handlePrint();
+        console.log("Transaction added successfully!");
+        console.log("Transaction data: ",data);
+        const transactionId = data.transaction[0]?.id;
+
+        console.log(transactionId); // Output: 71
+        handleUpdateInventory(data.transaction[0]?.id);
+        
       } else {
         console.log(`Error: ${data.error.message}`);
       }

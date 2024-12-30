@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
@@ -89,6 +89,26 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     image_file: null,
   });
 
+  const [errors, setErrors] = useState<any>({});
+
+
+  const validateForm = useCallback(() => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!newItem.item_name) newErrors.item_name = 'Item name is required.';
+    if (!newItem.category) newErrors.category = 'Category is required.';
+    if (!newItem.stock_quantity) newErrors.stock_quantity = 'Quantity is required.';
+    if (!newItem.price) newErrors.price = 'Price is required.';
+    if (!newItem.reorder_level) newErrors.reorder_level = 'Reorder level is required.';
+    if (!newItem.description) newErrors.description = 'Description is required.';
+    if (!newItem.image_file) newErrors.image_file = 'Item image is required.';
+
+    console.log("Error size: " + Object.keys(newErrors).length);
+    return newErrors;
+  }, [newItem]);
+
+  // validateForm();
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setFile(event.target.files[0]);
@@ -167,7 +187,18 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     setSearchTerm(e.target.value);
   };
 
+  const isFormValid = useMemo(() => {
+    const errors = validateForm();
+    return Object.keys(errors).length === 0;
+  }, [validateForm]);
+  
   const handleAddItem = async () => {
+    const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return; // Exit if there are errors
+  }
+
     setIsAdding(true);
     try {
       // Wait for the image to be uploaded and URL to be returned
@@ -197,7 +228,18 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   
       const data = await response.json();
       if (response.ok) {
-        console.log("Item added successfully!");
+        setNewItem({
+          item_name: "",
+          description: "",
+          category: "",
+          price: 0,
+          stock_quantity: 0,
+          reorder_level: 0,
+          last_restock_date: new Date("2023-10-05").toISOString(),
+          Image_url: "",
+          image_file: null,
+        });
+        setErrors({});
         setSuccessModalDescription("Item added successfully.");
         setSuccessModalHeader("Successful!");
         setShowSuccessModal(true);
@@ -675,6 +717,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     value={newItem.item_name}
                     onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
                   />
+                  {/* {errors.item_name && (
+                    <span className="text-red-500 text-sm">{errors.item_name}</span>
+                  )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -692,6 +737,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       </option>
                     ))}
                   </select>
+                  {/* {errors.category && (
+                    <span className="text-red-500 text-sm">{errors.category}</span>
+                  )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -710,6 +758,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       });
                     }}
                   />
+                  {/* {errors.stock_quantity && (
+                <span className="text-red-500 text-sm">{errors.stock_quantity}</span>
+              )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -725,6 +776,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       setNewItem({ ...newItem, price: parseFloat(e.target.value) })
                     }
                   />
+                  {/* {errors.price && (
+                <span className="text-red-500 text-sm">{errors.price}</span>
+              )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -739,6 +793,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       setNewItem({ ...newItem, reorder_level: parseInt(e.target.value) })
                     }
                   />
+                  {/* {errors.reorder_level && (
+                <span className="text-red-500 text-sm">{errors.reorder_level}</span>
+              )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -751,6 +808,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     value={newItem.description}
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                   />
+                  {/* {errors.description && (
+                    <span className="text-red-500 text-sm">{errors.description}</span>
+                  )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -762,6 +822,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     className="w-full p-2 border rounded"
                     onChange={handleFileChange}
                   />
+                  {/* {errors.item_name && (
+                    <span className="text-red-500 text-sm">{errors.item_name}</span>
+                  )} */}
                 </div>
               </div>
               <div className="mt-6 flex justify-end gap-4">
@@ -773,18 +836,15 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                 </button>
                 <button
                   onClick={handleAddItem}
-                  className={`px-4 py-2 rounded-lg ${
-                    isAdding ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
-                  } text-white`}
-                  disabled={isAdding}
+                  className={`px-4 py-2 rounded-lg ${!isFormValid ? 'bg-gray-400': 'bg-blue-600 hover:bg-blue-700'}  text-white`}
+                  disabled={!isFormValid || isAdding}
                 >
-                  {isAdding ? "Adding..." : "Add Item"}
+                  {isAdding ? 'Adding...' : 'Add Item'}
                 </button>
               </div>
             </div>
           </div>
         )}
-
 
         {/* Add Category Modal */}
         {showAddCategoryModal && (

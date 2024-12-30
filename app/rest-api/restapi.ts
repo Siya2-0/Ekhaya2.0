@@ -349,7 +349,7 @@ export async function addCategory(categoryname: string, categorydescription: str
         payment_method,
         status,
         notes
-      });
+      }).select();
   
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {

@@ -347,7 +347,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                             <button
                               onClick={() => addToOrders(item)}
                               disabled={item.stock_quantity === 0}
-                              className={`mt-4 flex items-center justify-center ${item.stock_quantity === 0 ? "bg-gray-700" : "bg-[#D62929]"} hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity duration-300`}
+                              className={`mt-4 flex items-center justify-center ${item.stock_quantity === 0 ? "bg-[#898989]" : "bg-[#D62929]"} hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity duration-300`}
                             >
                               <FiPlusCircle className="mr-2" />
                               Add to Order
@@ -399,7 +399,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                                           <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#000000] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                             <span className="relative z-10"><FaMinus className='w-[10px] h-[10px]'/></span>
                                           </button>
-                                            <input className="p-0 w-4 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-[#D62929]" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
+                                            <input className="p-0 min-w-4 max-w-[26px] bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-[#D62929]" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
                                             <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-[#D62929] relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#f2f2f2] px-3 text-[#000000] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                               <span className="relative z-10"><FaPlus className='w-[10px] h-[10px]'/></span>
                                             </button>
@@ -413,17 +413,17 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                                           <button onClick={() => updateQuantity(item.id, "decrement")} className="text-red mr-[0px] hover:before:bg-redborder-black relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#FFFFFF] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                             <span className="relative z-10"><FaMinus className='w-[10px] h-[10px]'/></span>
                                           </button>
-                                            <input className="p-0 w-4 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-[#D62929]" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
+                                            <input className="p-0 w-6 bg-transparent border-0 text-gray-800 text-center focus:ring-0 dark:text-[#D62929]" type="text" value={item.quantity} data-hs-input-number-input readOnly/>
                                             <button onClick={() =>  updateQuantity(item.id, "increment")} className="text-red mr-[0px] hover:before:bg-redborder-[#D62929] relative rounded-full h-[32px] w-[32px] overflow-hidden bg-[#FFFFFF] px-3 text-[#D62929] shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#D62929] before:transition-all before:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:left-0 hover:before:w-full">
                                               <span className="relative z-10"><FaPlus className='w-[10px] h-[10px]'/></span>
                                             </button>
                                           </div>
                                         </div>
                                         </div>
-                                          <p className='text-center text-2xl font-bold'>R{(item.price * item.quantity).toFixed(2)}</p>
+                                          <p className='text-center text-[22px] font-bold'>R{(item.price * item.quantity).toFixed(2)}</p>
                                         </div>
                                         <div className='md:block hidden pr-0'>
-                                          <button onClick={() => removeFromOrders(item.id)} className="pl-6 pr-6 h-[100px] bg-[#FFFFFF] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
+                                          <button onClick={() => removeFromOrders(item.id)} className="pl-4 pr-4 h-[100px] bg-[#FFFFFF] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
                                             <span className="relative z-10 uppercase text-[14px]">delete</span>
                                           </button>
                                         </div>

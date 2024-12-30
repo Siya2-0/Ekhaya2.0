@@ -402,7 +402,8 @@ const drawer = (
                             <div className="w-full mt-[-32px] justify-end items-end flex">
                               <button
                                 onClick={() => addToOrders(item)}
-                                className="mt-4 flex items-center justify-center bg-[#D62929] hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity duration-300"
+                                disabled={item.stock_quantity === 0}
+                                className={`mt-4 flex items-center justify-center ${item.stock_quantity === 0 ? "bg-[#898989]" : "bg-[#D62929]"} hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity duration-300`}
                               >
                                 <FiPlusCircle className="mr-2" />
                                 Add to Order
