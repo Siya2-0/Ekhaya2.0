@@ -196,6 +196,11 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
     return { subtotal, tax, total };
   };
 
+  const itemsPerPage = 4;
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
   const drawer = (
       <div className="flex">
           <Box sx={{ pb: 2, width: "100%" }}>
@@ -235,9 +240,6 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
       const ordersHistory = JSON.parse(localStorage.getItem('ordersHistory') || '[]');
       ordersHistory.push(newOrder);
       localStorage.setItem('ordersHistory', JSON.stringify(ordersHistory));
-      // setCurrentOrders([]);
-      // setCurrentOrders([]);
-      // setShowPaymentModal(false);
       setPay(paymentMethod === "card");
       setShowOrderSummary(true);
     };
@@ -315,7 +317,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                 </SearchWrapper>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                  {filteredItems.map((item: InventoryItem) => (
+                  {paginatedItems.map((item: InventoryItem) => (
                     <div
                       key={item.id}
                       className="bg-[#FFFFFF] rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
@@ -341,7 +343,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                             <p className="text-gray-400 text-sm mb-2">{item.category}</p>
                             <p className="text-[#303030] font-bold text-[24px]">R{item.price.toFixed(2)}</p>
                           </div>
-                          <div className="w-full mt-[-32px] justify-end items-end flex">
+                          <div className="w-full mt-[0px] justify-end items-end flex">
                             <button
                               onClick={() => addToOrders(item)}
                               className="mt-4 flex items-center justify-center bg-[#D62929] hover:opacity-90 text-white px-4 py-2 rounded-lg transition-opacity duration-300"
@@ -357,13 +359,13 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                 </div>
                 </Grid>
                 <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-                <Pagination
-                    count={Math.ceil(filteredItems.length / 3)}
-                    page={page}
-                    onChange={(e, value) => setPage(value)}
-                    color="primary"
-                />
-                </Box>
+                    <Pagination
+                      count={Math.ceil(filteredItems.length / itemsPerPage)}
+                      page={page}
+                      onChange={(e, value) => setPage(value)}
+                      color="primary"
+                    />
+                  </Box>
         </Container>
         </Box>
     </main>
@@ -371,8 +373,8 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
         </div>
 
         {/* Right column: Fixed width */}
-        <div className="w-[550px] bg-[#FFFFFF] min-h-screen">
-        <div className={`fixed top-0 right-0 h-full w-full md:w-[550px] bg-[#FFFFFF] z-50`}>
+        <div className="w-[530px] bg-[#FFFFFF] min-h-screen">
+        <div className={`fixed top-0 right-0 h-full w-full md:w-[530px] bg-[#FFFFFF] z-50`}>
         <div className="p-0 h-full flex flex-col">
           <React.Fragment>
                 <div className='h-full w-full bg-[#FFFFFF] text-[#212322]'>
@@ -444,10 +446,6 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                       <p className='mr-0 text-[#212322] text-3xl font-normal relative'>R{calculateTotal().total.toFixed(2)}</p>
                       </div>
                     </div>
-                    {/* <button onClick={() => setShowOrders(false)} disabled={currentOrders.length === 0} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} bg-[#f2f2f2] ${(currentOrders.length === 0) ? "text-[#898989]":"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#D62929]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>
-                      <span className={`top-0 flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "":"before:bg-[#D62929]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "":"after:bg-[#D62929]"} after:duration-500 ${(currentOrders.length === 0) ? "":"hover:text-[#ffffff]"} group-hover:before:h-full group-hover:after:h-full`}></span>
-                      <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#898989]":"group-hover:text-[#ffffff]"} text-[18px] font-semibold`}>Continue Ordering</span>
-                    </button> */}
                     <button onClick={() => setShowPaymentModal(true)} disabled={currentOrders.length === 0}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#D62929]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#D62929]"} hover:before:h-full hover:after:h-full`}>
                       <span className={`top-[0] flex h-full w-full items-center justify-center before:absolute before:bottom-0 before:left-1/4 before:z-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:right-1/4 after:top-0 after:z-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 hover:text-black group-hover:before:h-full group-hover:after:h-full`}></span>
                       <span className={`absolute bottom-0 left-0 right-0 top-0 z-10 flex h-full w-full items-center justify-center ${(currentOrders.length === 0) ? "group-hover:text-[#ffffff]":"group-hover:text-[#D62929]"} text-[18px] font-semibold`}>Process Payment</span>
