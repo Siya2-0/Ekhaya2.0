@@ -156,19 +156,14 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
   const handleEditEmployee = async (updatedEmployee: any) => {
     // console.log(updatedEmployee);
     try {
-      const response = await fetch("/api/user/update", {
+      const response = await fetch("/api/user/loaupdate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-        first_name:  updatedEmployee.user_metadata.first_name,
-        last_name: updatedEmployee.user_metadata.last_name,
-        phone_number: updatedEmployee.user_metadata.phone_number,
-        role: updatedEmployee.user_metadata.role,
-        image_url: updatedEmployee.user_metadata.image_url,
+        uuid: updatedEmployee.id,
         LOA: updatedEmployee.user_metadata.LOA,
-        status: updatedEmployee.user_metadata.status,
         }),
       });
   
@@ -466,7 +461,7 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
                 }}
               >
                 <div className="space-y-4 min-w-full">
-                      <div className="min-w-full">
+                      {/* <div className="min-w-full">
                       <TextField
                           select
                           variant="outlined"
@@ -482,7 +477,7 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
                           <MenuItem value="Security">Security</MenuItem>
                           <MenuItem value="Sound Engineer">Sound Engineer</MenuItem>
                         </TextField>
-                      </div>
+                      </div> */}
                       <div className="min-w-full">
                         <TextField
                           select
