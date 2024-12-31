@@ -723,6 +723,104 @@ export async function addCategory(categoryname: string, categorydescription: str
   };
 
 
+ export async function resendConfirmEmail(email:string)
+ {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email,
+    options: {
+      emailRedirectTo: 'http://localhost:3000/welcome'
+    }
+  });
+
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  return new Response(JSON.stringify({message:"sent"  }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  });
+
+
+  
+
+ }
+
+
+ export async function signOut() {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    const { error } = await supabase.auth.signOut()
+    return new Response(JSON.stringify({ error }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+}
+export async function FetchDailyTotals(count: number) {
+  const supabase = await createClient();
+  const { data: totals, error } = await supabase
+    .from('Daily_totals')
+    .select()
+    .order('date', { ascending: false }) // Sort by date column from recent to oldest
+    .limit(count); // Limit the number of rows returned
+
+  if (error) {
+    return new Response(JSON.stringify({ error }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  return new Response(JSON.stringify({ totals }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  });
+}
+
+
+export async function FetchTotalPaid(date: string)
+{
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_paid_transactions_sum', { transaction_date: date })
+  if (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { headers: { "Content-Type": "application/json" }, status: 400 }
+    );
+  }
+
+  return new Response(JSON.stringify({ data }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  });
+
+}
+export async function FetchTotalUnPaid(date: string)
+{
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('get_unpaid_transactions_sum', { transaction_date: date })
+  if (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { headers: { "Content-Type": "application/json" }, status: 400 }
+    );
+  }
+
+  return new Response(JSON.stringify({ data }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  });
+
+
+}
+
 
   // Upload file using standard upload
   // export async function uploadFile(file: any, filePath:string) {

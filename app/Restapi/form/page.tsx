@@ -1,13 +1,20 @@
-import { fetchTransaction, fetchTransactionHistory, UpdateInventory } from "../restapi";
+
+import { addTransaction, FetchDailyTotals, FetchTotalPaid, FetchTotalUnPaid, fetchTransaction, fetchTransactionHistory, UpdateInventory } from "../restapi";
 import { deleteUser, fetchUsers, UpdaterUser } from "../restapi copy";
+// import { AuthProvider, useAuth } from '../../AuthContext';
+// import InactivityPopup from "@/components/InactivityPopup";
 
 
 
 export default async function FormPage() {
   // const [users, setUsers] = useState([]);
 
-  const response = await fetchTransaction();
-  console.log(response)
+  const response = await FetchDailyTotals(2);
+  console.log(response);
+  const response1 = await FetchTotalPaid('2024-12-30');
+  console.log(response1);
+  const response2 = await FetchTotalUnPaid('2024-12-30');
+  console.log(response2);
 
   // useEffect(() => {
   //   fetchUsers()
@@ -26,9 +33,9 @@ export default async function FormPage() {
       <button className="mt-2 p-2 bg-blue-500 text-white rounded">
         Upload
       </button>
-      <ul>
-      
-      </ul>
+     {/* <InactivityPopup/> */}
+ 
     </main>
   );
 }
+
