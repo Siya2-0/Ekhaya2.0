@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { deleteUser } from '@/app/rest-api/api-users';
+import { updateMetadata } from "@/app/rest-api/restapi";
 
 interface User {
   id: string;
@@ -61,6 +62,8 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
   const [editEmployee, setEditEmployee] = useState<any>({});
   const [showModal, setShowModal] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [initialEditEmployee, setInitialEditEmployee] = useState<any>({});
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const supabase = createClientComponentClient();
 
@@ -146,7 +149,50 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
 
   const handleEdit = (employee: any) => {
     setEditEmployee(employee);
+    setInitialEditEmployee(employee);
     setShowModal(true);
+  };
+
+  const handleEditEmployee = async (updatedEmployee: any) => {
+    // console.log(updatedEmployee);
+    try {
+      const response = await fetch("/api/user/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+        first_name:  updatedEmployee.user_metadata.first_name,
+        last_name: updatedEmployee.user_metadata.last_name,
+        phone_number: updatedEmployee.user_metadata.phone_number,
+        role: updatedEmployee.user_metadata.role,
+        image_url: updatedEmployee.user_metadata.image_url,
+        LOA: updatedEmployee.user_metadata.LOA,
+        status: updatedEmployee.user_metadata.status,
+        }),
+      });
+  
+      const data = await response;
+      if (response.ok) {
+        console.log("User updated successfully!");
+        setEmployees(
+          employees.map((emp) =>
+            emp.id === updatedEmployee.id ? updatedEmployee : emp
+          )
+        );
+        setShowModal(false);
+        setIsUpdating(false);
+        setEditEmployee(null);
+        return data;
+      } else {
+        const errorData = await response.json();
+        console.error(`Error: ${errorData}`);
+        setIsUpdating(false);
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      setIsUpdating(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -170,13 +216,10 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
   };
 
   const handleUpdate = (updatedEmployee: any) => {
-    setEmployees(
-      employees.map((emp) =>
-        emp.id === updatedEmployee.id ? updatedEmployee : emp
-      )
-    );
-    setShowModal(false);
-    setEditEmployee(null);
+    // console.log("Updated Role:", updatedEmployee.user_metadata.role);
+    // console.log("Updated LOA:", updatedEmployee.user_metadata.LOA);
+    setIsUpdating(true);
+    handleEditEmployee(updatedEmployee);
   };
 
   const filteredEmployees = employees
@@ -284,19 +327,31 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
     }
   };
   
-    const handleChange = (event: any) => {
-      const { name, value } = event.target;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value
-      }));
-      if (errors[name as keyof FormErrors]) {
-        setErrors((prev) => ({
-          ...prev,
-          [name]: ""
-        }));
-      }
+  interface EditEmployee {
+    user_metadata: {
+      [key: string]: string;
     };
+  }
+
+  interface HandleChangeEvent {
+    target: {
+      name: string;
+      value: string;
+    };
+  }
+
+  const handleChange = (e: HandleChangeEvent) => {
+    const { name, value } = e.target;
+    setEditEmployee((prev: EditEmployee) => ({
+      ...prev,
+      user_metadata: {
+        ...prev.user_metadata,
+        [name]: value,
+      },
+    }));
+  };
+
+  const hasChanges = JSON.stringify(editEmployee) !== JSON.stringify(initialEditEmployee);
 
   return (
     <div className="p-6 bg-[F2F2F2] min-h-screen text-[#303030] pt-12">
@@ -416,10 +471,11 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
                           select
                           variant="outlined"
                           label="Level of Access"
-                          name="Role"
+                          name="role"
                           required
                           fullWidth
-                          defaultValue={editEmployee.user_metadata.role}
+                          onChange={handleChange}
+                          value={editEmployee.user_metadata.role || ""}
                         >
                           <MenuItem value="Waitress">Waitress</MenuItem>
                           <MenuItem value="Manager">Manager</MenuItem>
@@ -432,10 +488,11 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
                           select
                           variant="outlined"
                           label="Level of Access"
-                          name="loa"
+                          name="LOA"
                           required
                           fullWidth
-                          defaultValue={editEmployee.user_metadata.LOA}
+                          onChange={handleChange}
+                          value={editEmployee.user_metadata.LOA || ""}
                         >
                           <MenuItem value="NonManagement">NonManagement</MenuItem>
                           <MenuItem value="Management">Management</MenuItem>
@@ -453,9 +510,10 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    disabled={!hasChanges || isUpdating}
+                    className={`px-4 py-2 ${!hasChanges ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-600"}  text-white rounded-md`}
                   >
-                    Save Changes
+                    {isUpdating ? 'Updating...' : 'Save Changes'}
                   </button>
                 </div>
               </form>

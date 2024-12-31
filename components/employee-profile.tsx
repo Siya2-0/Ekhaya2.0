@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { FaUser, FaEnvelope, FaPhone, FaEdit, FaCheck, FaTimes, FaUserShield, FaUserCog, FaReceipt, FaChartLine, FaUsers, FaLock } from "react-icons/fa";
+import React, { useCallback, useEffect, useState } from "react";
+import { FaUser, FaEnvelope, FaPhone, FaEdit, FaCheck, FaTimes, FaUserShield } from "react-icons/fa";
 
 interface User {
   id: string;
@@ -36,7 +36,14 @@ interface User {
 const EmployeeProfile = ({ users }: any) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [employeeData, setEmployeeData] = useState<User>(users);
-  console.log("EmployeeProfile: ", users);
+  const [editEmployee, setEditEmployee] = useState<User>(users);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  useEffect(() => {
+    setEditEmployee(users);
+    setEmployeeData(users);
+  }, [users]);
+  
 
   const managerPermissions = [
     { id: 1, name: "Access POS System", granted: true },
@@ -68,26 +75,125 @@ const EmployeeProfile = ({ users }: any) => {
     { id: 7, name: "Manage Orders", granted: true},
   ]
 
-  const EditModal = () => (
+
+
+  const handleEditEmployee = async (updatedEmployee: User) => {
+    try {
+      const response = await fetch("/api/user/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: updatedEmployee.user_metadata.first_name,
+          last_name: updatedEmployee.user_metadata.last_name,
+          phone_number: updatedEmployee.user_metadata.phone_number,
+          role: updatedEmployee.user_metadata.role,
+          image_url: updatedEmployee.user_metadata.image_url,
+          LOA: updatedEmployee.user_metadata.LOA,
+          status: updatedEmployee.user_metadata.status,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("User updated successfully!");
+        setEmployeeData(updatedEmployee);
+        setShowEditModal(false);
+      } else {
+        console.error(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditEmployee((prev) => ({
+      ...prev,
+      user_metadata: {
+        ...prev.user_metadata,
+        [name]: value,
+      },
+    }));
+  };
+  
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    await handleEditEmployee(editEmployee);
+  };
+
+  const EditModal = ({
+    editEmployee,
+    handleChange,
+    handleSubmit,
+    setShowEditModal,
+    isUpdating,
+  }: {
+    editEmployee: User;
+    handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    handleSubmit: (e: React.FormEvent) => Promise<void>;
+    setShowEditModal: React.Dispatch<React.SetStateAction<boolean>>;
+    isUpdating: boolean;
+  }) => (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
         <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-        <form className="space-y-4">
+        {/* <form className="space-y-4" onSubmit={handleSubmit}> */}
           <div>
             <label className="block text-sm font-medium text-gray-700">First Name</label>
-            <input type="text" defaultValue={employeeData.user_metadata.first_name} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+            <input
+              type="text"
+              // name="first_name"
+              value={editEmployee.user_metadata.first_name}
+              onChange={(e) =>
+                setEditEmployee({
+                  ...editEmployee,
+                  user_metadata: {
+                    ...editEmployee.user_metadata, // Preserve other properties in user_metadata
+                    first_name: e.target.value,   // Update only the first_name field
+                  },
+                })
+              }
+              
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Last Name</label>
-            <input type="text" defaultValue={employeeData.user_metadata.last_name} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+            <input
+              type="text"
+              name="last_name"
+              value={editEmployee.user_metadata.last_name}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" defaultValue={employeeData.user_metadata.email} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+            <input
+              type="email"
+              name="email"
+              value={editEmployee.user_metadata.email}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone</label>
-            <input type="tel" defaultValue={employeeData.user_metadata.phone_number} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" />
+            <input
+              type="tel"
+              name="phone_number"
+              value={editEmployee.user_metadata.phone_number}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
           </div>
           <div className="flex justify-end space-x-2 mt-6">
             <button
@@ -98,16 +204,18 @@ const EmployeeProfile = ({ users }: any) => {
               Cancel
             </button>
             <button
-              type="submit"
+              // type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              disabled={isUpdating}
             >
-              Save Changes
+              {isUpdating ? "Updating..." : "Save Changes"}
             </button>
           </div>
-        </form>
+        {/* </form> */}
       </div>
     </div>
   );
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -119,7 +227,6 @@ const EmployeeProfile = ({ users }: any) => {
           </div>
         </div>
       </header>
-
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -217,7 +324,82 @@ const EmployeeProfile = ({ users }: any) => {
         </div>
       </main>
 
-      {showEditModal && <EditModal />}
+      {/* {showEditModal && (
+        <EditModal
+          editEmployee={editEmployee}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          setShowEditModal={setShowEditModal}
+          isUpdating={isUpdating}
+        />
+      )} */}
+
+      {showEditModal && (
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">First Name</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  value={editEmployee.user_metadata.first_name}
+                  onChange={handleChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                <input
+                  type="text"
+                  name="last_name"
+                  value={editEmployee.user_metadata.last_name}
+                  onChange={handleChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={editEmployee.user_metadata.email}
+                  onChange={handleChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <input
+                  type="tel"
+                  name="phone_number"
+                  value={editEmployee.user_metadata.phone_number}
+                  onChange={handleChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex justify-end space-x-2 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? "Updating..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
