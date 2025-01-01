@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 import  validator  from 'validator';
-
+import jsPDF from 'jspdf';
 import {v4 as uuidv4} from 'uuid';
 
 export async function addCategory(categoryname: string, categorydescription: string ) {
@@ -522,15 +522,7 @@ export async function addCategory(categoryname: string, categorydescription: str
 
   export async function fetchLowStock(checkZeroStock: boolean = false) {
     const supabase = await createClient();
-    let query = supabase.from('Inventory').select('*');
-  
-    if (checkZeroStock) {
-      query = query.eq('stock_quantity', 0);
-    } else {
-      query = query.lte('stock_quantity', 'reorder_level');
-    }
-  
-    const { data: Inventory, error } = await query;
+    const { data: Inventory, error } = await supabase.rpc('fetch_low_stock', { check_zero_stock: checkZeroStock });
   
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
@@ -840,6 +832,7 @@ export async function count_transactions_by_date(date: string)
 
 
 }
+
 
   // Upload file using standard upload
   // export async function uploadFile(file: any, filePath:string) {
