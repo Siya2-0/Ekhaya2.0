@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { FaShoppingCart, FaBoxes, FaUsers, FaChartLine, FaBell, FaCog, FaClipboardList, FaPlus } from "react-icons/fa";
 import { Line, Pie } from "react-chartjs-2";
 import {
@@ -27,20 +27,65 @@ ChartJS.register(
   ArcElement
 );
 
-const POSDashboard = () => {
-  const [activeTab, setActiveTab] = useState("daily");
+interface ApiData {
+  created_at: string;
+  daily_total: number;
+  date: string;
+  id: number;
+  updated_at: string;
+}
 
-  const salesData = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+const transformData = (data: ApiData[]) => {
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  
+  // Initialize an array for weekly totals
+  const weeklyTotals = Array(7).fill(0);
+
+  data.forEach(({ daily_total, date }) => {
+    const dayIndex = new Date(date).getDay();
+    weeklyTotals[dayIndex] += daily_total; // Aggregate sales per day
+  });
+
+  return {
+    labels: daysOfWeek,
     datasets: [
       {
         label: "Sales",
-        data: [3000, 4500, 3200, 5000, 4800, 6000, 5500],
+        data: weeklyTotals,
         borderColor: "rgb(75, 192, 192)",
-        tension: 0.1
-      }
-    ]
+        tension: 0.1,
+      },
+    ],
   };
+};
+
+const getTodaySales = (data: ApiData[]) => {
+  const today = new Date().toISOString().split("T")[0]; // Get current date in "YYYY-MM-DD" format
+  const todayData = data.find((item) => item.date === today);
+
+  return todayData ? todayData.daily_total : 0; // Return daily total or 0 if no data for today
+};
+
+const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
+  const [activeTab, setActiveTab] = useState("daily");
+  const [salesData, setSalesData] = useState<ApiData[]>(data);
+
+  const todaySales = useMemo(() => getTodaySales(salesData), [salesData]);
+  const chartData = useMemo(() => transformData(salesData), [salesData]);
+
+  console.log(totalOrders);
+
+  // const salesData = {
+  //   labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  //   datasets: [
+  //     {
+  //       label: "Sales",
+  //       data: [3000, 4500, 3200, 5000, 4800, 6000, 5500],
+  //       borderColor: "rgb(75, 192, 192)",
+  //       tension: 0.1
+  //     }
+  //   ]
+  // };
 
   const categoryData = {
     labels: ["Food", "Drinks", "Desserts", "Others"],
@@ -71,12 +116,13 @@ const POSDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      {/* <pre>{JSON.stringify(chartData, null, 2)}</pre> */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500">Daily Sales</p>
-              <h3 className="text-2xl font-bold">R5,670</h3>
+              <h3 className="text-2xl font-bold">R{todaySales}</h3>
             </div>
             <FaShoppingCart className="text-blue-500 text-2xl" />
           </div>
@@ -86,7 +132,7 @@ const POSDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500">Total Orders</p>
-              <h3 className="text-2xl font-bold">127</h3>
+              <h3 className="text-2xl font-bold">{totalOrders.total_count}</h3>
             </div>
             <FaClipboardList className="text-green-500 text-2xl" />
           </div>
@@ -96,7 +142,7 @@ const POSDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500">Low Stock Items</p>
-              <h3 className="text-2xl font-bold">8</h3>
+              <h3 className="text-2xl font-bold">{lowStock.length}</h3>
             </div>
             <FaBoxes className="text-yellow-500 text-2xl" />
           </div>
@@ -105,12 +151,22 @@ const POSDashboard = () => {
         <div className="bg-white p-4 rounded-lg shadow-md">
           <div className="flex items-center justify-between">
             <div>
+              <p className="text-gray-500">Out Of Stock Items</p>
+              <h3 className="text-2xl font-bold">{outOfStock.length}</h3>
+            </div>
+            <FaBoxes className="text-red-500 text-2xl" />
+          </div>
+        </div>
+
+        {/* <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="flex items-center justify-between">
+            <div>
               <p className="text-gray-500">Active Employees</p>
               <h3 className="text-2xl font-bold">12</h3>
             </div>
             <FaUsers className="text-purple-500 text-2xl" />
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -118,27 +174,27 @@ const POSDashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Sales Trends</h2>
             <div className="flex space-x-2">
-              <button
+              {/* <button
                 onClick={() => setActiveTab("daily")}
                 className={`px-3 py-1 rounded ${activeTab === "daily" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
               >
                 Daily
-              </button>
+              </button> */}
               <button
                 onClick={() => setActiveTab("weekly")}
-                className={`px-3 py-1 rounded ${activeTab === "weekly" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                className={`px-3 py-1 rounded bg-blue-500 text-white`}
               >
                 Weekly
               </button>
             </div>
           </div>
-          <Line data={salesData} />
+          <Line data={chartData} />
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        {/* <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-4">Category Breakdown</h2>
           <Pie data={categoryData} />
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

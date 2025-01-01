@@ -22,6 +22,7 @@ import {
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { deleteUser } from '@/app/rest-api/api-users';
 import { updateMetadata } from "@/app/rest-api/restapi";
+import { useRouter } from "next/navigation";
 
 interface User {
   id: string;
@@ -54,6 +55,8 @@ interface User {
 }
 
 const EmployeeTable = ({ users }: { users: User[] }) => {
+  const router = useRouter();
+
   const [employees, setEmployees] = useState<User[]>(users);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("");
@@ -225,7 +228,7 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
         .includes(searchTerm.toLowerCase())
     )
     .filter((employee) =>
-      filterRole ? employee.role === filterRole : true
+      filterRole ? employee.user_metadata.role === filterRole : true
     )
     .filter((employee) =>
       filterStatus ? employee.user_metadata.status === filterStatus : true
@@ -313,14 +316,15 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
     }
   };
 
-  const handleDialogClose = () => {
-    setShowDialog(false);
+    const handleDialogClose = () => {
+      setShowDialog(false);
 
-    if (dialogSuccess) {
-      // Refresh the page on successful registration
-      window.location.reload();
-    }
+      if (dialogSuccess) {
+      // Navigate to the current route to simulate a "refresh"
+      router.refresh();
+      }
   };
+
   
   interface EditEmployee {
     user_metadata: {
@@ -373,9 +377,11 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
               onChange={handleFilterRole}
             >
               <option value="">Filter by Role</option>
-              <option value="Developer">Developer</option>
-              <option value="Designer">Designer</option>
+              <option value="Waitress">Waitress</option>
+              <option value="Sound Engineer">Sound Engineer</option>
               <option value="Manager">Manager</option>
+              <option value="Security">Security</option>
+
             </select>
             <select
               className="px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-transparent"
@@ -632,20 +638,6 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
               </Button>
             </DialogActions>
           </Dialog>
-
-          {/* Error Snackbar */}
-          {/* {errorMessage && (
-            <Snackbar
-              open={Boolean(errorMessage)}
-              autoHideDuration={6000}
-              onClose={() => setErrorMessage(null)}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Alert severity="error" variant="filled" onClose={() => setErrorMessage(null)}>
-                {errorMessage}
-              </Alert>
-            </Snackbar>
-          )} */}
         </div>
       </div>
     </div>

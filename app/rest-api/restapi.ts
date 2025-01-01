@@ -511,15 +511,7 @@ export async function addCategory(categoryname: string, categorydescription: str
 
   export async function fetchLowStock(checkZeroStock: boolean = false) {
     const supabase = await createClient();
-    let query = supabase.from('Inventory').select('*');
-  
-    if (checkZeroStock) {
-      query = query.eq('stock_quantity', 0);
-    } else {
-      query = query.lte('stock_quantity', 'reorder_level');
-    }
-  
-    const { data: Inventory, error } = await query;
+    const { data: Inventory, error } = await supabase.rpc('fetch_low_stock', { check_zero_stock: checkZeroStock });
   
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
@@ -528,10 +520,7 @@ export async function addCategory(categoryname: string, categorydescription: str
       });
     }
   
-    return new Response(JSON.stringify({ Inventory }), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 200,
-    });
+    return Inventory;
   };
 
   export async function fetchTransactionHistory(transactionId?: number) {
@@ -710,3 +699,74 @@ export async function addCategory(categoryname: string, categorydescription: str
       status: 200,
     });
   };
+
+  export async function FetchDailyTotals(count: number) {
+    const supabase = await createClient();
+    const { data: totals, error } = await supabase
+      .from('Daily_totals')
+      .select()
+      .order('date', { ascending: false }) // Sort by date column from recent to oldest
+      .limit(count); // Limit the number of rows returned
+  
+    if (error) {
+      return new Response(JSON.stringify({ error }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+  
+    return totals;
+  }
+  
+  
+  export async function FetchTotalPaid(date: string)
+  {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc('get_paid_transactions_sum', { transaction_date: date })
+    if (error) {
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        { headers: { "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+  
+    return new Response(JSON.stringify({ data }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    });
+  
+  }
+  export async function FetchTotalUnPaid(date: string)
+  {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc('get_unpaid_transactions_sum', { transaction_date: date })
+    if (error) {
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        { headers: { "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+  
+    return new Response(JSON.stringify({ data }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 200,
+    });
+  
+  
+  }
+
+  export async function count_transactions_by_date(date: string)
+{
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('count_transactions_by_date', { transaction_date: date })
+  if (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { headers: { "Content-Type": "application/json" }, status: 400 }
+    );
+  }
+
+  return data;
+
+
+}

@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle, FaEnvelope } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import CategoryManagement from "./category-management";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
+import * as XLSX from 'xlsx';
+import emailjs from 'emailjs-com';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
@@ -259,8 +261,12 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     }
   };
 
-  const handleAddCategory = async () => {
+  const handleAddCat = () => {
     setIsAddingCategory(true);
+    handleAddCategory();
+  }
+
+  const handleAddCategory = async () => {
     try {
       const response = await fetch("/api/category/add", {
         method: "POST",
@@ -269,7 +275,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         },
         body: JSON.stringify({
           categoryname: newCategory.categoryName,
-          categorydescription: newCategory.cateogryDescription,
+          categorydescription: (newCategory.cateogryDescription === "" ? "\t" : newCategory.cateogryDescription),
         }),
       });
       
@@ -283,7 +289,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         setShowAddCategoryModal(false);
         setIsAddingCategory(false);
       } else {
-        console.log(`Error: ${data.error.message}`);
+        console.log(`Error: ${data.error}`);
         setIsAddingCategory(false);
       }
     } catch (error) {
@@ -511,6 +517,39 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     setShowAddModal(false); // Close modal
   };
 
+  const handleExportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(inventory);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Inventory");
+    XLSX.writeFile(workbook, "inventory.xlsx");
+  };
+
+  // const handleSendEmail = async () => {
+  //   const worksheet = XLSX.utils.json_to_sheet(inventory);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Inventory");
+  //   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+
+  //   const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  //   const file = new File([blob], "inventory.xlsx", { type: "application/octet-stream" });
+
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+
+  //   try {
+  //     await emailjs.sendForm(
+  //       process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+  //       process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+  //       formData,
+  //       process.env.NEXT_PUBLIC_EMAILJS_USER_ID!
+  //     );
+  //     alert("Email sent successfully!");
+  //   } catch (error) {
+  //     console.error("Error sending email:", error);
+  //     alert("Failed to send email.");
+  //   }
+  // };
+
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">
       <div className="max-w-7xl mx-auto">
@@ -585,6 +624,18 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
             >
               <FaPlus /> Add New Category
             </button>
+            <button
+              onClick={handleExportToExcel}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-green-700"
+            >
+              <FaFileExport /> Export to Excel
+            </button>
+            {/* <button
+              onClick={handleSendEmail}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700"
+            >
+              <FaEnvelope /> Send via Email
+            </button> */}
           </div>
         </div>
 
@@ -850,46 +901,50 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         {showAddCategoryModal && (
             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
               <div className="bg-white rounded-lg p-8 max-w-md w-full">
-                <h2 className="text-2xl font-bold mb-4">Add New Category</h2>
-                <div className="space-y-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                    Category Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Category Name"
-                    className="w-full p-2 border rounded"
-                    value={newCategory.categoryName}
-                    onChange={(e) => setNewCategory({ ...newCategory, categoryName: e.target.value })}
-                  />
-                  <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
-                    Category Description
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Category Description"
-                    className="w-full p-2 border rounded"
-                    value={newCategory.cateogryDescription}
-                    onChange={(e) => setNewCategory({ ...newCategory, cateogryDescription: e.target.value })}
-                  />
-                </div>
-                <div className="mt-6 flex justify-end gap-4">
-                  <button
-                    onClick={() => setShowAddCategoryModal(false)}
-                    className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAddCategory}
-                    className={`px-4 py-2 rounded-lg ${
-                      isAddingCategory ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
-                    } text-white`}
-                    disabled={isAddingCategory} // Disable button while loading
-                  >
-                    {isAddingCategory ? "Adding..." : "Add Category"}
-                  </button>
-                </div>
+                <form action={handleAddCat}>
+                  <h2 className="text-2xl font-bold mb-4">Add New Category</h2>
+                  <div className="space-y-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                      Category Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Category Name"
+                      className="w-full p-2 border rounded"
+                      value={newCategory.categoryName}
+                      required
+                      onChange={(e) => setNewCategory({ ...newCategory, categoryName: e.target.value })}
+                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-[-10px] capitalize">
+                      Category Description
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Category Description"
+                      className="w-full p-2 border rounded"
+                      value={newCategory.cateogryDescription || ""}
+                      onChange={(e) => setNewCategory({ ...newCategory, cateogryDescription: e.target.value })}
+                    />
+                  </div>
+                  <div className="mt-6 flex justify-end gap-4">
+                    <button
+                      onClick={() => setShowAddCategoryModal(false)}
+                      className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      // onClick={() => setIsAddingCategory(true)}
+                      disabled={(newCategory.categoryName === "") || isAddingCategory}
+                      className={`px-4 py-2 rounded-lg ${
+                        (!newCategory.categoryName || isAddingCategory) ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+                      } text-white`}
+                    >
+                      {isAddingCategory ? "Adding..." : "Add Category"}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}
