@@ -2,6 +2,8 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaCheck, FaTimes, FaUserShield } from "react-icons/fa";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { v4 as uuidv4 } from 'uuid';
 
 interface User {
   id: string;
@@ -38,6 +40,10 @@ const EmployeeProfile = ({ users }: any) => {
   const [employeeData, setEmployeeData] = useState<User>(users);
   const [editEmployee, setEditEmployee] = useState<User>(users);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     setEditEmployee(users);
@@ -75,7 +81,70 @@ const EmployeeProfile = ({ users }: any) => {
     { id: 7, name: "Manage Orders", granted: true},
   ]
 
+  useEffect(() => {
+    if (file) {
+      handleUploadProfilePicture();
+    }
+  }, [file]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      // handleUploadProfilePicture();
+    }
+  };
+
+  const uploadFile = async (file: File, filePath: string) => {
+    const { data, error } = await supabase.storage.from('Ekhaya_Bucket').upload(filePath, file);
+    if (error) {
+      console.log(`Error uploading file: ${error.message}`);
+    } else {
+      const { data: url } = await supabase.storage.from('Ekhaya_Bucket').getPublicUrl(filePath);
+      console.log(url.publicUrl);
+      console.log(`File uploaded successfully: ${data}`);
+      return url.publicUrl;
+    }
+  };
+
+  const handleUpload = async () => {
+    if (file) {
+      // setUploading(true);
+      const filePath = `image/${uuidv4()}.${file.name.split('.').pop()}`;
+      return uploadFile(file, filePath).finally(() => console.log("Upload complete"));
+    } else {
+      console.log('No file selected');
+      return null;
+    }
+  };
+
+  const handleUploadProfilePicture = async () => {
+    setLoading(true);
+    if (file) {
+      const filePath = `image/${uuidv4()}.${file.name.split('.').pop()}`;
+
+      const imageUrl = await uploadFile(file, filePath).finally(() => console.log("Upload complete"));
+      if (imageUrl) {
+        setEditEmployee((prev) => ({
+          ...prev,
+          user_metadata: {
+            ...prev.user_metadata,
+            image_url: imageUrl,
+          },
+        }));
+        handleEditEmployee({
+          ...editEmployee,
+          user_metadata: {
+            ...editEmployee.user_metadata,
+            image_url: imageUrl,
+          },
+        });
+        setLoading(false);
+      }
+    } else {
+      console.log('No file selected');
+      setLoading(false);
+    }
+  };
 
   const handleEditEmployee = async (updatedEmployee: User) => {
     try {
@@ -100,6 +169,7 @@ const EmployeeProfile = ({ users }: any) => {
         console.log("User updated successfully!");
         setEmployeeData(updatedEmployee);
         setShowEditModal(false);
+        setLoading(false);
       } else {
         console.error(`Error: ${data.error}`);
       }
@@ -129,96 +199,16 @@ const EmployeeProfile = ({ users }: any) => {
     await handleEditEmployee(editEmployee);
   };
 
-  const EditModal = ({
-    editEmployee,
-    handleChange,
-    handleSubmit,
-    setShowEditModal,
-    isUpdating,
-  }: {
-    editEmployee: User;
-    handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    handleSubmit: (e: React.FormEvent) => Promise<void>;
-    setShowEditModal: React.Dispatch<React.SetStateAction<boolean>>;
-    isUpdating: boolean;
-  }) => (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-        {/* <form className="space-y-4" onSubmit={handleSubmit}> */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">First Name</label>
-            <input
-              type="text"
-              // name="first_name"
-              value={editEmployee.user_metadata.first_name}
-              onChange={(e) =>
-                setEditEmployee({
-                  ...editEmployee,
-                  user_metadata: {
-                    ...editEmployee.user_metadata, // Preserve other properties in user_metadata
-                    first_name: e.target.value,   // Update only the first_name field
-                  },
-                })
-              }
-              
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Last Name</label>
-            <input
-              type="text"
-              name="last_name"
-              value={editEmployee.user_metadata.last_name}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={editEmployee.user_metadata.email}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone</label>
-            <input
-              type="tel"
-              name="phone_number"
-              value={editEmployee.user_metadata.phone_number}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-          <div className="flex justify-end space-x-2 mt-6">
-            <button
-              type="button"
-              onClick={() => setShowEditModal(false)}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              // type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              disabled={isUpdating}
-            >
-              {isUpdating ? "Updating..." : "Save Changes"}
-            </button>
-          </div>
-        {/* </form> */}
-      </div>
-    </div>
-  );
-  
-
   return (
     <div className="min-h-screen bg-gray-100">
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-transparent p-6 rounded-lg">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+            <h2 className="text-2xl font-bold text-white">Please wait...</h2>
+          </div>
+        </div>
+      )}
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex items-center justify-between">
           <div className="flex items-center">
@@ -244,9 +234,20 @@ const EmployeeProfile = ({ users }: any) => {
                         (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1633332755192-727a05c4013d";
                       }}
                     />
-                    <button className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-2 text-white hover:bg-blue-700 transition-colors">
+                    {/* upload profile picture button */}
+                    <button
+                      className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-2 text-white hover:bg-blue-700 transition-colors"
+                      onClick={() => document.getElementById('fileInput')?.click()}
+                    >
                       <FaEdit className="h-4 w-4" />
                     </button>
+                    <input
+                      type="file"
+                      id="fileInput"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
                   </div>
                   <h2 className="mt-4 text-xl font-semibold">{`${employeeData.user_metadata.first_name} ${employeeData.user_metadata.last_name}`}</h2>
                   <p className="text-gray-600">{employeeData.user_metadata.role}</p>
@@ -323,16 +324,6 @@ const EmployeeProfile = ({ users }: any) => {
           </div>
         </div>
       </main>
-
-      {/* {showEditModal && (
-        <EditModal
-          editEmployee={editEmployee}
-          handleChange={handleChange}
-          handleSubmit={handleSubmit}
-          setShowEditModal={setShowEditModal}
-          isUpdating={isUpdating}
-        />
-      )} */}
 
       {showEditModal && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">

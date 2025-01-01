@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { BsArrowRight } from "react-icons/bs";
+import Link from "next/link";
 
 const Welcome = () => {
   const socialLinks = [
@@ -80,20 +81,22 @@ const Welcome = () => {
           whileTap={{ scale: 0.95 }}
           className="mt-8"
         >
-          <button
-            className="group relative inline-flex items-center px-8 py-4 text-lg font-bold tracking-widest text-black bg-gradient-to-r from-yellow-600 to-[#D62929] rounded-full overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
-            onClick={() => console.log("New Order Clicked")}
-          >
-            <span className="relative z-10">NEW ORDER</span>
-            <motion.span
-              className="absolute right-4 flex items-center"
-              initial={{ x: -10, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 1.5 }}
+          <Link href={"/protected/new-order"}>
+            <button
+              className="group relative inline-flex items-center px-8 py-4 text-lg font-bold tracking-widest text-black bg-gradient-to-r from-yellow-600 to-[#D62929] rounded-full overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
+              onClick={() => console.log("New Order Clicked")}
             >
-              <BsArrowRight className="ml-2 text-xl" />
-            </motion.span>
-          </button>
+              <span className="relative z-10">NEW ORDER</span>
+              <motion.span
+                className="absolute right-4 flex items-center"
+                initial={{ x: -10, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 1.5 }}
+              >
+                <BsArrowRight className="ml-2 text-xl" />
+              </motion.span>
+            </button>
+          </Link>
         </motion.div>
       </motion.header>
 
