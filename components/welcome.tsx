@@ -35,7 +35,7 @@ const Welcome = () => {
         delay: i * 0.1,
         duration: 0.5,
         repeat: Infinity,
-        repeatType: "reverse",
+        repeatType: "reverse" as "reverse",
         repeatDelay: 2
       },
     }),
