@@ -822,6 +822,25 @@ export async function FetchTotalUnPaid(date: string)
 }
 
 
+export async function count_transactions_by_date(date: string)
+{
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('count_transactions_by_date', { transaction_date: date })
+  if (error) {
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { headers: { "Content-Type": "application/json" }, status: 400 }
+    );
+  }
+
+  return new Response(JSON.stringify({ data }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  });
+
+
+}
+
   // Upload file using standard upload
   // export async function uploadFile(file: any, filePath:string) {
   //   const supabase = await createClient();

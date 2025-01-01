@@ -1,5 +1,5 @@
 
-import { addTransaction, FetchDailyTotals, FetchTotalPaid, FetchTotalUnPaid, fetchTransaction, fetchTransactionHistory, UpdateInventory } from "../restapi";
+import { addTransaction, count_transactions_by_date, FetchDailyTotals, FetchTotalPaid, FetchTotalUnPaid, fetchTransaction, fetchTransactionHistory, UpdateInventory } from "../restapi";
 import { deleteUser, fetchUsers, UpdaterUser } from "../restapi copy";
 // import { AuthProvider, useAuth } from '../../AuthContext';
 // import InactivityPopup from "@/components/InactivityPopup";
@@ -9,11 +9,11 @@ import { deleteUser, fetchUsers, UpdaterUser } from "../restapi copy";
 export default async function FormPage() {
   // const [users, setUsers] = useState([]);
 
-  const response = await FetchDailyTotals(2);
-  console.log(response);
-  const response1 = await FetchTotalPaid('2024-12-30');
-  console.log(response1);
-  const response2 = await FetchTotalUnPaid('2024-12-30');
+  // const response = await FetchDailyTotals(2);
+  // console.log(response);
+  // const response1 = await FetchTotalPaid('2024-12-30');
+  // console.log(response1);
+  const response2 = await count_transactions_by_date('2024-12-30');
   console.log(response2);
 
   // useEffect(() => {
