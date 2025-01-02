@@ -223,25 +223,37 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
   );
 };
 
-export function generatePDF(transactions: any) {
+function generatePDF(transactions: any) {
   const doc = new jsPDF();
 
   // Set the title
   doc.setFontSize(18);
+  doc.setTextColor(40);
   doc.text('Transaction History', 14, 22);
 
-  // Set the table headers vertically
+  // Define the table headers
+  const headers = ['Date', 'Employee', 'Total Price', 'Status', 'Payment Method'];
+
+  // Define the initial positions
+  let startX = 4;
+  let startY = 30;
+  const lineHeight = 10;
+
+  // Draw table headers
   doc.setFontSize(12);
-  const headers = ['ID', 'Date', 'Employee', 'Total Price', 'Status', 'Payment Method'];
-  let headerY = 32;
-  headers.forEach((header) => {
-    doc.text(header, 14, headerY);
-    headerY += 10;
+  doc.setFillColor(0, 57, 107);
+  doc.setTextColor(255, 255, 255);
+  headers.forEach((header, index) => {
+    doc.setFillColor(0, 57, 107);
+    doc.rect(startX + index * 39, startY, 39, lineHeight, 'F');
+    doc.text(header, startX + index * 39 + 5, startY + 7);
   });
 
-  let x = 50; // Initial x position for the first column of data
+  // Draw table rows
+  doc.setFontSize(8);
+  doc.setTextColor(0, 0, 0);
 
-  transactions.forEach((transaction: any) => {
+  transactions.forEach((transaction: any, rowIndex: number) => {
     let transactionData;
     try {
       transactionData = JSON.parse(transaction.transaction_data);
@@ -250,41 +262,38 @@ export function generatePDF(transactions: any) {
       return;
     }
 
-    let y = 32; // Reset y position for each transaction
+    const rowY = startY + (rowIndex + 1) * lineHeight;
+    
+    const row = [
+      new Date(transaction.changed_at).toLocaleString(),
+      transaction.employee_username || 'N/A',
+      transactionData?.total_price?.toFixed(2) || '0.00',
+      transactionData?.status || 'Unknown',
+      transactionData?.payment_method || 'Unknown',
+    ];
 
-    doc.text(transaction.id, x, y);
-    y += 10;
-    doc.text(new Date(transaction.changed_at).toLocaleString(), x, y);
-    y += 10;
-    doc.text(transaction.employee_username, x, y);
-    y += 10;
-    doc.text(transactionData.total_price.toString(), x, y);
-    y += 10;
-    doc.text(transactionData.status, x, y);
-    y += 10;
-    doc.text(transactionData.payment_method, x, y);
+    row.forEach((cell, cellIndex) => {
+      doc.rect(startX + cellIndex * 39, rowY, 39, lineHeight);
+      doc.text(String(cell), startX + cellIndex * 39 + 5, rowY + 7);
+    });
 
-    y += 10; // Move to the next row
-
-    // Add order items if they exist
-    if (transactionData.items && transactionData.items.orderItems) {
-      transactionData.items.orderItems.forEach((item: any) => {
-        doc.text(`- ${item.name}`, x, y);
-        y += 10;
-        doc.text(`Price: ${item.price}`, x, y);
-        y += 10;
-        doc.text(`Quantity: ${item.quantity}`, x, y);
-        y += 10; // Move to the next row for each item
+    
+    transactionData.items = JSON.parse(transactionData.items);
+    if (transactionData.items?.orderItems?.length) {
+      transactionData.items.orderItems.forEach((item: any, itemIndex: number) => {
+        const itemY = rowY + (itemIndex + 1) * lineHeight;
+        const itemDetails = `- ${item.name} | Price: ${item.price.toFixed(2)} | Qty: ${item.quantity}`;
+        doc.text(itemDetails, startX + 5, itemY + 7);
       });
-    }
 
-    x += 60; // Move to the next column for the next transaction
+      startY=startY + (transactionData.items?.orderItems?.length + 1) * lineHeight; 
+    }
   });
 
+  // Generate timestamp for the filename
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
-  // Save the PDF with timestamp in the filename
+  // Save the PDF with a timestamp in the filename
   doc.save(`transaction_history_${timestamp}.pdf`);
-};
-
+}
 export default TransactionHistory;
