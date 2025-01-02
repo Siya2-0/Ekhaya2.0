@@ -767,6 +767,45 @@ export async function addCategory(categoryname: string, categorydescription: str
   }
 
   return data;
+}
+
+export async function resendConfirmEmail(email:string)
+ {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email,
+    options: {
+      emailRedirectTo: 'http://localhost:3000/welcome'
+    }
+  });
+
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
+
+  return new Response(JSON.stringify({message:"sent"  }), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  });
 
 
+  
+
+ }
+
+
+ export async function signOut() {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    const { error } = await supabase.auth.signOut()
+    return new Response(JSON.stringify({ error }), {
+      headers: { 'Content-Type': 'application/json' },
+      status: 400,
+    });
+  }
 }

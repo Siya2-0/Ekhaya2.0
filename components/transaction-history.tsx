@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaCalendar, FaCreditCard, FaEye, FaTimes, FaUser } from "react-icons/fa";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import jsPDF from "jspdf";
 
 const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
   const [historyData, setHistoryData] = useState<any[]>([]);
@@ -110,9 +111,9 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-4 hover:shadow-lg transition-shadow duration-300">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold text-gray-800">Order #{order.transaction_id}</h3>
-          <button className="text-blue-600 hover:text-blue-800 flex items-center gap-2">
+          <button onClick={() => generatePDF(historyData)} className="text-blue-600 hover:text-blue-800 flex items-center gap-2">
             <FaEye className="text-lg" />
-            <span>View Details</span>
+            <span>Generate PDF</span>
           </button>
         </div>
 
@@ -220,6 +221,70 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
       </div>
     </div>
   );
+};
+
+export function generatePDF(transactions: any) {
+  const doc = new jsPDF();
+
+  // Set the title
+  doc.setFontSize(18);
+  doc.text('Transaction History', 14, 22);
+
+  // Set the table headers vertically
+  doc.setFontSize(12);
+  const headers = ['ID', 'Date', 'Employee', 'Total Price', 'Status', 'Payment Method'];
+  let headerY = 32;
+  headers.forEach((header) => {
+    doc.text(header, 14, headerY);
+    headerY += 10;
+  });
+
+  let x = 50; // Initial x position for the first column of data
+
+  transactions.forEach((transaction: any) => {
+    let transactionData;
+    try {
+      transactionData = JSON.parse(transaction.transaction_data);
+    } catch (error) {
+      console.error('Error parsing transaction_data:', error);
+      return;
+    }
+
+    let y = 32; // Reset y position for each transaction
+
+    doc.text(transaction.id, x, y);
+    y += 10;
+    doc.text(new Date(transaction.changed_at).toLocaleString(), x, y);
+    y += 10;
+    doc.text(transaction.employee_username, x, y);
+    y += 10;
+    doc.text(transactionData.total_price.toString(), x, y);
+    y += 10;
+    doc.text(transactionData.status, x, y);
+    y += 10;
+    doc.text(transactionData.payment_method, x, y);
+
+    y += 10; // Move to the next row
+
+    // Add order items if they exist
+    if (transactionData.items && transactionData.items.orderItems) {
+      transactionData.items.orderItems.forEach((item: any) => {
+        doc.text(`- ${item.name}`, x, y);
+        y += 10;
+        doc.text(`Price: ${item.price}`, x, y);
+        y += 10;
+        doc.text(`Quantity: ${item.quantity}`, x, y);
+        y += 10; // Move to the next row for each item
+      });
+    }
+
+    x += 60; // Move to the next column for the next transaction
+  });
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+
+  // Save the PDF with timestamp in the filename
+  doc.save(`transaction_history_${timestamp}.pdf`);
 };
 
 export default TransactionHistory;

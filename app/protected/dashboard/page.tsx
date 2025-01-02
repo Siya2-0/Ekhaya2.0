@@ -4,6 +4,7 @@ import POSDashboard from '@/components/dashboard-management'
 import { FetchDailyTotals } from "@/app/rest-api/restapi";
 import { count_transactions_by_date } from "@/app/rest-api/restapi";
 import { fetchLowStock } from "@/app/rest-api/restapi";
+import InactivityPopupServer from '@/components/inactivity-popup-server';
 
 const getCurrentDate = (): string => {
   const date = new Date();
@@ -26,7 +27,8 @@ const Dashboard = async () => {
         <main className="relative flex min-h-screen flex-col bg-[#F2F2F2] pt-12">
         <p className="text-[#303030] font-bold text-[32px] ml-8">Dashboard</p>
             <AuthButton />
-            <POSDashboard data={sales} totalOrders={totalOrders} lowStock={lowStock.data} outOfStock={outOfStock.data} />            
+            <POSDashboard data={sales} totalOrders={totalOrders} lowStock={lowStock.data} outOfStock={outOfStock.data} />   
+            <InactivityPopupServer/>          
         </main>
     </div>
   )
