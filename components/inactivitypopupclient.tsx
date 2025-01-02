@@ -1,10 +1,9 @@
+'use client';
 
-//import { createClient } from '@supabase/supabase-js';
-//import { createClient } from '@/utils/supabase/client';
 import { signOutAction } from '@/app/actions';
 import React, { useState, useEffect } from 'react';
 
-const InactivityPopup = () => {
+const InactivityPopupClient = () => {
   const [isInactive, setIsInactive] = useState(false);
   const [countdown, setCountdown] = useState(10);
 
@@ -23,7 +22,6 @@ const InactivityPopup = () => {
           setCountdown((prev) => {
             if (prev === 1) {
               clearInterval(countdownTimer);
-              // Add your sign-out logic here if needed
               signOutAction();
               return 0;
             }
@@ -52,8 +50,7 @@ const InactivityPopup = () => {
   };
 
   const handleSignOut = () => {
-    // Add your sign-out logic here
-    signOutAction()
+    signOutAction();
     setIsInactive(false);
     setCountdown(10);
   };
@@ -62,9 +59,9 @@ const InactivityPopup = () => {
     <div>
       {isInactive && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded shadow-lg">
-            <p className="text-lg">Are you still there?</p>
-            <p className="text-lg">Signing out in {countdown} seconds...</p>
+          <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
+            <p className="text-xl font-bold">Are you still there?</p>
+            <p className="text-lg">Touch the screen if so. Signing out in {countdown} seconds...</p>
             <div className="mt-4 flex justify-end space-x-2">
               <button
                 className="p-2 bg-blue-500 text-white rounded"
@@ -86,21 +83,4 @@ const InactivityPopup = () => {
   );
 };
 
-export default InactivityPopup;
-
-
-// async function signOut() {
-// const supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-// const anon_key = process.env.SERVICE_ROLE_KEY  as string;
-
-
-//   const supabase = createClient();
-//   const { error } = await supabase.auth.signOut()
-//   if (error) {
-//     const { error } = await supabase.auth.signOut()
-//     return new Response(JSON.stringify({ error }), {
-//       headers: { 'Content-Type': 'application/json' },
-//       status: 400,
-//     });
-//   }
-// }
+export default InactivityPopupClient;
