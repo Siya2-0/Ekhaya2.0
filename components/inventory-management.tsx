@@ -552,6 +552,12 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   //   }
   // };
 
+  const handleEdit = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setInitialItem(item);
+    setShowEditModal(true);
+  };
+
   const hasItemChanged = JSON.stringify(selectedItem) !== JSON.stringify(initialItem);
 
   return (
@@ -708,7 +714,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       onClick={() => {
-                        setSelectedItem({
+                        const item: InventoryItem = {
                           editing: false,
                           id: item.id,
                           name: item.item_name,
@@ -720,21 +726,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           image: item.Image_url,
                           description: item.description,
                           dateAdded: item.created_at,
-                        });
-                        setInitialItem({
-                          editing: false,
-                          id: item.id,
-                          name: item.item_name,
-                          category: item.category,
-                          quantity: item.stock_quantity,
-                          unitPrice: item.price,
-                          last_restock_date: item.last_restock_date,
-                          reorderLevel: item.reorder_level,
-                          image: item.Image_url,
-                          description: item.description,
-                          dateAdded: item.created_at,
-                        });
-                        setShowEditModal(true);
+                        };
+                        handleEdit(item);
                       }}
                       className="text-blue-600 hover:text-blue-900 mr-4"
                     >
