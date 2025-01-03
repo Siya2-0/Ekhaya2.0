@@ -764,7 +764,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   <input
                     type="text"
                     placeholder="Item Name"
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded bg-transparent"
                     value={newItem.item_name}
                     onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
                   />
@@ -777,7 +777,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     Category
                   </label>
                   <select
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded bg-transparent"
                     value={newItem.category}
                     onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
                   >
@@ -799,7 +799,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   <input
                     type="number"
                     placeholder="Quantity"
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded bg-transparent"
                     value={newItem.stock_quantity ?? ''}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -821,7 +821,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     type="number"
                     step="0.01"
                     placeholder="Unit Price"
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded bg-transparent"
                     value={newItem.price}
                     onChange={(e) =>
                       setNewItem({ ...newItem, price: parseFloat(e.target.value) })
@@ -838,7 +838,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   <input
                     type="number"
                     placeholder="Reorder Level"
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded bg-transparent"
                     value={newItem.reorder_level}
                     onChange={(e) =>
                       setNewItem({ ...newItem, reorder_level: parseInt(e.target.value) })
@@ -855,7 +855,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   <input
                     type="text"
                     placeholder="Item Description"
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded bg-transparent"
                     value={newItem.description}
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                   />
@@ -870,7 +870,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   <input
                     type="file"
                     accept="image/*"
-                    className="w-full p-2 border rounded"
+                    className="w-full p-2 border rounded bg-transparent"
                     onChange={handleFileChange}
                   />
                   {/* {errors.item_name && (
@@ -910,7 +910,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <input
                       type="text"
                       placeholder="Category Name"
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border rounded bg-transparent"
                       value={newCategory.categoryName}
                       required
                       onChange={(e) => setNewCategory({ ...newCategory, categoryName: e.target.value })}
@@ -921,7 +921,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <input
                       type="text"
                       placeholder="Category Description"
-                      className="w-full p-2 border rounded"
+                      className="w-full p-2 border rounded bg-transparent"
                       value={newCategory.cateogryDescription || ""}
                       onChange={(e) => setNewCategory({ ...newCategory, cateogryDescription: e.target.value })}
                     />
@@ -1026,7 +1026,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <input
                       type="text"
                       placeholder="Item Name"
-                      className="w-full p-4 border rounded"
+                      className="w-full p-4 border rounded bg-transparent"
                       value={selectedItem.name}
                       onChange={(e) =>
                         setSelectedItem({ ...selectedItem, name: e.target.value, editing: true })
@@ -1040,7 +1040,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <input
                       type="text"
                       placeholder="Item Description"
-                      className="w-full p-4 border rounded"
+                      className="w-full p-4 border rounded bg-transparent"
                       value={selectedItem.description}
                       onChange={(e) =>
                         setSelectedItem({ ...selectedItem, description: e.target.value, editing: true })
@@ -1052,7 +1052,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       Item Category
                     </label>
                     <select
-                      className="w-full p-4 border rounded"
+                      className="w-full p-4 border rounded bg-transparent"
                       value={selectedItem.category}
                       onChange={(e) =>
                         setSelectedItem({ ...selectedItem, category: e.target.value, editing: true })
@@ -1072,7 +1072,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <input
                       type="number"
                       placeholder="Quantity"
-                      className="w-full p-4 border rounded"
+                      className="w-full p-4 border rounded bg-transparent"
                       value={selectedItem.quantity}
                       onChange={(e) =>
                         setSelectedItem({
@@ -1090,7 +1090,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <input
                       type="number"
                       placeholder="Reorder Level"
-                      className="w-full p-4 border rounded"
+                      className="w-full p-4 border rounded bg-transparent"
                       value={selectedItem.reorderLevel}
                       onChange={(e) =>
                         setSelectedItem({
@@ -1109,7 +1109,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       type="number"
                       step="0.01"
                       placeholder="Unit Price"
-                      className="w-full p-4 border rounded"
+                      className="w-full p-4 border rounded bg-transparent"
                       value={selectedItem.unitPrice}
                       onChange={(e) =>
                         setSelectedItem({

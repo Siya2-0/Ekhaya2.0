@@ -229,7 +229,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                   <input
                     type="text"
                     value={customerName}
-                    className="pl-10 w-full p-2 border rounded-lg"
+                    className="pl-10 w-full p-2 border rounded-lg bg-transparent"
                     placeholder="Customer Name"
                     onChange={(e) =>
                       setCustomerName(e.target.value)

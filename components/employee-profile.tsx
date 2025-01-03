@@ -39,6 +39,7 @@ const EmployeeProfile = ({ users }: any) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [employeeData, setEmployeeData] = useState<User>(users);
   const [editEmployee, setEditEmployee] = useState<User>(users);
+  const [initialEditEmployee, setInitialEditEmployee] = useState<User>(users);
   const [isUpdating, setIsUpdating] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -199,6 +200,8 @@ const EmployeeProfile = ({ users }: any) => {
     await handleEditEmployee(editEmployee);
   };
 
+  const hasChanges = JSON.stringify(editEmployee) !== JSON.stringify(initialEditEmployee);
+
   return (
     <div className="min-h-screen bg-gray-100">
       {loading && (
@@ -337,7 +340,7 @@ const EmployeeProfile = ({ users }: any) => {
                   name="first_name"
                   value={editEmployee.user_metadata.first_name}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent"
                 />
               </div>
               <div>
@@ -347,7 +350,7 @@ const EmployeeProfile = ({ users }: any) => {
                   name="last_name"
                   value={editEmployee.user_metadata.last_name}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent"
                 />
               </div>
               <div>
@@ -357,7 +360,7 @@ const EmployeeProfile = ({ users }: any) => {
                   name="email"
                   value={editEmployee.user_metadata.email}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent"
                 />
               </div>
               <div>
@@ -367,7 +370,7 @@ const EmployeeProfile = ({ users }: any) => {
                   name="phone_number"
                   value={editEmployee.user_metadata.phone_number}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-transparent"
                 />
               </div>
               <div className="flex justify-end space-x-2 mt-6">
@@ -381,7 +384,7 @@ const EmployeeProfile = ({ users }: any) => {
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                  disabled={isUpdating}
+                  disabled={!hasChanges || isUpdating}
                 >
                   {isUpdating ? "Updating..." : "Save Changes"}
                 </button>
