@@ -102,10 +102,10 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
           console.warn(`Invalid items format for order ID ${order.id}:`, error);
         }
     
+        console.log("tip: "+tip);
         return {
           ...order,
           items: itemsArray,
-          tip: tip,
         };
       });
       setOrders(parsedOrders);
@@ -142,7 +142,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     total_price: number;
     status: string;
     items: OrderItem[];
-    tip: number;
     notes: string;
     payment_method: string;
   }
@@ -292,7 +291,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                 {order.total_price.toFixed(2)}
               </p>
               <p className="text-right">
-                <span className="font-semibold">Tip:</span> R{order.tip.toFixed(2)}
+                <span className="font-semibold">Tip:</span> R0.00
               </p>
               <p className="text-right text-xl font-bold">
                 Total: R{(order.total_price + 0).toFixed(2)}
