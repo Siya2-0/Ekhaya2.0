@@ -49,6 +49,7 @@ const EmployeeProfile = ({ users }: any) => {
   useEffect(() => {
     setEditEmployee(users);
     setEmployeeData(users);
+    setInitialEditEmployee(users);
   }, [users]);
   
 
@@ -169,6 +170,7 @@ const EmployeeProfile = ({ users }: any) => {
       if (response.ok) {
         console.log("User updated successfully!");
         setEmployeeData(updatedEmployee);
+        setInitialEditEmployee(updatedEmployee);
         setShowEditModal(false);
         setLoading(false);
       } else {
@@ -383,7 +385,7 @@ const EmployeeProfile = ({ users }: any) => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className={`px-4 py-2 ${!hasChanged ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"} text-white rounded-md transition-colors`}
                   disabled={!hasChanges || isUpdating}
                 >
                   {isUpdating ? "Updating..." : "Save Changes"}
