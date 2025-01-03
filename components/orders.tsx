@@ -19,6 +19,8 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     null
   );
 
+  console.log(transactions);
+
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
   const supabase = createClientComponentClient();
@@ -93,6 +95,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
         let itemsArray = [];
         try {
           const parsedItems = JSON.parse(order.items); // If `items` is JSON
+          console.log("parsed Items: ",parsedItems);
           itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
         } catch (error) {
           console.warn(`Invalid items format for order ID ${order.id}:`, error);
