@@ -93,23 +93,23 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     useEffect(() => {
       const parsedOrders = transactions.map((order: any) => {
         let itemsArray = [];
-        let tip = 0;
+        // let tip = 0;
         try {
           const parsedItems = JSON.parse(order.items); // If `items` is JSON
-          console.log("parsed Items: ",parsedItems);
+          // console.log("parsed Items: ",parsedItems);
           itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
-          if(parsedItems.tip) {
-            tip = parsedItems.tip;
-          }
+          // if(parsedItems.tip) {
+          //   tip = parsedItems.tip;
+          // }
         } catch (error) {
           console.warn(`Invalid items format for order ID ${order.id}:`, error);
         }
     
-        console.log("tip: "+tip);
+        // console.log("tip: "+tip);
         return {
           ...order,
           items: itemsArray,
-          tip: tip,
+          // tip: tip,
         };
       });
       setOrders(parsedOrders);
@@ -146,7 +146,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     total_price: number;
     status: string;
     items: OrderItem[];
-    tip: number;
+    // tip: number;
     notes: string;
     payment_method: string;
   }
@@ -296,7 +296,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                 {order.total_price.toFixed(2)}
               </p>
               <p className="text-right">
-                <span className="font-semibold">Tip:</span> {order.tip.toFixed(2)}
+                <span className="font-semibold">Tip:</span> R0.00
               </p>
               <p className="text-right text-xl font-bold">
                 Total: R{(order.total_price + 0).toFixed(2)}

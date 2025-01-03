@@ -93,6 +93,7 @@ const [drawerOpen, setDrawerOpen] = useState(false);
     total_price: number;
     status: string;
     items: OrderItem[];
+    // tip: number;
     notes: string;
     payment_method: string;
   }
