@@ -327,11 +327,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     );
   };
 
-  const handleTipChange = (e: React.ChangeEvent<HTMLInputElement>, order: Order) => {
-    const newTip = parseFloat(e.target.value) || 0;
-    setSelectedOrder({ ...order, tip: newTip });
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 space-y-4">
@@ -407,14 +402,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                     R{order.total_price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="number"
-                        value={order.tip}
-                        onChange={(e) => handleTipChange(e, order)}
-                        className="w-full p-2 border rounded"
-                      />
-                    </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         order.status === "paid"
@@ -431,17 +418,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                         order.status.slice(1)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => {
-                          setSelectedOrder(order);
-                          setIsModalOpen(true);
-                        }}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        Edit
-                      </button>
-                    </td>
                 </tr>
               ))}
             </tbody>
@@ -453,7 +429,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
         <OrderDetailModal
           order={selectedOrder}
           onClose={() => setIsModalOpen(false)}
-          // onSave={handleEditTransaction}
         />
       )}
 
