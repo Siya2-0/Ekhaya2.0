@@ -56,8 +56,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   const [successModalHeader, setSuccessModalHeader] = useState("");
   const [successModalDescription, setSuccessModalDescription] = useState("");
   const [successModalType, setSuccessModalType] = useState("");
-  const [initialItem, setInitialItem] = useState<InventoryItem | null>(null);
-
   const [selectedItem, setSelectedItem] = useState<{
     editing: boolean,
     id: number;
@@ -552,8 +550,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   //   }
   // };
 
-  const hasItemChanged = JSON.stringify(selectedItem) !== JSON.stringify(initialItem);
-
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">
       <div className="max-w-7xl mx-auto">
@@ -709,19 +705,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     <button
                       onClick={() => {
                         setSelectedItem({
-                          editing: false,
-                          id: item.id,
-                          name: item.item_name,
-                          category: item.category,
-                          quantity: item.stock_quantity,
-                          unitPrice: item.price,
-                          last_restock_date: item.last_restock_date,
-                          reorderLevel: item.reorder_level,
-                          image: item.Image_url,
-                          description: item.description,
-                          dateAdded: item.created_at,
-                        });
-                        setInitialItem({
                           editing: false,
                           id: item.id,
                           name: item.item_name,
@@ -1029,6 +1012,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                         (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1633332755192-727a05c4013d";
                       }}
                     />
+                    {/* <button className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-2 text-white hover:bg-blue-700 transition-colors">
+                      <FaEdit className="h-4 w-4" />
+                    </button> */}
                   </div>
                 </div>
 
@@ -1157,9 +1143,9 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   <button
                     onClick={handleUpdate}
                     className={`px-4 py-2 rounded-lg ${
-                      (isEditingItem || !hasItemChanged) ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+                      isEditingItem ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
                     } text-white`}
-                    disabled={isEditingItem || !hasItemChanged}
+                    disabled={isEditingItem} // Disable button while loading
                   >
                     {isEditingItem ? "Saving..." : "Save Changes"}
                   </button>
