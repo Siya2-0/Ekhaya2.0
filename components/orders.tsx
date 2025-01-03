@@ -93,11 +93,14 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     useEffect(() => {
       const parsedOrders = transactions.map((order: any) => {
         let itemsArray = [];
+        let tip = 0;
         try {
           const parsedItems = JSON.parse(order.items); // If `items` is JSON
           console.log("parsed Items: ",parsedItems);
           itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
-          tip = parsedItems.tip;
+          if(parsedItems.tip) {
+            tip = parsedItems.tip;
+          }
         } catch (error) {
           console.warn(`Invalid items format for order ID ${order.id}:`, error);
         }
@@ -106,6 +109,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
         return {
           ...order,
           items: itemsArray,
+          tip: tip,
         };
       });
       setOrders(parsedOrders);
@@ -142,6 +146,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     total_price: number;
     status: string;
     items: OrderItem[];
+    tip: number;
     notes: string;
     payment_method: string;
   }
