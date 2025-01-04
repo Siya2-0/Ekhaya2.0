@@ -5,6 +5,7 @@ import { FaCheck, FaTimes, FaSearch, FaPlus, FaHistory } from "react-icons/fa";
 import TransactionHistory from "./transaction-history";
 import AddOrderManagement from "./add-orders";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { FiEdit } from "react-icons/fi";
 
 
 const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: any) => {
@@ -14,7 +15,11 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddMoreOpen, setIsAddMoreOpen] = useState(false);
+  const [editingTip, setEditingTip] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [tipInput, setTipInput] = useState<number | null>(null);
+    const [loading, setLoading] = useState(false);
+
   const [viewHistoryOrderId, setViewHistoryOrderId] = useState<number | null>(
     null
   );
@@ -189,7 +194,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
           id: order.id,
           customer_name: order.customer_name,
           employee_username: order.employee_username,
-          items: {orderItems: order.items},
+          items: {orderItems: order.items, tip: order.tip},
           total_price: order.total_price,
           payment_method: order.payment_method,
           status: order.status,
@@ -200,6 +205,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
       const data = await response;
       if (response.ok) {
         console.log("Transaction updated successfully!");
+        setLoading(false);
         return data;
       } else {
         const errorData = await response.json();
@@ -234,109 +240,32 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     setViewHistoryOrderId(orderId);
   };
 
-  const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Order Details #{order.id}</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-              <FaTimes size={24} />
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <p>
-                <span className="font-semibold">Customer:</span> {order.customer_name}
-              </p>
-              <p>
-                <span className="font-semibold">Date:</span>{" "}
-                {formatDateTime(order.transaction_date_time)}
-              </p>
-              <p>
-                <span className="font-semibold">Employee:</span>{" "}
-                {order.employee_username}
-              </p>
-              <p>
-                <span className="font-semibold">Status:</span>{" "}
-                <span
-                  className={`${
-                    order.status === "paid"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  } capitalize`}
-                >
-                  {order.status}
-                </span>
-              </p>
-            </div>
-
-            <div className="mt-6">
-              <h3 className="text-xl font-semibold mb-3">Ordered Items</h3>
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-2 text-left">Item</th>
-                      <th className="px-4 py-2 text-left">Quantity</th>
-                      <th className="px-4 py-2 text-right">Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.items.map((item, index) => (
-                      <tr key={index} className="border-t">
-                        <td className="px-4 py-2">{item.name}</td>
-                        <td className="px-4 py-2">{item.quantity}</td>
-                        <td className="px-4 py-2 text-right">
-                          R{item.price.toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="mt-4 space-y-2">
-              <p className="text-right">
-                <span className="font-semibold">Subtotal:</span> R
-                {order.total_price.toFixed(2)}
-              </p>
-              <p className="text-right">
-                <span className="font-semibold">Tip:</span> R{order.tip.toFixed(2)}
-              </p>
-              <p className="text-right text-xl font-bold">
-                Total: R{(order.total_price + 0).toFixed(2)}
-              </p>
-            </div>
-
-            <div className="mt-6 flex justify-between">
-              <button onClick={() => handleViewHistoryClick(order.id)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                <FaHistory /> View History
-              </button>
-              {order.status === "unpaid" && (
-                <>
-                  <button
-                    onClick={() => handleMarkAsPaid(order.id)}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  >
-                    <FaCheck /> Mark as Paid
-                  </button>
-                  <button onClick={() => handleAddOrderClick(order)} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                    <FaPlus /> Add More Items
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const handleUpdateTip = () => {
+    if (selectedOrder && tipInput !== null) {
+      setLoading(true);
+      const updatedOrder = { ...selectedOrder, tip: tipInput };
+      setSelectedOrder(updatedOrder);
+      handleEditTransaction(updatedOrder);
+      setEditingTip(false);
+    }
   };
+  
+  // const OrderDetailModal = ({ order, onClose }: OrderDetailModalProps) => {
+  //   return (
+      
+  //   );
+  // };
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+          <div className="bg-transparent p-6 rounded-lg">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+            <h2 className="text-2xl font-bold text-white">Please wait...</h2>
+          </div>
+        </div>
+      )}
       <div className="mb-6 space-y-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -434,10 +363,150 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
       </div>
 
       {isModalOpen && selectedOrder && (
-        <OrderDetailModal
-          order={selectedOrder}
-          onClose={() => setIsModalOpen(false)}
-        />
+        // <OrderDetailModal
+        //   order={selectedOrder}
+        //   onClose={() => setIsModalOpen(false)}
+        // />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Order Details #{selectedOrder.id}</h2>
+            <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-gray-700">
+              <FaTimes size={24} />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <p>
+                <span className="font-semibold">Customer:</span> {selectedOrder.customer_name}
+              </p>
+              <p>
+                <span className="font-semibold">Date:</span>{" "}
+                {formatDateTime(selectedOrder.transaction_date_time)}
+              </p>
+              <p>
+                <span className="font-semibold">Employee:</span>{" "}
+                {selectedOrder.employee_username}
+              </p>
+              <p>
+                <span className="font-semibold">Status:</span>{" "}
+                <span
+                  className={`${
+                    selectedOrder.status === "paid"
+                      ? "text-green-600"
+                      : "text-red-600"
+                  } capitalize`}
+                >
+                  {selectedOrder.status}
+                </span>
+              </p>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-xl font-semibold mb-3">Ordered Items</h3>
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left">Item</th>
+                      <th className="px-4 py-2 text-left">Quantity</th>
+                      <th className="px-4 py-2 text-right">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedOrder.items.map((item, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="px-4 py-2">{item.name}</td>
+                        <td className="px-4 py-2">{item.quantity}</td>
+                        <td className="px-4 py-2 text-right">
+                          R{item.price.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              <p className="text-right">
+                <span className="font-semibold">Subtotal:</span> R
+                {selectedOrder.total_price.toFixed(2)}
+              </p>
+              <div className="flex items-end justify-end w-full px-0 py-4">
+                <div className="flex items-end gap-2">
+                  <p className="font-semibold">Tip:</p>
+                  {editingTip ? (
+                    <input
+                      type="number"
+                      className="w-20 px-2 py-0 border rounded bg-transparent text-right"
+                      value={tipInput ?? ""}
+                      onChange={(e) => setTipInput(parseFloat(e.target.value) || 0)}
+                    />
+                  ) : (
+                    <span className="text-right">R {selectedOrder.tip.toFixed(2)}</span>
+                  )}
+                </div>
+
+                {/* Edit and Save/Cancel buttons */}
+                <div className="flex items-center gap-4 pl-4">
+                  {editingTip ? (
+                    <>
+                      <button
+                        onClick={handleUpdateTip}
+                        className="text-green-600 hover:text-green-900"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingTip(false)}
+                        className="text-gray-600 hover:text-gray-900"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setEditingTip(true);
+                        setTipInput(selectedOrder?.tip || 0); // Initialize with current tip value
+                      }}
+                      className="text-blue-600 hover:text-blue-900 mt-[-8px]"
+                    >
+                      <FiEdit className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+
+              <p className="text-right text-xl font-bold">
+                Total: R{(selectedOrder.total_price + 0).toFixed(2)}
+              </p>
+            </div>
+
+            <div className="mt-6 flex justify-between">
+              <button onClick={() => handleViewHistoryClick(selectedOrder.id)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <FaHistory /> View History
+              </button>
+              {selectedOrder.status === "unpaid" && (
+                <>
+                  <button
+                    onClick={() => handleMarkAsPaid(selectedOrder.id)}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  >
+                    <FaCheck /> Mark as Paid
+                  </button>
+                  <button onClick={() => handleAddOrderClick(selectedOrder)} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                    <FaPlus /> Add More Items
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
       )}
 
       {viewHistoryOrderId && (
