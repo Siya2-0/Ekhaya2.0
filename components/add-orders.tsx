@@ -93,7 +93,7 @@ const [drawerOpen, setDrawerOpen] = useState(false);
     total_price: number;
     status: string;
     items: OrderItem[];
-    // tip: number;
+    tip: number;
     notes: string;
     payment_method: string;
   }
@@ -297,7 +297,7 @@ const drawer = (
           id: order.id,
           customer_name: order.customer_name,
           employee_username: username,
-          items: {orderItems: updatedItems},
+          items: {orderItems: updatedItems, tip: order.tip},
           total_price: (order.total_price + calculateTotal().total),
           payment_method: order.payment_method,
           status: order.status,

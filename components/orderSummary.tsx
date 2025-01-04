@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FaCreditCard, FaMoneyBillWave, FaPrint, FaPlus, FaMinus } from "react-icons/fa";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdEmail } from "react-icons/md";
 import OrderSuccessModal from "./order-success-modal";
 
 interface OrderItem {
@@ -72,7 +72,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
         console.log(`Error: ${String(error)}`);
       }
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -101,7 +101,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
         console.log("Transaction data: ",data);
         const transactionId = data.transaction[0]?.id;
 
-        console.log(transactionId); // Output: 71
+        console.log(transactionId);
         handleUpdateInventory(data.transaction[0]?.id);
         
       } else {
@@ -114,7 +114,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
         console.log(`Error: ${String(error)}`);
       }
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -124,6 +124,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
     setCurrentOrders([]);
     setShowPaymentModal(false);
     setShowOrderSummary(false);
+    setLoading(false);
   };
 
   const handleEmailReceipt = () => {
@@ -281,6 +282,12 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
                 <FaPrint /> Print Receipt
+              </button>
+              <button
+                onClick={handleAddTransaction}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                <MdEmail /> Email Receipt
               </button>
               <button
                 onClick={handleEmailReceipt}

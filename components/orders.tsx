@@ -39,22 +39,30 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
           console.log("Real-time update:", payload);
 
           if (payload.eventType === "INSERT") {
+            console.log("Insert payload: ", payload.new);
             setOrders((prev) => [...prev, payload.new]);
           }
 
           if (payload.eventType === "UPDATE") {
             const parsedOrders = (() => {
               let itemsArray = [];
+              let tip = 0;
               try {
                 const parsedItems = JSON.parse(payload.new.items); // If `items` is JSON
                 itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
+                if(parsedItems.tip) {
+                  tip = parsedItems.tip;
+                }
               } catch (error) {
                 console.warn(`Invalid items format for order ID ${payload.new.id}:`, error);
               }
+
+              console.log("Update payload: ", payload.new);
           
               return {
                 ...payload.new,
-                items: itemsArray, // Ensure `items` is always an array
+                items: itemsArray,
+                tip: tip,
               };
             })();
             setOrders((prev) =>
@@ -93,14 +101,14 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     useEffect(() => {
       const parsedOrders = transactions.map((order: any) => {
         let itemsArray = [];
-        // let tip = 0;
+        let tip = 0;
         try {
           const parsedItems = JSON.parse(order.items); // If `items` is JSON
           // console.log("parsed Items: ",parsedItems);
           itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
-          // if(parsedItems.tip) {
-          //   tip = parsedItems.tip;
-          // }
+          if(parsedItems.tip) {
+            tip = parsedItems.tip;
+          }
         } catch (error) {
           console.warn(`Invalid items format for order ID ${order.id}:`, error);
         }
@@ -109,7 +117,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
         return {
           ...order,
           items: itemsArray,
-          // tip: tip,
+          tip: tip,
         };
       });
       setOrders(parsedOrders);
@@ -146,7 +154,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     total_price: number;
     status: string;
     items: OrderItem[];
-    // tip: number;
+    tip: number;
     notes: string;
     payment_method: string;
   }
@@ -296,7 +304,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                 {order.total_price.toFixed(2)}
               </p>
               <p className="text-right">
-                <span className="font-semibold">Tip:</span> R0.00
+                <span className="font-semibold">Tip:</span> R{order.tip.toFixed(2)}
               </p>
               <p className="text-right text-xl font-bold">
                 Total: R{(order.total_price + 0).toFixed(2)}
