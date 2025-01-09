@@ -907,7 +907,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       }}
                       className="bg-blue-500 text-white px-4 py-2 rounded mt-2 ml-8"
                     >
-                      Edit Quantity
+                      Stock intake
                     </button>
                   </td>
                 </tr>
