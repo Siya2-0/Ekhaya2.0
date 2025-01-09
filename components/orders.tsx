@@ -480,7 +480,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                 </div>
               </div>
 
-
               <p className="text-right text-xl font-bold">
                 Total: R{(selectedOrder.total_price + selectedOrder.tip).toFixed(2)}
               </p>

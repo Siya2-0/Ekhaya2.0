@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle, FaEnvelope } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle, FaEnvelope, FaBarcode } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import CategoryManagement from "./category-management";
@@ -28,6 +28,7 @@ type InventoryItem = {
   description: string;
   created_at: string;
   update_at: string;
+  barcode: string;
 };
 type Category = {
   id: number;
@@ -68,6 +69,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     image: string;
     description: string;
     dateAdded: string;
+    barcode: string;
   } | null>(null);
   const [newItem, setNewItem] = useState<{
     item_name: string;
@@ -79,6 +81,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     last_restock_date: string;
     Image_url: string;
     image_file: File | null;
+    barcode: string;
   }>({
     item_name: "",
     description: "",
@@ -89,6 +92,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     last_restock_date: new Date("2023-10-05").toISOString(),
     Image_url: "",
     image_file: null,
+    barcode: ""
   });
 
   const [errors, setErrors] = useState<any>({});
@@ -104,6 +108,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     if (!newItem.reorder_level) newErrors.reorder_level = 'Reorder level is required.';
     if (!newItem.description) newErrors.description = 'Description is required.';
     if (!newItem.image_file) newErrors.image_file = 'Item image is required.';
+    if (!newItem.barcode) newErrors.barcode = 'Item barcode is required.';
 
     console.log("Error size: " + Object.keys(newErrors).length);
     return newErrors;
@@ -224,7 +229,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           stock_quantity: newItem.stock_quantity,
           reorder_level: newItem.reorder_level,
           last_restock_date: new Date("2023-10-05").toISOString(),
-          Image_url: storageImageUrl, // Use the uploaded image URL
+          Image_url: storageImageUrl,
+          barcode: newItem.barcode
         }),
       });
   
@@ -240,6 +246,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           last_restock_date: new Date("2023-10-05").toISOString(),
           Image_url: "",
           image_file: null,
+          barcode: "",
         });
         setErrors({});
         setSuccessModalDescription("Item added successfully.");
@@ -322,7 +329,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     reorder_level: number,
     last_restock_date: Date,
     Image_url: string,
-    id: number
+    id: number,
+    barcode: string
   ) => {
     try {
       let storageImageUrl: any | null = await handleUpdateImageUpload();
@@ -349,6 +357,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           last_restock_date,
           Image_url: storageImageUrl, // Use the correct key
           id,
+          barcode,
         }),
       });
   
@@ -384,7 +393,8 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         selectedItem?.reorderLevel,
         new Date(selectedItem?.last_restock_date),
         selectedItem?.image,
-        selectedItem.id
+        selectedItem.id,
+        selectedItem.barcode,
       );
   
       if (updatedItem) {
@@ -509,6 +519,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       last_restock_date: new Date("2023-10-05").toISOString(),
       Image_url: "",
       image_file: null,
+      barcode: "",
     });
   };
 
@@ -630,6 +641,12 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
             >
               <FaFileExport /> Export to Excel
             </button>
+            <button
+              // onClick={handleExportToExcel}
+              className="bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-orange-700"
+            >
+              <FaBarcode /> Scan Barcode
+            </button>
             {/* <button
               onClick={handleSendEmail}
               className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700"
@@ -716,6 +733,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           image: item.Image_url,
                           description: item.description,
                           dateAdded: item.created_at,
+                          barcode: item.barcode,
                         });
                         setShowEditModal(true);
                       }}
@@ -737,6 +755,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           image: item.Image_url,
                           description: item.description,
                           dateAdded: item.created_at,
+                          barcode: item.barcode,
                         });
                         setShowDeleteModal(true);
                       }}
@@ -858,6 +877,21 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     className="w-full p-2 border rounded bg-transparent"
                     value={newItem.description}
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                  />
+                  {/* {errors.description && (
+                    <span className="text-red-500 text-sm">{errors.description}</span>
+                  )} */}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 capitalize">
+                    Item Barcode
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Item Barcode"
+                    className="w-full p-2 border rounded bg-transparent"
+                    value={newItem.barcode}
+                    onChange={(e) => setNewItem({ ...newItem, barcode: e.target.value })}
                   />
                   {/* {errors.description && (
                     <span className="text-red-500 text-sm">{errors.description}</span>
@@ -1122,12 +1156,26 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 capitalize">
+                      Item Barcode
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Item Barcode"
+                      className="w-full p-4 border rounded bg-transparent"
+                      value={selectedItem.barcode}
+                      onChange={(e) =>
+                        setSelectedItem({ ...selectedItem, barcode: e.target.value, editing: true })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 capitalize">
                         Update Item Image
                       </label>
                       <input
                         type="file"
                         accept="image/*"
-                        className="w-full p-2 border rounded"
+                        className="w-full p-4 border rounded"
                         onChange={handleImageUpdate}
                       />
                   </div>

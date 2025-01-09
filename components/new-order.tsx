@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaTimes, FaPlus, FaMinus, FaShoppingCart, FaCreditCard, FaReceipt } from "react-icons/fa";
+import { FaTimes, FaPlus, FaMinus, FaShoppingCart, FaCreditCard, FaReceipt, FaBarcode } from "react-icons/fa";
 import Image from "next/image";
 import { RxCross2 } from 'react-icons/rx';
 import {
@@ -28,15 +28,17 @@ import {
   FormControlLabel,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import { FiMenu, FiPlusCircle, FiSearch, FiShoppingCart } from "react-icons/fi";
+import { FiCamera, FiMenu, FiPlusCircle, FiSearch, FiShoppingCart } from "react-icons/fi";
 import Link from "next/link";
 import Payments from "@/components/billing";
 import OrderSummary from "@/components/orderSummary";
 import base64 from "@/app/assets/base64.jpeg";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import toast, { Toaster } from 'react-hot-toast';
+import { Barcode, Plus } from "lucide-react";
 
 const SearchWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -57,6 +59,7 @@ type InventoryItem = {
     description: string;
     created_at: string;
     update_at: string;
+    barcode: string;
   };
 
   type Category = {
@@ -75,11 +78,14 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
   const [showOrders, setShowOrders] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [barcodeQuery, setBarcodeQuery] = useState("");
     const [sortBy, setSortBy] = useState("");
     const [page, setPage] = useState(1);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showOrderSummary, setShowOrderSummary] = useState(false);
     const [pay, setPay] = useState(false);
+    const [isScanning, setIsScanning] = useState(false);
+    const [itemCode, setItemCode] = useState("");
 
     const supabase = createClientComponentClient();
 
@@ -125,6 +131,44 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
       };
     }, [supabase]);
 
+    // Handle barcode scanner input
+    useEffect(() => {
+      let barcodeBuffer = "";
+      let lastKeyTime = Date.now();
+    
+      const handleBarcodeInput = (e: KeyboardEvent) => {
+        console.log("handleBarcodeInput");
+        const currentTime = Date.now();
+        
+        // Reset the buffer if time between key presses is too long (> 100 ms)
+        if (currentTime - lastKeyTime > 1000) {
+          barcodeBuffer = "";
+        }
+        
+        lastKeyTime = currentTime;
+    
+        if (e.key !== "Enter") {
+          barcodeBuffer += e.key;  // Accumulate the key in the buffer
+        } else {
+          if (barcodeBuffer) {
+            const trimmedBarcode = barcodeBuffer.trim();
+            setItemCode(trimmedBarcode);  // Update state for other uses if needed
+            handleBarcodeScan(trimmedBarcode);  // Pass the barcode directly
+            console.log("Scanned Barcode:", trimmedBarcode);
+            barcodeBuffer = "";
+          }
+          
+        }
+      };
+    
+      window.addEventListener("keypress", handleBarcodeInput);
+    
+      return () => {
+        window.removeEventListener("keypress", handleBarcodeInput);
+      };
+    }, []);
+    
+
   interface OrderItem {
     id: number;
     name: string;
@@ -132,6 +176,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
     price: number;
     image: string;
     quantity: number;
+    barcode: string;
   }
 
   const [currentOrders, setCurrentOrders] = useState<OrderItem[]>([]);
@@ -143,6 +188,43 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
         : [...prev, category]
     );
   };
+
+  const handleAddItemManually = () => {
+    if (!itemCode.trim()) {
+      toast.error("Please enter a valid item code.");
+      return;
+    }
+  
+    // Find the item with the matching barcode
+    const matchedItem = liquorItems.find((item: InventoryItem) => item.barcode === itemCode.trim());
+  
+    if (matchedItem) {
+      addToOrders(matchedItem);  // Call the add to order function
+      setItemCode("");           // Clear the input field
+      // toast.success(`${matchedItem.item_name} added to orders`);
+    } else {
+      toast.error("Item not found.");
+    }
+  };
+
+  const handleBarcodeScan = (code: any) => {
+    if (!code.trim()) {
+      toast.error("Please enter a valid item code.");
+      return;
+    }
+  
+    // Find the item with the matching barcode
+    const matchedItem = liquorItems.find((item: InventoryItem) => item.barcode === code.trim());
+  
+    if (matchedItem) {
+      addToOrders(matchedItem);  // Call the add to order function
+      setItemCode("");           // Clear the input field
+      // toast.success(`${matchedItem.item_name} added to orders`);
+    } else {
+      toast.error("Item not found.");
+    }
+  };
+  
 
   const filteredItems = liquorItems
     .filter((product: InventoryItem) =>
@@ -170,7 +252,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
             : order
         ));
       } else {
-        setCurrentOrders([...currentOrders, { id: item.id, name: item.item_name, category: item.category, price: item.price, image: item.Image_url, quantity: 1 }]);
+        setCurrentOrders([...currentOrders, { id: item.id, name: item.item_name, category: item.category, price: item.price, image: item.Image_url, quantity: 1, barcode: item.barcode }]);
       }
       toast.success(`${item.item_name} added to orders`);
     };
@@ -293,6 +375,32 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
             <Grid item xs={12} sm={9}>
                 {drawer}
                 <SearchWrapper sx={{ mb: 4 }}>
+                {/* Barcode Scanner Status */}
+                {/* <div className="mb-4 flex items-center gap-2">
+                  <FaBarcode className={`text-2xl ${isScanning ? "text-green-500" : "text-gray-400"}`} />
+                  <span className={`text-sm ${isScanning ? "text-green-500" : "text-gray-400"}`}>
+                    {isScanning ? "Scanner Ready" : "Scanner Standby"}
+                  </span>
+                </div> */}
+
+                {/* Manual Order Input Section */}
+                <TextField
+                    fullWidth
+                    placeholder="Manually enter item code"
+                    value={itemCode}
+                    onChange={(e) => setItemCode(e.target.value)}
+                    InputProps={{
+                        startAdornment: <Barcode />,
+                        endAdornment: (
+                            <IconButton 
+                                onClick={handleAddItemManually} 
+                                edge="end"
+                            >
+                                <Plus />
+                            </IconButton>
+                        )
+                    }}
+                />
                 <TextField
                     fullWidth
                     placeholder="Search products..."

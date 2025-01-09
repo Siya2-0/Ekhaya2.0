@@ -9,7 +9,8 @@ export async function POST(req: Request) {
     stock_quantity,
     reorder_level,
     last_restock_date: last_restock_date_str,
-    Image_url } = await req.json();
+    Image_url,
+    barcode } = await req.json();
   let last_restock_date = last_restock_date_str;
   try {
     if (typeof last_restock_date === 'string') {
@@ -23,7 +24,8 @@ export async function POST(req: Request) {
         stock_quantity,
         reorder_level,
         last_restock_date,
-        Image_url);
+        Image_url,
+        barcode);
     return NextResponse.json(await response.json(), { status: response.status });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
