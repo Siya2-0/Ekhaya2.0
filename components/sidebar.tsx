@@ -12,6 +12,7 @@ import { BsCashCoin } from "react-icons/bs";
 import { TbReportSearch } from "react-icons/tb";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { IoSettingsOutline } from "react-icons/io5";
+import InactivityPopupClient from "./inactivitypopupclient";
 
 const Sidebar = () => {
   const router = useRouter(); // Initialize useRouter
@@ -79,6 +80,7 @@ const Sidebar = () => {
           ))}
         </div>
       </div>
+      <InactivityPopupClient />
     </div>
   );
 };

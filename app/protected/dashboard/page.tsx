@@ -11,7 +11,7 @@ const Dashboard = () => {
         <p className="text-[#303030] font-bold text-[32px] ml-8">Dashboard Page</p>
         <AuthButton />
             {/* <EmployeeTable/> */}
-            <InactivityPopupServer/> 
+         
         </main>
     </div>
   )
