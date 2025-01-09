@@ -76,6 +76,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     description: string;
     dateAdded: string;
     barcode: string;
+    new_quantity: number;
   } | null>(null);
   const [newItem, setNewItem] = useState<{
     item_name: string;
@@ -456,7 +457,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         selectedItem?.description,
         selectedItem.category,
         selectedItem?.unitPrice,
-        selectedItem?.quantity,
+        (selectedItem?.quantity + selectedItem?.new_quantity),
         selectedItem?.reorderLevel,
         new Date(selectedItem?.last_restock_date),
         selectedItem?.image,
@@ -854,6 +855,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           description: item.description,
                           dateAdded: item.created_at,
                           barcode: item.barcode,
+                          new_quantity: 0,
                         });
                         setShowEditModal(true);
                       }}
@@ -876,6 +878,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           description: item.description,
                           dateAdded: item.created_at,
                           barcode: item.barcode,
+                          new_quantity: 0,
                         });
                         setShowDeleteModal(true);
                       }}
@@ -898,6 +901,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                           description: item.description,
                           dateAdded: item.created_at,
                           barcode: item.barcode,
+                          new_quantity: 0,
                         });
                         setIsQuantityModalOpen(true);
                       }}
@@ -1452,14 +1456,14 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
             </label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               placeholder="Quantity"
               className="w-full p-4 border rounded bg-transparent"
-              value={selectedItem?.quantity}
+              value={selectedItem?.new_quantity}
               onChange={(e) =>
                 setSelectedItem({
                   ...selectedItem,
-                  quantity: parseFloat(e.target.value),
+                  new_quantity: parseFloat(e.target.value),
                   editing: true,
                 })
               }
