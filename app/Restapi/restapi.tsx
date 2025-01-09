@@ -132,7 +132,8 @@ export async function addCategory(categoryname: string, categorydescription: str
     stock_quantity: number,
     reorder_level: number,
     last_restock_date: Date,
-    Image_url: string
+    Image_url: string,
+    barcode: string
   ) {
     if (!validator.isLength(item_name, { min: 1, max: 255 })) {
       return new Response(JSON.stringify({ error: 'Invalid item name length' }), {
@@ -192,7 +193,8 @@ export async function addCategory(categoryname: string, categorydescription: str
         stock_quantity,
         reorder_level,
         last_restock_date: last_restock_date.toISOString(), // Convert Date to ISO string
-        Image_url
+        Image_url,
+        barcode
       });
   
     if (error) {
@@ -217,6 +219,7 @@ export async function addCategory(categoryname: string, categorydescription: str
     reorder_level: number,
     last_restock_date: Date,
     Image_url:string,
+    barcode:string,
     id:number
   ) {
 
@@ -279,7 +282,8 @@ export async function addCategory(categoryname: string, categorydescription: str
         stock_quantity,
         reorder_level,
         last_restock_date: last_restock_date.toISOString(), // Convert Date to ISO string
-        Image_url
+        Image_url,
+        barcode
       }).eq('id', id);
   
     if (error) {
