@@ -142,7 +142,7 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500">Low Stock Items</p>
-              <h3 className="text-2xl font-bold">{lowStock.length}</h3>
+              <h3 className="text-2xl font-bold">{lowStock?.length ?? 0}</h3>
             </div>
             <FaBoxes className="text-yellow-500 text-2xl" />
           </div>
@@ -152,7 +152,7 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500">Out Of Stock Items</p>
-              <h3 className="text-2xl font-bold">{outOfStock.length}</h3>
+              <h3 className="text-2xl font-bold">{outOfStock?.length ?? 0}</h3>
             </div>
             <FaBoxes className="text-red-500 text-2xl" />
           </div>

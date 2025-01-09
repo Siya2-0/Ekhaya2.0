@@ -148,12 +148,12 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
         lastKeyTime = currentTime;
     
         if (e.key !== "Enter") {
-          barcodeBuffer += e.key;  // Accumulate the key in the buffer
+          barcodeBuffer += e.key;
         } else {
           if (barcodeBuffer) {
             const trimmedBarcode = barcodeBuffer.trim();
-            setItemCode(trimmedBarcode);  // Update state for other uses if needed
-            handleBarcodeScan(trimmedBarcode);  // Pass the barcode directly
+            setItemCode(trimmedBarcode);
+            handleBarcodeScan(trimmedBarcode);
             console.log("Scanned Barcode:", trimmedBarcode);
             barcodeBuffer = "";
           }

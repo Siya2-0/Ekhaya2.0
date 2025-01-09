@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { FaPlus, FaEdit, FaTrash, FaFileExport, FaSearch, FaFilter, FaChartLine, FaBoxOpen, FaExclamationTriangle, FaEnvelope, FaBarcode } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
@@ -10,6 +10,7 @@ import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx';
 import emailjs from 'emailjs-com';
+import toast, { Toaster } from "react-hot-toast";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
@@ -57,6 +58,11 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   const [successModalHeader, setSuccessModalHeader] = useState("");
   const [successModalDescription, setSuccessModalDescription] = useState("");
   const [successModalType, setSuccessModalType] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false);
+  const [itemCode, setItemCode] = useState("");
+  const modalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [selectedItem, setSelectedItem] = useState<{
     editing: boolean,
     id: number;
@@ -96,6 +102,67 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   });
 
   const [errors, setErrors] = useState<any>({});
+
+  // useEffect(() => {
+  //   const handleEscape = (e: KeyboardEvent) => {
+  //     if (e.key === "Escape" && isOpen) {
+  //     setIsOpen(false);
+  //     }
+  //   };
+
+  //   const handleClickOutside = (e: MouseEvent) => {
+  //     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+  //     setIsOpen(false);
+  //     }
+  //   };
+
+  //   if (isOpen) {
+  //     document.addEventListener("keydown", handleEscape);
+  //     document.addEventListener("mousedown", handleClickOutside);
+  //     inputRef.current?.focus();
+  //   }
+
+  //   return () => {
+  //     document.removeEventListener("keydown", handleEscape);
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [isOpen]);
+
+  useEffect(() => {
+        let barcodeBuffer = "";
+        let lastKeyTime = Date.now();
+      
+        const handleBarcodeInput = (e: KeyboardEvent) => {
+          console.log("handleBarcodeInput");
+          const currentTime = Date.now();
+          
+          // Reset the buffer if time between key presses is too long (> 100 ms)
+          if (currentTime - lastKeyTime > 1000) {
+            barcodeBuffer = "";
+          }
+          
+          lastKeyTime = currentTime;
+      
+          if (e.key !== "Enter") {
+            barcodeBuffer += e.key;
+          } else {
+            if (barcodeBuffer) {
+              const trimmedBarcode = barcodeBuffer.trim();
+              setItemCode(trimmedBarcode);
+              handleBarcodeScan(trimmedBarcode);
+              console.log("Scanned Barcode:", trimmedBarcode);
+              barcodeBuffer = "";
+            }
+            
+          }
+        };
+      
+        window.addEventListener("keypress", handleBarcodeInput);
+      
+        return () => {
+          window.removeEventListener("keypress", handleBarcodeInput);
+        };
+      }, []);
 
 
   const validateForm = useCallback(() => {
@@ -535,6 +602,44 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     XLSX.writeFile(workbook, "inventory.xlsx");
   };
 
+  const handleAddItemManually = () => {
+    if (!itemCode.trim()) {
+      toast.error("Please enter a valid item code.");
+      return;
+    }
+  
+    // Find the item with the matching barcode
+    const matchedItem = inventory.find((item: InventoryItem) => item.barcode === itemCode.trim());
+  
+    if (matchedItem) {
+      setSearchTerm(matchedItem.item_name);
+      setItemCode("");
+      setIsOpen(false);
+      toast.success(`${matchedItem.item_name} found`);
+    } else {
+      toast.error("Item not found.");
+    }
+  };
+
+  const handleBarcodeScan = (code: any) => {
+    if (!code.trim()) {
+      toast.error("Please enter a valid item code.");
+      return;
+    }
+  
+    // Find the item with the matching barcode
+    const matchedItem = inventory.find((item: InventoryItem) => item.barcode === code.trim());
+  
+    if (matchedItem) {
+      setSearchTerm(matchedItem.item_name);
+      setItemCode("");
+      setIsOpen(false);
+      toast.success(`${matchedItem.item_name} found`);
+    } else {
+      toast.error("Item not found.");
+    }
+  };
+
   // const handleSendEmail = async () => {
   //   const worksheet = XLSX.utils.json_to_sheet(inventory);
   //   const workbook = XLSX.utils.book_new();
@@ -563,6 +668,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">
+      <Toaster/>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -642,7 +748,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
               <FaFileExport /> Export to Excel
             </button>
             <button
-              // onClick={handleExportToExcel}
+              onClick={() => setIsOpen(true)}
               className="bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-orange-700"
             >
               <FaBarcode /> Scan Barcode
@@ -762,6 +868,28 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       className="text-red-600 hover:text-red-900"
                     >
                       <FaTrash />
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setSelectedItem({
+                          editing: false,
+                          id: item.id,
+                          name: item.item_name,
+                          category: item.category,
+                          quantity: item.stock_quantity,
+                          unitPrice: item.price,
+                          last_restock_date: item.last_restock_date,
+                          reorderLevel: item.reorder_level,
+                          image: item.Image_url,
+                          description: item.description,
+                          dateAdded: item.created_at,
+                          barcode: item.barcode,
+                        });
+                        setIsQuantityModalOpen(true);
+                      }}
+                      className="bg-blue-500 text-white px-4 py-2 rounded mt-2 ml-8"
+                    >
+                      Edit Quantity
                     </button>
                   </td>
                 </tr>
@@ -1229,6 +1357,119 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         )}
       </div>
       {isCategoryModalOpen && <CategoryManagement setIsCategoryModalOpen={setIsCategoryModalOpen} categoriesData={categoriesData}/>}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            ref={modalRef}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 transform transition-all"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2
+                id="modal-title"
+                className="text-xl font-semibold text-gray-900"
+              >
+                Barcode Scanner
+              </h2>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-400 hover:text-gray-500 transition-colors duration-200"
+                aria-label="Close modal"
+              >
+                <IoMdClose className="text-2xl" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-center h-32 bg-gray-50 rounded-lg">
+                <p className="text-gray-600 text-center">
+                  Waiting for you to scan a barcode...
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="itemCode"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Manual Entry
+                </label>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  id="itemCode"
+                  value={itemCode}
+                  onChange={(e) => setItemCode(e.target.value)}
+                  placeholder="Enter item code"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                  aria-label="Item code input"
+                />
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={handleAddItemManually}
+                  disabled={!itemCode.trim()}
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Submit
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {isQuantityModalOpen && selectedItem && (
+        <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="modal-content bg-white p-6 rounded shadow-lg">
+            <h4 className="text-lg font-semibold mb-4">Update Quantity</h4>
+            <div>
+            <label className="block text-sm font-medium text-gray-700 capitalize">
+              Quantity
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              placeholder="Quantity"
+              className="w-full p-4 border rounded bg-transparent"
+              value={selectedItem?.quantity}
+              onChange={(e) =>
+                setSelectedItem({
+                  ...selectedItem,
+                  quantity: parseFloat(e.target.value),
+                  editing: true,
+                })
+              }
+            />
+          </div>
+            <div className="mt-4 flex justify-end">
+              <button 
+                onClick={() => setIsQuantityModalOpen(false)} 
+                className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                className={`px-4 py-2 rounded-lg ${
+                  isEditingItem ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+                } text-white`}
+                disabled={isEditingItem} // Disable button while loading
+              >
+                {isEditingItem ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
