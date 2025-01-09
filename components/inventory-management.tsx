@@ -747,12 +747,26 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
             >
               <FaFileExport /> Export to Excel
             </button>
-            <button
+            {/* <button
               onClick={() => setIsOpen(true)}
               className="bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-orange-700"
             >
               <FaBarcode /> Scan Barcode
-            </button>
+            </button> */}
+            <div className="relative flex">
+              <FaSearch className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Manually enter item code"
+                className="pl-10 w-full flex-1 p-2 border rounded-lg bg-transparent"
+                value={itemCode}
+                onChange={(e) => setItemCode(e.target.value)}
+              />
+              <button
+              onClick={handleAddItemManually}
+              className="bg-green-600 text-white ml-4 px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-green-700"
+              >Find</button>
+            </div>
             {/* <button
               onClick={handleSendEmail}
               className="bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700"
@@ -1357,6 +1371,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         )}
       </div>
       {isCategoryModalOpen && <CategoryManagement setIsCategoryModalOpen={setIsCategoryModalOpen} categoriesData={categoriesData}/>}
+
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
