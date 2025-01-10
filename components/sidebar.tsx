@@ -9,6 +9,7 @@ import { MdOutlineInventory } from "react-icons/md";
 import { PiUsersFourLight } from "react-icons/pi";
 import { MdOutlineBorderColor } from "react-icons/md";
 import useNavigation from '@/app/hook/useNavigation';
+import InactivityPopupClient from "./inactivity-popup-client";
 
 interface User {
   id: string;
@@ -151,6 +152,7 @@ const Sidebar = ({user}: any) => {
             </div>
         </div>
       </div>
+      <InactivityPopupClient />
     </div>
   );
 };

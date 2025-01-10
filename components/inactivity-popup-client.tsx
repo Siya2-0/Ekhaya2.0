@@ -33,6 +33,7 @@ const InactivityPopupClient = () => {
 
     window.addEventListener('mousemove', resetTimer);
     window.addEventListener('keypress', resetTimer);
+    window.addEventListener('beforeunload', handleSignOut);
 
     resetTimer(); // Initialize the timer
 
@@ -41,6 +42,7 @@ const InactivityPopupClient = () => {
       clearInterval(countdownTimer);
       window.removeEventListener('mousemove', resetTimer);
       window.removeEventListener('keypress', resetTimer);
+      window.removeEventListener('beforeunload', handleSignOut);
     };
   }, []);
 
