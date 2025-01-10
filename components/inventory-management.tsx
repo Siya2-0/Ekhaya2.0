@@ -130,37 +130,39 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   // }, [isOpen]);
 
   useEffect(() => {
-        let barcodeBuffer = "";
-        let lastKeyTime = Date.now();
-      
-        const handleBarcodeInput = (e: KeyboardEvent) => {
-          const currentTime = Date.now();
-          
-          // Reset the buffer if time between key presses is too long (> 100 ms)
-          if (currentTime - lastKeyTime > 1000) {
+    if (!showAddModal){
+      let barcodeBuffer = "";
+      let lastKeyTime = Date.now();
+    
+      const handleBarcodeInput = (e: KeyboardEvent) => {
+        const currentTime = Date.now();
+        
+        // Reset the buffer if time between key presses is too long (> 100 ms)
+        if (currentTime - lastKeyTime > 1000) {
+          barcodeBuffer = "";
+        }
+        
+        lastKeyTime = currentTime;
+    
+        if (e.key !== "Enter") {
+          barcodeBuffer += e.key;
+        } else {
+          if (barcodeBuffer) {
+            const trimmedBarcode = barcodeBuffer.trim();
+            setItemCode(trimmedBarcode);
+            handleBarcodeScan(trimmedBarcode);
             barcodeBuffer = "";
           }
           
-          lastKeyTime = currentTime;
-      
-          if (e.key !== "Enter") {
-            barcodeBuffer += e.key;
-          } else {
-            if (barcodeBuffer) {
-              const trimmedBarcode = barcodeBuffer.trim();
-              setItemCode(trimmedBarcode);
-              handleBarcodeScan(trimmedBarcode);
-              barcodeBuffer = "";
-            }
-            
-          }
-        };
-      
-        window.addEventListener("keypress", handleBarcodeInput);
-      
-        return () => {
-          window.removeEventListener("keypress", handleBarcodeInput);
-        };
+        }
+      };
+    
+      window.addEventListener("keypress", handleBarcodeInput);
+    
+      return () => {
+        window.removeEventListener("keypress", handleBarcodeInput);
+      };
+    }
       }, []);
 
 
@@ -1157,9 +1159,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                         (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1633332755192-727a05c4013d";
                       }}
                     />
-                    {/* <button className="absolute bottom-0 right-0 bg-blue-600 rounded-full p-2 text-white hover:bg-blue-700 transition-colors">
-                      <FaEdit className="h-4 w-4" />
-                    </button> */}
                   </div>
                 </div>
 
