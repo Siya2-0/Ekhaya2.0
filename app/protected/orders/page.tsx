@@ -17,13 +17,8 @@ const Orders = async () => {
     transactions = response; // If it's already an array
   }
 
-    // Extract only the values
-    const valuesOnly: any[][] = transactions.map((transaction: Record<string, any>) => Object.values(transaction));
-    console.log("Values Only: ", valuesOnly);
   const categories = await fetchCategory();
   const items = await fetchItems();
-
-  // console.log(transactions);
 
   const supabase = await createClient();
 

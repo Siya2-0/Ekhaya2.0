@@ -646,7 +646,6 @@ export async function addCategory(categoryname: string, categorydescription: str
           );
         }
       }
-      console.log("Here");
     } else if (count !== null && count > 1) {
       const transactionData = data[0].transaction_data;
       const parsedData = JSON.parse(transactionData);

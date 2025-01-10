@@ -110,7 +110,6 @@ const [drawerOpen, setDrawerOpen] = useState(false);
           table: "Inventory",
         },
         (payload: any) => {
-          console.log("Real-time update:", payload);
           if (payload.eventType === "INSERT") {
             setLiquorItems((prev: InventoryItem[]) => [...prev, payload.new]); // Append the new category
           }
@@ -307,7 +306,6 @@ const drawer = (
   
       const data = await response;
       if (response.ok) {
-        console.log("Transaction updated successfully!");
         setIsAddMoreOpen(false);
         setLoading(false);
         return data;

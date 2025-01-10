@@ -97,13 +97,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Transaction added successfully!");
-        console.log("Transaction data: ",data);
-        const transactionId = data.transaction[0]?.id;
-
-        console.log(transactionId);
-        handleUpdateInventory(data.transaction[0]?.id);
-        
+        handleUpdateInventory(data.transaction[0]?.id); 
       } else {
         console.log(`Error: ${data.error.message}`);
       }

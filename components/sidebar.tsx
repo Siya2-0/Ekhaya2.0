@@ -9,6 +9,7 @@ import { MdOutlineInventory } from "react-icons/md";
 import { PiUsersFourLight } from "react-icons/pi";
 import { MdOutlineBorderColor } from "react-icons/md";
 import useNavigation from '@/app/hook/useNavigation';
+import InactivityPopupClient from "./inactivity-popup-client";
 
 interface User {
   id: string;
@@ -48,15 +49,6 @@ const Sidebar = ({user}: any) => {
 
   const adminLinks = [
     { name: "Ekhaya", icon: <FaBuilding />, id: "company", path: "/" },
-  ];
-
-  const personalLinks = [
-    { name: "Dashboard", icon: <LuLayoutDashboard />, id: "dashboard", path: "/protected/dashboard" },
-    { name: "New Order", icon: <MdOutlineBorderColor />, id: "neworder", path: "/protected/new-order" },
-    { name: "Orders", icon: <PiTrolley />, id: "orders", path: "/protected/orders" },
-    { name: "Inventory", icon: <MdOutlineInventory />, id: "inventory", path: "/protected/inventory" },
-    { name: "Staff", icon: <PiUsersFourLight />, id: "staff", path: "/protected/staff" },
-    { name: "Profile", icon: <FaUser />, id: "profile", path: "/protected/profile" },
   ];
 
   const handleLinkClick = (linkId: any, path: string) => {
@@ -151,6 +143,7 @@ const Sidebar = ({user}: any) => {
             </div>
         </div>
       </div>
+      <InactivityPopupClient />
     </div>
   );
 };

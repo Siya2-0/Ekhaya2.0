@@ -102,20 +102,7 @@ const EmployeeProfile = ({ users }: any) => {
       console.log(`Error uploading file: ${error.message}`);
     } else {
       const { data: url } = await supabase.storage.from('Ekhaya_Bucket').getPublicUrl(filePath);
-      console.log(url.publicUrl);
-      console.log(`File uploaded successfully: ${data}`);
       return url.publicUrl;
-    }
-  };
-
-  const handleUpload = async () => {
-    if (file) {
-      // setUploading(true);
-      const filePath = `image/${uuidv4()}.${file.name.split('.').pop()}`;
-      return uploadFile(file, filePath).finally(() => console.log("Upload complete"));
-    } else {
-      console.log('No file selected');
-      return null;
     }
   };
 
@@ -124,7 +111,7 @@ const EmployeeProfile = ({ users }: any) => {
     if (file) {
       const filePath = `image/${uuidv4()}.${file.name.split('.').pop()}`;
 
-      const imageUrl = await uploadFile(file, filePath).finally(() => console.log("Upload complete"));
+      const imageUrl = await uploadFile(file, filePath);
       if (imageUrl) {
         setEditEmployee((prev) => ({
           ...prev,
@@ -168,7 +155,6 @@ const EmployeeProfile = ({ users }: any) => {
 
       const data = await response.json();
       if (response.ok) {
-        console.log("User updated successfully!");
         setEmployeeData(updatedEmployee);
         setInitialEditEmployee(updatedEmployee);
         setShowEditModal(false);

@@ -20,15 +20,12 @@ const Dashboard = async () => {
   const totalOrders = await count_transactions_by_date(getCurrentDate());
   const lowStock = await fetchLowStock(false);
   const outOfStock = await fetchLowStock(true);
-  console.log("low stock: ", lowStock);
-  console.log("out of stock: ", outOfStock);
   return (
     <div>
         <main className="relative flex min-h-screen flex-col bg-[#F2F2F2] pt-12">
         <p className="text-[#303030] font-bold text-[32px] ml-8">Dashboard</p>
             <AuthButton />
             <POSDashboard data={sales} totalOrders={totalOrders} lowStock={lowStock.data} outOfStock={outOfStock.data} />   
-            <InactivityPopupServer/>          
         </main>
     </div>
   )

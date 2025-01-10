@@ -73,20 +73,6 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
   const todaySales = useMemo(() => getTodaySales(salesData), [salesData]);
   const chartData = useMemo(() => transformData(salesData), [salesData]);
 
-  console.log(totalOrders);
-
-  // const salesData = {
-  //   labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-  //   datasets: [
-  //     {
-  //       label: "Sales",
-  //       data: [3000, 4500, 3200, 5000, 4800, 6000, 5500],
-  //       borderColor: "rgb(75, 192, 192)",
-  //       tension: 0.1
-  //     }
-  //   ]
-  // };
-
   const categoryData = {
     labels: ["Food", "Drinks", "Desserts", "Others"],
     datasets: [

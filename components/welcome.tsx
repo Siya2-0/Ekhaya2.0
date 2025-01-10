@@ -84,7 +84,6 @@ const Welcome = () => {
           <Link href={"/protected/new-order"}>
             <button
               className="group relative inline-flex items-center px-8 py-4 text-lg font-bold tracking-widest text-black bg-gradient-to-r from-yellow-600 to-[#D62929] rounded-full overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
-              onClick={() => console.log("New Order Clicked")}
             >
               <span className="relative z-10">NEW ORDER</span>
               <motion.span

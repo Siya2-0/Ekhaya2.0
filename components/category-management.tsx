@@ -39,7 +39,6 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
           table: "Categories",
         },
         (payload: any) => {
-          console.log("Real-time update:", payload);
           if (payload.eventType === "INSERT") {
             setCategories((prev: Category[]) => [...prev, payload.new]); // Append the new category
           }
@@ -110,7 +109,6 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
   
       const data = await response;
       if (response.ok) {
-        console.log("Category updated successfully!");
         return data;
       } else {
         const errorData = await response.json();
@@ -155,7 +153,6 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Delete added successfully!");
       } else {
         console.log(`Error: ${data.error.message}`);
       }
@@ -200,7 +197,6 @@ const CategoryManagement = ({setIsCategoryModalOpen, categoriesData}: any) => {
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Category added successfully!");
         console.log(data);
       } else {
         console.log(`Error: ${data.error.message}`);

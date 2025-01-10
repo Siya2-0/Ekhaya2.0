@@ -6,7 +6,7 @@ import { fetchCategory } from "@/app/rest-api/restapi";
 
 const InventoryPage = async () => {
   const categories = await fetchCategory();
-    const items = await fetchItems();
+  const items = await fetchItems();
 
   return (
     <div>

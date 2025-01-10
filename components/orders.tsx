@@ -24,8 +24,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     null
   );
 
-  console.log(transactions);
-
   const [currentOrder, setCurrentOrder] = useState<Order | null>(null);
 
   const supabase = createClientComponentClient();
@@ -41,10 +39,8 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
           table: "Transactions",
         },
         (payload: any) => {
-          console.log("Real-time update:", payload);
 
           if (payload.eventType === "INSERT") {
-            console.log("Insert payload: ", payload.new);
             setOrders((prev) => [...prev, payload.new]);
           }
 
@@ -62,7 +58,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                 console.warn(`Invalid items format for order ID ${payload.new.id}:`, error);
               }
 
-              console.log("Update payload: ", payload.new);
           
               return {
                 ...payload.new,
@@ -96,7 +91,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
     if (selectedOrder) {
       const updatedOrder = orders.find((order) => order.id === selectedOrder.id);
       if (updatedOrder) {
-        console.log("Updated Order:", updatedOrder); // Pass the object as a separate argument
         setSelectedOrder(updatedOrder);
       }
     }
@@ -109,7 +103,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
         let tip = 0;
         try {
           const parsedItems = JSON.parse(order.items); // If `items` is JSON
-          // console.log("parsed Items: ",parsedItems);
           itemsArray = Array.isArray(parsedItems.orderItems) ? parsedItems.orderItems : [];
           if(parsedItems.tip) {
             tip = parsedItems.tip;
@@ -118,7 +111,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
           console.warn(`Invalid items format for order ID ${order.id}:`, error);
         }
     
-        // console.log("tip: "+tip);
         return {
           ...order,
           items: itemsArray,
@@ -204,7 +196,6 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
   
       const data = await response;
       if (response.ok) {
-        console.log("Transaction updated successfully!");
         setLoading(false);
         return data;
       } else {

@@ -134,7 +134,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         let lastKeyTime = Date.now();
       
         const handleBarcodeInput = (e: KeyboardEvent) => {
-          console.log("handleBarcodeInput");
           const currentTime = Date.now();
           
           // Reset the buffer if time between key presses is too long (> 100 ms)
@@ -151,7 +150,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
               const trimmedBarcode = barcodeBuffer.trim();
               setItemCode(trimmedBarcode);
               handleBarcodeScan(trimmedBarcode);
-              console.log("Scanned Barcode:", trimmedBarcode);
               barcodeBuffer = "";
             }
             
@@ -178,7 +176,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     if (!newItem.image_file) newErrors.image_file = 'Item image is required.';
     if (!newItem.barcode) newErrors.barcode = 'Item barcode is required.';
 
-    console.log("Error size: " + Object.keys(newErrors).length);
     return newErrors;
   }, [newItem]);
 
@@ -226,7 +223,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           table: "Inventory",
         },
         (payload: any) => {
-          console.log("Real-time update:", payload);
           if (payload.eventType === "INSERT") {
             setInventory((prev: InventoryItem[]) => [...prev, payload.new]); // Append the new category
           }
@@ -357,7 +353,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Category added successfully!");
         setSuccessModalDescription("Category added successfully.");
         setSuccessModalHeader("Successful!");
         setShowSuccessModal(true);
@@ -431,7 +426,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   
       const data = await response;
       if (response.ok) {
-        console.log("Item updated successfully!");
         return data;
       } else {
         const errorData = await response.json();
@@ -509,7 +503,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
 
       const data = await response.json();
       if (response.ok) {
-        console.log("Delete added successfully!");
       } else {
         console.log(`Error: ${data.error.message}`);
       }
@@ -548,8 +541,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       console.log(`Error uploading file: ${error.message}`);
     } else {
       const { data: url } = await supabase.storage.from('Ekhaya_Bucket').getPublicUrl(filePath);
-      console.log(url.publicUrl);
-      console.log(`File uploaded successfully: ${data}`);
       return url.publicUrl;
     }
   };
@@ -558,7 +549,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     if (file) {
       // setUploading(true);
       const filePath = `image/${uuidv4()}.${file.name.split('.').pop()}`;
-      return uploadFile(file, filePath).finally(() => console.log("Upload complete"));
+      return uploadFile(file, filePath);
     } else {
       console.log('No file selected');
       return null;
@@ -569,7 +560,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     if (updatedImageFile) {
       // setUploading(true);
       const filePath = `image/${uuidv4()}.${updatedImageFile.name.split('.').pop()}`;
-      return uploadFile(updatedImageFile, filePath).finally(() => console.log("Upload complete"));
+      return uploadFile(updatedImageFile, filePath);
     } else {
       console.log('No file selected');
       return null;
@@ -640,32 +631,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       toast.error("Item not found.");
     }
   };
-
-  // const handleSendEmail = async () => {
-  //   const worksheet = XLSX.utils.json_to_sheet(inventory);
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Inventory");
-  //   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-
-  //   const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-  //   const file = new File([blob], "inventory.xlsx", { type: "application/octet-stream" });
-
-  //   const formData = new FormData();
-  //   formData.append("file", file);
-
-  //   try {
-  //     await emailjs.sendForm(
-  //       process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-  //       process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-  //       formData,
-  //       process.env.NEXT_PUBLIC_EMAILJS_USER_ID!
-  //     );
-  //     alert("Email sent successfully!");
-  //   } catch (error) {
-  //     console.error("Error sending email:", error);
-  //     alert("Failed to send email.");
-  //   }
-  // };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] p-8">

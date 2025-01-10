@@ -9,7 +9,6 @@ const Profile = async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("Employee: ",user);
   return (
     <main className='w-full h-screen'>
       <EmployeeProfile users={user}/>

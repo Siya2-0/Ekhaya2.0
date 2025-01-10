@@ -101,7 +101,6 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
             table: "Inventory",
           },
           (payload: any) => {
-            console.log("Real-time update:", payload);
             if (payload.eventType === "INSERT") {
               setLiquorItems((prev: InventoryItem[]) => [...prev, payload.new]); // Append the new category
             }
@@ -137,7 +136,6 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
       let lastKeyTime = Date.now();
     
       const handleBarcodeInput = (e: KeyboardEvent) => {
-        console.log("handleBarcodeInput");
         const currentTime = Date.now();
         
         // Reset the buffer if time between key presses is too long (> 100 ms)
@@ -154,7 +152,6 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
             const trimmedBarcode = barcodeBuffer.trim();
             setItemCode(trimmedBarcode);
             handleBarcodeScan(trimmedBarcode);
-            console.log("Scanned Barcode:", trimmedBarcode);
             barcodeBuffer = "";
           }
           

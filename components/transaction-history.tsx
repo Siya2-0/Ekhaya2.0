@@ -22,7 +22,6 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
             table: "Transaction_history",
           },
           (payload: any) => {
-            console.log("Real-time update:", payload);
             if (payload.eventType === "INSERT") {
               setHistoryData((prev: any[]) => [...prev, payload.new]);
             }
@@ -69,7 +68,6 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
         if (response.ok) {
           const data = await response.json();
           setHistoryData(data.items);
-          console.log("History fetched successfully!", data.items);
         } else {
           const errorData = await response.json();
           setError(`Error: ${errorData.message || "Failed to fetch history"}`);

@@ -81,8 +81,6 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
           table: "Users",
         },
         (payload: any) => {
-          console.log("Real-time update:", payload);
-
           if (payload.eventType === "INSERT") {
             setEmployees((prev) => [...prev, payload.new]);
           }
@@ -157,7 +155,6 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
   };
 
   const handleEditEmployee = async (updatedEmployee: any) => {
-    // console.log(updatedEmployee);
     try {
       const response = await fetch("/api/user/loaupdate", {
         method: "POST",
@@ -172,7 +169,6 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
   
       const data = await response;
       if (response.ok) {
-        console.log("User updated successfully!");
         setEmployees(
           employees.map((emp) =>
             emp.id === updatedEmployee.id ? updatedEmployee : emp
@@ -214,8 +210,6 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
   };
 
   const handleUpdate = (updatedEmployee: any) => {
-    // console.log("Updated Role:", updatedEmployee.user_metadata.role);
-    // console.log("Updated LOA:", updatedEmployee.user_metadata.LOA);
     setIsUpdating(true);
     handleEditEmployee(updatedEmployee);
   };
