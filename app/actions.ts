@@ -72,11 +72,19 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect("error", "/forgot-password", "Email is required");
   }
 
+  // const { data, error: sessionError } = await supabase.auth.getSession();
+
+  // if (sessionError) {
+  //   console.error('Error getting session:', sessionError);
+  //   return;
+  // }
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/protected/reset-password`,
+    redirectTo: `${origin}/reset-password`,
   });
 
   if (error) {
+    console.error(error.message);
     return encodedRedirect(
       "error",
       "/forgot-password",

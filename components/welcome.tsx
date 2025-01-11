@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 import { BsArrowRight } from "react-icons/bs";
 import Link from "next/link";
+import qr from "@/app/assets/qrcode.png";
+import Image from "next/image";
 
 const Welcome = () => {
   const socialLinks = [
@@ -112,17 +114,7 @@ const Welcome = () => {
               <p>Address: 123 Lounge Street, Downtown</p>
             </div>
             <div className="flex gap-6">
-              {socialLinks.map((link, index) => (
-                <motion.a
-                  key={index}
-                  href={link.url}
-                  className="text-gray-400 hover:text-amber-400 text-2xl transition-colors duration-300"
-                  whileHover={{ scale: 1.2 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  {link.icon}
-                </motion.a>
-              ))}
+            <Image src={qr} alt="Social Media" width={50} height={50} className="h-50px"/>
             </div>
           </div>
         </footer>
