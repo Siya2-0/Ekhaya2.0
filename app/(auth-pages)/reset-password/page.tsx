@@ -76,7 +76,7 @@ export default function ResetPassword(
 
   return (
     (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen min-w-full flex items-center justify-center bg-gray-100">
           <Suspense fallback={<div>Loading...</div>}>
           <ResetPasswordContent />
         </Suspense>
