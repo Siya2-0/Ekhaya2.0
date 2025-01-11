@@ -104,31 +104,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
 
   const [errors, setErrors] = useState<any>({});
 
-  // useEffect(() => {
-  //   const handleEscape = (e: KeyboardEvent) => {
-  //     if (e.key === "Escape" && isOpen) {
-  //     setIsOpen(false);
-  //     }
-  //   };
-
-  //   const handleClickOutside = (e: MouseEvent) => {
-  //     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-  //     setIsOpen(false);
-  //     }
-  //   };
-
-  //   if (isOpen) {
-  //     document.addEventListener("keydown", handleEscape);
-  //     document.addEventListener("mousedown", handleClickOutside);
-  //     inputRef.current?.focus();
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener("keydown", handleEscape);
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, [isOpen]);
-
   useEffect(() => {
     if (!showAddModal){
       let barcodeBuffer = "";
@@ -163,7 +138,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
         window.removeEventListener("keypress", handleBarcodeInput);
       };
     }
-      }, []);
+      }, [showAddModal]);
 
 
   const validateForm = useCallback(() => {
@@ -478,11 +453,21 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
   };
 
   const filteredInventory = inventory.filter((item: InventoryItem) => {
-    const matchesSearch = item.item_name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || getStatus(item.stock_quantity, item.reorder_level) === filterStatus;
-    const matchesCategory = filterCategory === "all" || item.category === filterCategory;
+    const matchesSearch = 
+      item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      item.barcode === searchTerm;
+    
+    const matchesStatus = 
+      filterStatus === "all" || 
+      getStatus(item.stock_quantity, item.reorder_level) === filterStatus;
+    
+    const matchesCategory = 
+      filterCategory === "all" || 
+      item.category === filterCategory;
+  
     return matchesSearch && matchesStatus && matchesCategory;
   });
+  
 
   const stats = {
     total: inventory.length,
@@ -601,12 +586,13 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
       toast.error("Please enter a valid item code.");
       return;
     }
+
   
     // Find the item with the matching barcode
     const matchedItem = inventory.find((item: InventoryItem) => item.barcode === itemCode.trim());
   
     if (matchedItem) {
-      setSearchTerm(matchedItem.item_name);
+      setSearchTerm(matchedItem.barcode);
       setItemCode("");
       setIsOpen(false);
       toast.success(`${matchedItem.item_name} found`);
@@ -625,7 +611,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
     const matchedItem = inventory.find((item: InventoryItem) => item.barcode === code.trim());
   
     if (matchedItem) {
-      setSearchTerm(matchedItem.item_name);
+      setSearchTerm(matchedItem.barcode);
       setItemCode("");
       setIsOpen(false);
       toast.success(`${matchedItem.item_name} found`);
@@ -883,7 +869,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
           </table>
         </div>
 
-        {/* Add Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white rounded-lg p-8 max-w-4xl w-full">
@@ -900,9 +885,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     value={newItem.item_name}
                     onChange={(e) => setNewItem({ ...newItem, item_name: e.target.value })}
                   />
-                  {/* {errors.item_name && (
-                    <span className="text-red-500 text-sm">{errors.item_name}</span>
-                  )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -920,9 +902,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       </option>
                     ))}
                   </select>
-                  {/* {errors.category && (
-                    <span className="text-red-500 text-sm">{errors.category}</span>
-                  )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -941,9 +920,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       });
                     }}
                   />
-                  {/* {errors.stock_quantity && (
-                <span className="text-red-500 text-sm">{errors.stock_quantity}</span>
-              )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -959,9 +935,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       setNewItem({ ...newItem, price: parseFloat(e.target.value) })
                     }
                   />
-                  {/* {errors.price && (
-                <span className="text-red-500 text-sm">{errors.price}</span>
-              )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -976,9 +949,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                       setNewItem({ ...newItem, reorder_level: parseInt(e.target.value) })
                     }
                   />
-                  {/* {errors.reorder_level && (
-                <span className="text-red-500 text-sm">{errors.reorder_level}</span>
-              )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -991,9 +961,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     value={newItem.description}
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                   />
-                  {/* {errors.description && (
-                    <span className="text-red-500 text-sm">{errors.description}</span>
-                  )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -1006,9 +973,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     value={newItem.barcode}
                     onChange={(e) => setNewItem({ ...newItem, barcode: e.target.value })}
                   />
-                  {/* {errors.description && (
-                    <span className="text-red-500 text-sm">{errors.description}</span>
-                  )} */}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
@@ -1020,9 +984,6 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     className="w-full p-2 border rounded bg-transparent"
                     onChange={handleFileChange}
                   />
-                  {/* {errors.item_name && (
-                    <span className="text-red-500 text-sm">{errors.item_name}</span>
-                  )} */}
                 </div>
               </div>
               <div className="mt-6 flex justify-end gap-4">

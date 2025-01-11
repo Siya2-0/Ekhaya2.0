@@ -66,85 +66,88 @@ const Sidebar = ({user}: any) => {
     isHomeActive,} = useNavigation();
 
   return (
-    <div
-      className={`h-screen sticky flex flex-col bg-[#303030] text-white transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"} fixed left-0 top-0`}
-    >
-      <div className={`absolute right-0 z-10 ${isCollapsed ? 'top-0' : 'top-0'}`}>
-        <button onClick={() => setIsCollapsed(!isCollapsed)} className='bg-[#D62929] text-white p-2 cursor-pointer'>
-          <FaArrowRight className={`w-5 h-5 transform ${!isCollapsed ? 'rotate-180' : 'rotate-0'} transition-transform duration-500 ease-in-out`} />
-        </button>
-      </div>
-
-      <div className="p-4">
-        <div className="mb-8 mt-8">
-          <h2 className={`text-gray-400 uppercase text-xs font-semibold mb-4 ${isCollapsed ? "hidden" : "block"}`}>
-            Administrative
-          </h2>
-          {adminLinks.map((link) => (
-            <div
-              key={link.id}
-              onClick={() => handleLinkClick(link.id, link.path)} // Pass path to handleLinkClick
-              className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isHomeActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
-            >
-              <span className="text-xl transition-transform duration-300 transform group-hover:scale-110">{link.icon}</span>
-              <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>{link.name}</span>
-            </div>
-          ))}
+    <>
+    
+      <div
+        className={`h-screen sticky flex flex-col bg-[#303030] text-white transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"} fixed left-0 top-0`}
+      >
+        <div className={`absolute right-0 z-10 ${isCollapsed ? 'top-0' : 'top-0'}`}>
+          <button onClick={() => setIsCollapsed(!isCollapsed)} className='bg-[#D62929] text-white p-2 cursor-pointer'>
+            <FaArrowRight className={`w-5 h-5 transform ${!isCollapsed ? 'rotate-180' : 'rotate-0'} transition-transform duration-500 ease-in-out`} />
+          </button>
         </div>
 
-        <div>
-            {employeeData.user_metadata.LOA !== "NonManagement" && (
+        <div className="p-4">
+          <div className="mb-8 mt-8">
+            <h2 className={`text-gray-400 uppercase text-xs font-semibold mb-4 ${isCollapsed ? "hidden" : "block"}`}>
+              Administrative
+            </h2>
+            {adminLinks.map((link) => (
               <div
-                onClick={() => handleLinkClick("dashboard", "/protected/dashboard")} // Pass path to handleLinkClick
-                className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isDashboardActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
+                key={link.id}
+                onClick={() => handleLinkClick(link.id, link.path)} // Pass path to handleLinkClick
+                className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isHomeActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
               >
-                <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><LuLayoutDashboard /></span>
-                <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Dashboard</span>
+                <span className="text-xl transition-transform duration-300 transform group-hover:scale-110">{link.icon}</span>
+                <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>{link.name}</span>
               </div>
-            )}
-            <div
-              onClick={() => handleLinkClick("neworder", "/protected/new-order")} // Pass path to handleLinkClick
-              className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isNewOrderActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
-            >
-              <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><MdOutlineBorderColor /></span>
-              <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>New Order</span>
-            </div>
-            <div
-              onClick={() => handleLinkClick("orders", "/protected/orders")} // Pass path to handleLinkClick
-              className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isOrdersActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
-            >
-              <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><PiTrolley /></span>
-              <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Orders</span>
-            </div>
-            {employeeData.user_metadata.LOA !== "NonManagement" && (
-              <>
+            ))}
+          </div>
+
+          <div>
+              {employeeData.user_metadata.LOA !== "NonManagement" && (
                 <div
-                  onClick={() => handleLinkClick("inventory", "/protected/inventory")} // Pass path to handleLinkClick
-                  className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isInventoryActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
+                  onClick={() => handleLinkClick("dashboard", "/protected/dashboard")} // Pass path to handleLinkClick
+                  className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isDashboardActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
                 >
-                  <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><MdOutlineInventory /></span>
-                  <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Inventory</span>
+                  <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><LuLayoutDashboard /></span>
+                  <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Dashboard</span>
                 </div>
-                <div
-                  onClick={() => handleLinkClick("staff", "/protected/staff")} // Pass path to handleLinkClick
-                  className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isStaffActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
-                >
-                  <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><PiUsersFourLight /></span>
-                  <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Staff</span>
-                </div>
-              </>
-            )}
-            <div
-              onClick={() => handleLinkClick("profile", "/protected/profile")} // Pass path to handleLinkClick
-              className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isProfileActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
-            >
-              <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><FaUser /></span>
-              <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Profile</span>
-            </div>
+              )}
+              <div
+                onClick={() => handleLinkClick("neworder", "/protected/new-order")} // Pass path to handleLinkClick
+                className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isNewOrderActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
+              >
+                <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><MdOutlineBorderColor /></span>
+                <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>New Order</span>
+              </div>
+              <div
+                onClick={() => handleLinkClick("orders", "/protected/orders")} // Pass path to handleLinkClick
+                className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isOrdersActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
+              >
+                <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><PiTrolley /></span>
+                <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Orders</span>
+              </div>
+              {employeeData.user_metadata.LOA !== "NonManagement" && (
+                <>
+                  <div
+                    onClick={() => handleLinkClick("inventory", "/protected/inventory")} // Pass path to handleLinkClick
+                    className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isInventoryActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
+                  >
+                    <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><MdOutlineInventory /></span>
+                    <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Inventory</span>
+                  </div>
+                  <div
+                    onClick={() => handleLinkClick("staff", "/protected/staff")} // Pass path to handleLinkClick
+                    className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isStaffActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
+                  >
+                    <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><PiUsersFourLight /></span>
+                    <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Staff</span>
+                  </div>
+                </>
+              )}
+              <div
+                onClick={() => handleLinkClick("profile", "/protected/profile")} // Pass path to handleLinkClick
+                className={`flex items-center cursor-pointer p-3 rounded-lg mb-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg ${isProfileActive ? "bg-[#D62929]" : "hover:bg-gray-500"}`}
+              >
+                <span className="text-xl transition-transform duration-300 transform group-hover:scale-110"><FaUser /></span>
+                <span className={`ml-3 ${isCollapsed ? "hidden" : "block"}`}>Profile</span>
+              </div>
+          </div>
         </div>
       </div>
       <InactivityPopupClient />
-    </div>
+    </>
   );
 };
 
