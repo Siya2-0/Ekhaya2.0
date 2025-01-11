@@ -13,6 +13,7 @@ const UseNavigation = () => {
   const [isStaffActive, setIsStaffActive] = useState(false);
   const [isProfileActive, setIsProfileActive] = useState(false);
   const [isHomeActive, setIsHomeActive] = useState(false);
+  const [isSignInActive, setIsSignInActive] = useState(false);
 
   useEffect(() => {
     setIsDashboardActive(false);
@@ -22,6 +23,7 @@ const UseNavigation = () => {
     setIsStaffActive(false);
     setIsProfileActive(false);
     setIsHomeActive(false);
+    setIsSignInActive(false);
     switch (pathname) {
         case '/protected':
         setIsHomeActive(true);
@@ -44,6 +46,9 @@ const UseNavigation = () => {
       case '/protected/profile':
         setIsProfileActive(true);
         break;
+      case '/sign-in':
+        setIsSignInActive(true);
+        break;
       default:
         break;
     }
@@ -56,7 +61,9 @@ const UseNavigation = () => {
     isInventoryActive,
     isStaffActive,
     isProfileActive,
-    isHomeActive,};
+    isHomeActive,
+    isSignInActive,
+  };
 };
 
 export default UseNavigation;

@@ -6,9 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
-import { useState } from "react";
-import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+
+
+ function ExtractCode() {
+  const searchParams = useSearchParams()
+  console.log("Here11");
+  const code = searchParams.get('code')
+  console.log(code);
+  return code;
+}
 
 export default function ResetPassword(
 ) {
@@ -16,34 +25,54 @@ export default function ResetPassword(
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  //const router = useRouter();
+  const router = useRouter();
+ 
+
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+  
+    
+    setError('');
+    setMessage('');
+  
+ 
     if (password.length < 8) {
       setError('Password must be at least 8 characters long.');
       return;
     }
+  
+ 
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
-
   
-  const supabase = createClient(); 
-  const { data, error } = await supabase.auth.updateUser({
-    password: password
-  });
-
-  if (error) {
-    setError(error.message);
-    
-  } else {
-    setMessage('Password has been reset successfully.');
-    //redirect to sign
-
-    
-  }
+    try {
+      
+       const code=ExtractCode();
+      console.log("vuma"); 
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({
+        password: password,
+      });
+  
+      console.log(error);
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage('Password has been reset successfully.');
+        // Redirect to sign-in page after a short delay
+        setTimeout(() => {
+          //router.push('/auth/callback?redirect_to=/sign-in');
+          window.close();
+        }, 2000);
+      }
+    } catch (err) {
+      // Handle unexpected errors
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Error resetting password:', err);
+    }
   };
 
   return (
