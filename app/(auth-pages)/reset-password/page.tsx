@@ -6,17 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
+function ResetPasswordContent() {
+  const searchParams = useSearchParams();
+  const parameter1 = searchParams.get('code');
 
- function ExtractCode() {
-  const searchParams = useSearchParams()
-  console.log("Here11");
-  const code = searchParams.get('code')
-  console.log(code);
-  return code;
+  console.log("searchParams: ", parameter1);
+
+  return (
+    <div>
+      {/* Your form or other UI elements go here */}
+    </div>
+  );
 }
 
 export default function ResetPassword(
@@ -25,9 +29,6 @@ export default function ResetPassword(
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const router = useRouter();
- 
-
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -50,7 +51,7 @@ export default function ResetPassword(
   
     try {
       
-       const code=ExtractCode();
+      //  const code=ExtractCode();
       console.log("vuma"); 
       const supabase = createClient();
       const { error } = await supabase.auth.updateUser({
@@ -78,6 +79,9 @@ export default function ResetPassword(
   return (
     (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
+          <Suspense fallback={<div>Loading...</div>}>
+          <ResetPasswordContent />
+        </Suspense>
         <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
           <h1 className="text-2xl font-medium mb-4">Reset Password</h1>
           <p className="text-sm text-secondary-foreground mb-4">
