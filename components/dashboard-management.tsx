@@ -229,7 +229,7 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
                 Inventory
               </button>
             </Link>
-            <Link href={"/protected/reports"}>
+            {/* <Link href={"/protected/reports"}>
               <button className="flex items-center justify-center p-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
                 <FaChartLine className="mr-2" />
                 Reports
@@ -240,7 +240,7 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
                 <FaCog className="mr-2" />
                 Settings
               </button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>
