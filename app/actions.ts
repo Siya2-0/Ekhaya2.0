@@ -5,6 +5,10 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+const origin = process.env.NEXT_PUBLIC_API_BASE_URL
+  ? `https://${process.env.NEXT_PUBLIC_API_BASE_URL}`
+  : "http://localhost:3000";
+
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
@@ -65,7 +69,7 @@ export const signInAction = async (formData: FormData) => {
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
-  const origin = (await headers()).get("origin");
+  // const origin = (await headers()).get("origin");
   const callbackUrl = formData.get("callbackUrl")?.toString();
 
   if (!email) {
