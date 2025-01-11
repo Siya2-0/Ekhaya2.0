@@ -50,9 +50,7 @@ export default function ResetPassword(
     }
   
     try {
-      
       //  const code=ExtractCode();
-      console.log("vuma"); 
       const supabase = createClient();
       const { error } = await supabase.auth.updateUser({
         password: password,
