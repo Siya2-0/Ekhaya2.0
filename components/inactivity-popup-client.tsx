@@ -28,12 +28,12 @@ const InactivityPopupClient = () => {
             return prev - 1;
           });
         }, 1000);
-      }, 60000); // 60 seconds of inactivity
+      }, 300000); // 60 seconds of inactivity
     };
 
     window.addEventListener('mousemove', resetTimer);
     window.addEventListener('keypress', resetTimer);
-    window.addEventListener('beforeunload', handleSignOut);
+    //window.addEventListener('beforeunload', handleSignOut);
 
     resetTimer(); // Initialize the timer
 
@@ -42,7 +42,7 @@ const InactivityPopupClient = () => {
       clearInterval(countdownTimer);
       window.removeEventListener('mousemove', resetTimer);
       window.removeEventListener('keypress', resetTimer);
-      window.removeEventListener('beforeunload', handleSignOut);
+      //window.removeEventListener('beforeunload', handleSignOut);
     };
   }, []);
 
