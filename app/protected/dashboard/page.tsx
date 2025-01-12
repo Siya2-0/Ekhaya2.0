@@ -4,6 +4,7 @@ import POSDashboard from '@/components/dashboard-management'
 import { FetchDailyTotals } from "@/app/rest-api/restapi";
 import { count_transactions_by_date } from "@/app/rest-api/restapi";
 import { fetchLowStock } from "@/app/rest-api/restapi";
+import InactivityPopupClient from '@/components/inactivity-popup-client';
 
 
 const getCurrentDate = (): string => {

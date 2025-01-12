@@ -75,9 +75,12 @@ const Sidebar = ({user}: any) => {
     isHomeActive,} = useNavigation();
 
   return (
+
+    
     <div
       className={`h-screen sticky flex flex-col bg-[#303030] text-white transition-all duration-300 ${isCollapsed ? "w-20" : "w-64"} fixed left-0 top-0`}
     >
+       
       <div className={`absolute right-0 z-10 ${isCollapsed ? 'top-0' : 'top-0'}`}>
         <button onClick={() => setIsCollapsed(!isCollapsed)} className='bg-[#D62929] text-white p-2 cursor-pointer'>
           <FaArrowRight className={`w-5 h-5 transform ${!isCollapsed ? 'rotate-180' : 'rotate-0'} transition-transform duration-500 ease-in-out`} />
@@ -152,7 +155,9 @@ const Sidebar = ({user}: any) => {
             </div>
         </div>
       </div>
-      <InactivityPopupClient />
+     
+
+    <InactivityPopupClient />
     </div>
   );
 };

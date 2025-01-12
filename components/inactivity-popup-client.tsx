@@ -58,9 +58,9 @@ const InactivityPopupClient = () => {
   };
 
   return (
-    <div>
-      {isInactive && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div >
+      { isInactive &&(
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[99999999]">
           <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
             <p className="text-xl font-bold">Are you still there?</p>
             <p className="text-lg">Touch the screen if so. Signing out in {countdown} seconds...</p>
