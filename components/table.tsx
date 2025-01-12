@@ -302,7 +302,7 @@ const EmployeeTable = ({ users }: { users: User[] }) => {
       setShowForm(false);
 
       // Refresh the page after closing the dialog
-      setShowDialog(true);
+     // setShowDialog(true);
     } else {
       setDialogMessage(response.message || "An error occurred.");
       setDialogSuccess(false);
