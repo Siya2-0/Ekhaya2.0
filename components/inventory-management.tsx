@@ -777,7 +777,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                     {item.stock_quantity}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    R{item.price.toFixed(2)}
+                    P{item.price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                   <span
@@ -923,7 +923,7 @@ const InventoryManagement = ({categoriesData, itemsData}: any) => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 capitalize">
-                    Unit Price (R)
+                    Unit Price (P)
                   </label>
                   <input
                     type="number"

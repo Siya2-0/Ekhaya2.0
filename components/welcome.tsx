@@ -110,8 +110,8 @@ const Welcome = () => {
         <footer className="py-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-4">
             <div className="text-gray-400 text-sm">
-              <p>Contact: +1 234 567 890</p>
-              <p>Address: 123 Lounge Street, Downtown</p>
+              <p>Landline: 3960369</p>
+              <p>Address: P.O Box 1600 Gaborone</p>
             </div>
             <div className="flex gap-6">
             <Image src={qr} alt="Social Media" width={50} height={50} className="h-50px"/>

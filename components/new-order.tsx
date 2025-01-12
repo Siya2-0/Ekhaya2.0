@@ -275,7 +275,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
     return { subtotal, tax, total };
   };
 
-  const itemsPerPage = 4;
+  const itemsPerPage = 10;
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedItems = filteredItems.slice(startIndex, endIndex);
@@ -446,7 +446,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                           <div>
                             <h3 className="text-xl font-semibold text-[#303030] mb-2">{item.item_name}</h3>
                             <p className="text-gray-400 text-sm mb-2">{item.category}</p>
-                            <p className="text-[#303030] font-bold text-[24px]">R{item.price.toFixed(2)}</p>
+                            <p className="text-[#303030] font-bold text-[24px]">P{item.price.toFixed(2)}</p>
                           </div>
                           <div className="w-full mt-[0px] justify-end items-end flex">
                             <button
@@ -525,7 +525,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                                           </div>
                                         </div>
                                         </div>
-                                          <p className='text-center text-[22px] font-bold'>R{(item.price * item.quantity).toFixed(2)}</p>
+                                          <p className='text-center text-[22px] font-bold'>P{(item.price * item.quantity).toFixed(2)}</p>
                                         </div>
                                         <div className='md:block hidden pr-0'>
                                           <button onClick={() => removeFromOrders(item.id)} className="pl-4 pr-4 h-[100px] bg-[#FFFFFF] w-full text-[#D62929] right-0 top-0 relative overflow-hidden bg-[#f2f2f2] text-[#D62929] transition-all before:absolute before:left-0 before:top-0 before:h-full before:w-0 before:duration-500 after:absolute after:right-0 after:top-0 after:h-full after:w-0 after:duration-500 hover:text-white hover:shadow-[#D62929] hover:before:w-2/4 hover:before:bg-[#D62929] hover:after:w-2/4 hover:after:bg-[#D62929]">
@@ -549,7 +549,7 @@ const NewOrderManagement = ({ categoriesData, itemsData, username }: any) => {
                           <p className='text-black text-2xl font-bold'>TOTAL</p>
                       </div>
                       <div className='w-full'>
-                      <p className='mr-0 text-[#212322] text-3xl font-normal relative'>R{calculateTotal().total.toFixed(2)}</p>
+                      <p className='mr-0 text-[#212322] text-3xl font-normal relative'>P{calculateTotal().total.toFixed(2)}</p>
                       </div>
                     </div>
                     <button onClick={() => setShowPaymentModal(true)} disabled={currentOrders.length === 0}  className={`group relative bottom-0 min-h-[66px] md:min-h-[86px] w-[100%] overflow-hidden border ${(currentOrders.length === 0) ? "border-[#898989]":"border-[#D62929]"} ${(currentOrders.length === 0) ? "bg-[#898989]":"bg-[#D62929]"} text-white transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${(currentOrders.length === 0) ? "before:bg-[#898989]":"before:bg-[#f2f2f2]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${(currentOrders.length === 0) ? "after:bg-[#898989]":"after:bg-[#f2f2f2]"} after:duration-500 ${(currentOrders.length === 0) ? "hover:text-[#898989]":"hover:text-[#D62929]"} hover:before:h-full hover:after:h-full`}>

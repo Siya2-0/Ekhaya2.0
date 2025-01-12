@@ -327,7 +327,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                     {order.customer_name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    R{order.total_price.toFixed(2)}
+                    P{order.total_price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -411,7 +411,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                         <td className="px-4 py-2">{item.name}</td>
                         <td className="px-4 py-2">{item.quantity}</td>
                         <td className="px-4 py-2 text-right">
-                          R{item.price.toFixed(2)}
+                          P{item.price.toFixed(2)}
                         </td>
                       </tr>
                     ))}
@@ -422,7 +422,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
 
             <div className="mt-4 space-y-2">
               <p className="text-right">
-                <span className="font-semibold">Subtotal:</span> R
+                <span className="font-semibold">Subtotal:</span> P
                 {selectedOrder.total_price.toFixed(2)}
               </p>
               <div className="flex items-end justify-end w-full px-0 py-4">
@@ -436,7 +436,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                       onChange={(e) => setTipInput(parseFloat(e.target.value) || 0)}
                     />
                   ) : (
-                    <span className="text-right">R {selectedOrder.tip.toFixed(2)}</span>
+                    <span className="text-right">P {selectedOrder.tip.toFixed(2)}</span>
                   )}
                 </div>
 
@@ -473,7 +473,7 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
               </div>
 
               <p className="text-right text-xl font-bold">
-                Total: R{(selectedOrder.total_price + selectedOrder.tip).toFixed(2)}
+                Total: P{(selectedOrder.total_price + selectedOrder.tip).toFixed(2)}
               </p>
             </div>
 

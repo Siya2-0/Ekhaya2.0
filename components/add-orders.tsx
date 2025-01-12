@@ -396,7 +396,7 @@ const drawer = (
                             <div>
                               <h3 className="text-xl font-semibold text-[#303030] mb-2">{item.item_name}</h3>
                               <p className="text-gray-400 text-sm mb-2">{item.category}</p>
-                              <p className="text-[#303030] font-bold text-[24px]">R{item.price.toFixed(2)}</p>
+                              <p className="text-[#303030] font-bold text-[24px]">P{item.price.toFixed(2)}</p>
                             </div>
                             <div className="w-full mt-[-32px] justify-end items-end flex">
                               <button
@@ -499,7 +499,7 @@ const drawer = (
                             <p className='text-black text-2xl font-bold'>TOTAL</p>
                         </div>
                         <div className='w-full'>
-                        <p className='mr-0 text-[#212322] text-3xl font-normal relative'>R{calculateTotal().total.toFixed(2)}</p>
+                        <p className='mr-0 text-[#212322] text-3xl font-normal relative'>P{calculateTotal().total.toFixed(2)}</p>
                         </div>
                       </div>
                       <button onClick={() => setIsAddMoreOpen(false)} className={`group relative bottom-2 min-h-[66px] md:min-h-[76px] w-[96%] overflow-hidden border ${"border-[#D62929]"} bg-[#ffffff] ${"text-[#D62929]"} transition-all before:absolute before:left-0 before:top-0 before:h-0 before:w-1/4 ${"before:bg-[#D62929]"} before:duration-500 after:absolute after:bottom-0 after:right-0 after:h-0 after:w-1/4 ${"after:bg-[#D62929]"} after:duration-500 ${"hover:text-[#ffffff]"} hover:before:h-full hover:after:h-full`}>

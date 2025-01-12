@@ -143,7 +143,7 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
           <div>
             <p className="text-sm text-gray-500">Total Amount</p>
             <p className="text-xl font-bold text-blue-600">
-              R{totalPrice ? totalPrice.toFixed(2) : "N/A"}
+              P{totalPrice ? totalPrice.toFixed(2) : "N/A"}
             </p>
           </div>
 
@@ -174,7 +174,7 @@ const TransactionHistory = ({ orderId, setViewHistoryOrderId }: any) => {
                     <p className="font-medium">{item.name}</p>
                     <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                   </div>
-                  <p className="font-medium">R{item.price.toFixed(2)}</p>
+                  <p className="font-medium">P{item.price.toFixed(2)}</p>
                 </div>
               ))
             ) : (

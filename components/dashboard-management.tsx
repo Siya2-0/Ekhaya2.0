@@ -88,17 +88,17 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
     ]
   };
 
-  const alerts = [
-    { id: 1, message: "Low stock: French Fries", type: "warning" },
-    { id: 2, message: "Printer offline", type: "error" },
-    { id: 3, message: "New order #123 received", type: "info" }
-  ];
+  // const alerts = [
+  //   { id: 1, message: "Low stock: French Fries", type: "warning" },
+  //   { id: 2, message: "Printer offline", type: "error" },
+  //   { id: 3, message: "New order #123 received", type: "info" }
+  // ];
 
-  const recentActivity = [
-    { id: 1, action: "Order #456 completed", time: "2 mins ago" },
-    { id: 2, action: "Stock updated: Burger Buns", time: "15 mins ago" },
-    { id: 3, action: "Employee John checked in", time: "1 hour ago" }
-  ];
+  // const recentActivity = [
+  //   { id: 1, action: "Order #456 completed", time: "2 mins ago" },
+  //   { id: 2, action: "Stock updated: Burger Buns", time: "15 mins ago" },
+  //   { id: 3, action: "Employee John checked in", time: "1 hour ago" }
+  // ];
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -108,7 +108,7 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500">Daily Sales</p>
-              <h3 className="text-2xl font-bold">R{todaySales}</h3>
+              <h3 className="text-2xl font-bold">P{todaySales}</h3>
             </div>
             <FaShoppingCart className="text-blue-500 text-2xl" />
           </div>
@@ -184,7 +184,7 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        {/* <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-4">Alerts</h2>
           <div className="space-y-3">
             {alerts.map((alert) => (
@@ -200,9 +200,9 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        {/* <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
           <div className="space-y-3">
             {recentActivity.map((activity) => (
@@ -212,7 +212,7 @@ const POSDashboard = ({data, totalOrders, lowStock, outOfStock}: any ) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-4">Quick Actions</h2>

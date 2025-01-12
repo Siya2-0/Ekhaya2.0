@@ -155,8 +155,8 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                     <tr key={item.id} className="border-b">
                       <td className="p-3">{item.name}</td>
                       <td className="p-3 text-center">{item.quantity}</td>
-                      <td className="p-3 text-right">R{item.price.toFixed(2)}</td>
-                      <td className="p-3 text-right">R{(item.price * item.quantity).toFixed(2)}</td>
+                      <td className="p-3 text-right">P{item.price.toFixed(2)}</td>
+                      <td className="p-3 text-right">P{(item.price * item.quantity).toFixed(2)}</td>
                       <td className="p-3 text-right">
                         <button
                           onClick={() => handleQuantityChange(item.id, 1)}
@@ -208,7 +208,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                           className="w-full p-2 border rounded"
                         />
                         <div className="text-lg font-semibold">
-                          Change Due: R{Math.max(0, cashTendered - total).toFixed(2)}
+                          Change Due: P{Math.max(0, cashTendered - total).toFixed(2)}
                         </div>
                       </div>
                     )}
@@ -236,15 +236,15 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Subtotal:</span>
-                    <span>R{subtotal.toFixed(2)}</span>
+                    <span>P{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tip:</span>
-                    <span>R{tip.toFixed(2)}</span>
+                    <span>P{tip.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-xl font-bold pt-2 border-t">
                     <span>Total:</span>
-                    <span>R{total.toFixed(2)}</span>
+                    <span>P{total.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -259,7 +259,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
                           selectedTip === percentage ? "bg-blue-600 text-white" : "bg-gray-100"
                         }`}
                       >
-                        {percentage}% (R{(subtotal * (percentage / 100)).toFixed(2)})
+                        {percentage}% (P{(subtotal * (percentage / 100)).toFixed(2)})
                       </button>
                     ))}
                   </div>
