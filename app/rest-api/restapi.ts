@@ -20,8 +20,8 @@ export async function addCategory(categoryname: string, categorydescription: str
       status: 400,
     });
   }
-  categoryname = validator.escape(categoryname);
-  categorydescription = validator.escape(categorydescription);
+  //categoryname = validator.escape(categoryname);
+  //categorydescription = validator.escape(categorydescription);
 
   const supabase = await createClient();
     const { data: Categories, error } = await supabase.from('Categories').insert({category_name:categoryname, category_description:categorydescription})
@@ -61,8 +61,8 @@ export async function addCategory(categoryname: string, categorydescription: str
         status: 400,
       });
     }
-    categoryname = validator.escape(categoryname);
-    categorydescription = validator.escape(categorydescription);
+   // categoryname = validator.escape(categoryname);
+    //categorydescription = validator.escape(categorydescription);
 
     const supabase = await createClient();
     const { data: Categories, error } = await supabase.from('Categories').update({category_name:categoryname, category_description:categorydescription})
@@ -174,9 +174,9 @@ export async function addCategory(categoryname: string, categorydescription: str
       });
     }
 
-    item_name = validator.escape(item_name);
-    description = validator.escape(description);
-    category = validator.escape(category);
+   // item_name = validator.escape(item_name);
+    //description = validator.escape(description);
+    //category = validator.escape(category);
   
 
     const supabase = await createClient();
