@@ -84,7 +84,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   // }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${defaultUrl}/reset-password`,
+    redirectTo: 'https://ekhaya2-0.vercel.app/reset-password',
   });
 
   if (error) {
