@@ -47,7 +47,6 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
   };
 
   const handleUpdateInventory = async (id: any) => {
-    // setLoading(true);
     try {
       const response = await fetch("/api/item/update", {
         method: "POST",
@@ -71,8 +70,6 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
       } else {
         console.log(`Error: ${String(error)}`);
       }
-    } finally {
-      // setLoading(false);
     }
   };
 
@@ -108,7 +105,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
         console.log(`Error: ${String(error)}`);
       }
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -132,14 +129,14 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-transparent p-6 rounded-lg">
-          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
             <h2 className="text-2xl font-bold text-white">Please wait...</h2>
           </div>
         </div>
       )}
       {!showSuccessModal && (
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="max-w-7xl mx-auto overflow-hidden">
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6 max-h-[80vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
             
             <div className="overflow-x-auto">
@@ -183,7 +180,7 @@ const OrderSummary = ({ pay, setShowPaymentModal, setCurrentOrders, setShowOrder
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 {pay && (
-                  <div className="">
+                  <div>
                     <h3 className="text-xl font-semibold">Payment Methods</h3>
                     
                     <div className="grid grid-cols-2 gap-4">
