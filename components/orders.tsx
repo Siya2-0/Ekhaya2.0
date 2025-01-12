@@ -440,35 +440,36 @@ const OrderDashboard = ({ transactions, categoriesData, itemsData, username }: a
                   )}
                 </div>
 
-                {/* Edit and Save/Cancel buttons */}
-                <div className="flex items-center gap-4 pl-4">
-                  {editingTip ? (
-                    <>
+                {selectedOrder.status.toLowerCase() === "unpaid" && (
+                  <div className="flex items-center gap-4 pl-4">
+                    {editingTip ? (
+                      <>
+                        <button
+                          onClick={handleUpdateTip}
+                          className="text-green-600 hover:text-green-900"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingTip(false)}
+                          className="text-gray-600 hover:text-gray-900"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
                       <button
-                        onClick={handleUpdateTip}
-                        className="text-green-600 hover:text-green-900"
+                        onClick={() => {
+                          setEditingTip(true);
+                          setTipInput(selectedOrder?.tip || 0); // Initialize with current tip value
+                        }}
+                        className="text-blue-600 hover:text-blue-900 mt-[-8px]"
                       >
-                        Save
+                        <FiEdit className="w-5 h-5" />
                       </button>
-                      <button
-                        onClick={() => setEditingTip(false)}
-                        className="text-gray-600 hover:text-gray-900"
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setEditingTip(true);
-                        setTipInput(selectedOrder?.tip || 0); // Initialize with current tip value
-                      }}
-                      className="text-blue-600 hover:text-blue-900 mt-[-8px]"
-                    >
-                      <FiEdit className="w-5 h-5" />
-                    </button>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <p className="text-right text-xl font-bold">
