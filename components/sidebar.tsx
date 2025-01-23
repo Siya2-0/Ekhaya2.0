@@ -10,6 +10,7 @@ import { PiUsersFourLight } from "react-icons/pi";
 import { MdOutlineBorderColor } from "react-icons/md";
 import useNavigation from '@/app/hook/useNavigation';
 import InactivityPopupClient from "./inactivity-popup-client";
+import SessionListener  from "./session-listener";
 
 interface User {
   id: string;
@@ -147,6 +148,7 @@ const Sidebar = ({user}: any) => {
         </div>
       </div>
       <InactivityPopupClient />
+      <SessionListener/>
     </>
   );
 };
