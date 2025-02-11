@@ -29,15 +29,15 @@ Ekhaya PubnGrill is a nightclub in Botswana. This custom Point of Sale (POS) sys
 ## Installation & Setup
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-repo-name.git
+   git clone https://github.com/Siya2-0/Ekhaya2.0.git
    ```
 2. Navigate to the project directory:
    ```sh
-   cd ekhaya-pos
+   cd Ekhaya2.0
    ```
 3. Install dependencies:
    ```sh
-   npm install
+   npm install --legacy-peer-deps
    ```
 4. Start the development server:
    ```sh
