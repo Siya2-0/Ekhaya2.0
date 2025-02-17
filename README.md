@@ -44,6 +44,9 @@ Ekhaya PubnGrill is a nightclub in Botswana. This custom Point of Sale (POS) sys
    npm run dev
    ```
 
+##Test Logins
+pubngrill4@gmail.com    admin12345#
+
 ## Contributing
 Contributions are welcome! Feel free to fork the repository and submit a pull request.
 
